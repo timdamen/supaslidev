@@ -43,6 +43,7 @@ pnpm create supaslidev --name my-slides --presentation intro-deck
 | `--install` / `--no-install` | Run pnpm install          | `true`                |
 
 The wizard creates a pnpm workspace with:
+
 - A `presentations/` directory for your decks
 - A `packages/shared/` directory with reusable components, layouts, and styles (configured as a Slidev addon)
 - Shared dependency management via pnpm catalog

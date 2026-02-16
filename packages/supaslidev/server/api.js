@@ -741,8 +741,21 @@ function importPresentation({ source, name }) {
     }
 
     console.log('[import] Files copied successfully');
-    console.log('[import] Running pnpm install...');
 
+    regeneratePresentationsJson();
+
+    const presentation = {
+      id: presentationName,
+      title: presentationName,
+      description: '',
+      theme: 'default',
+      background: 'https://cover.sli.dev',
+      duration: '',
+    };
+
+    resolvePromise({ success: true, presentation });
+
+    console.log('[import] Running pnpm install in background...');
     const install = spawn('pnpm', ['install'], {
       cwd: projectRoot,
       stdio: 'inherit',
@@ -750,37 +763,15 @@ function importPresentation({ source, name }) {
     });
 
     install.on('close', (code) => {
-      if (code === 0) {
-        console.log('[import] pnpm install completed');
-        regeneratePresentationsJson();
-        resolvePromise({
-          success: true,
-          presentation: {
-            id: presentationName,
-            title: presentationName,
-            description: '',
-            theme: 'default',
-            background: 'https://cover.sli.dev',
-            duration: '',
-          },
-        });
-      } else {
+      if (code !== 0) {
         console.error(`[import] pnpm install failed with code ${code}`);
-        resolvePromise({
-          success: false,
-          field: 'install',
-          message: `Failed to install dependencies (exit code ${code})`,
-        });
+      } else {
+        console.log('[import] pnpm install completed');
       }
     });
 
     install.on('error', (err) => {
       console.error('[import] pnpm install error:', err);
-      resolvePromise({
-        success: false,
-        field: 'install',
-        message: `Failed to install dependencies: ${err.message}`,
-      });
     });
   });
 }
@@ -899,8 +890,21 @@ function uploadPresentation({ files, name, folderName }) {
     }
 
     console.log('[upload] Files written successfully');
-    console.log('[upload] Running pnpm install...');
 
+    regeneratePresentationsJson();
+
+    const presentation = {
+      id: presentationName,
+      title: presentationName,
+      description: '',
+      theme: 'default',
+      background: 'https://cover.sli.dev',
+      duration: '',
+    };
+
+    resolvePromise({ success: true, presentation });
+
+    console.log('[upload] Running pnpm install in background...');
     const install = spawn('pnpm', ['install'], {
       cwd: projectRoot,
       stdio: 'inherit',
@@ -908,37 +912,15 @@ function uploadPresentation({ files, name, folderName }) {
     });
 
     install.on('close', (code) => {
-      if (code === 0) {
-        console.log('[upload] pnpm install completed');
-        regeneratePresentationsJson();
-        resolvePromise({
-          success: true,
-          presentation: {
-            id: presentationName,
-            title: presentationName,
-            description: '',
-            theme: 'default',
-            background: 'https://cover.sli.dev',
-            duration: '',
-          },
-        });
-      } else {
+      if (code !== 0) {
         console.error(`[upload] pnpm install failed with code ${code}`);
-        resolvePromise({
-          success: false,
-          field: 'install',
-          message: `Failed to install dependencies (exit code ${code})`,
-        });
+      } else {
+        console.log('[upload] pnpm install completed');
       }
     });
 
     install.on('error', (err) => {
       console.error('[upload] pnpm install error:', err);
-      resolvePromise({
-        success: false,
-        field: 'install',
-        message: `Failed to install dependencies: ${err.message}`,
-      });
     });
   });
 }
