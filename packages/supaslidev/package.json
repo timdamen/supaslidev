@@ -1,6 +1,6 @@
 {
   "name": "supaslidev",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "CLI toolkit for managing Supaslidev presentations",
   "keywords": [
     "slidev",

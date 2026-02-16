@@ -33,7 +33,6 @@ function resolvePresentationsDir() {
 
 const projectRoot = resolveProjectRoot();
 const presentationsDir = resolvePresentationsDir();
-const workspaceRoot = join(projectRoot, '..');
 const packageDir = join(__dirname, '..');
 const presentationsJsonPath = join(projectRoot, '.supaslidev', 'presentations.json');
 const dashboardDir = process.env.SUPASLIDEV_DASHBOARD_DIR;
@@ -272,9 +271,18 @@ function startServer(presentationId) {
     return { success: true, port: runningServers.get(presentationId).port, alreadyRunning: true };
   }
 
-  const port = getNextPort();
   const presentationPath = join(projectRoot, 'presentations', presentationId);
   const slidevBin = join(presentationPath, 'node_modules', '.bin', 'slidev');
+
+  if (!existsSync(presentationPath)) {
+    return { success: false, error: 'Presentation not found' };
+  }
+
+  if (!existsSync(slidevBin)) {
+    return { success: false, error: 'Dependencies not installed. Run pnpm install first.' };
+  }
+
+  const port = getNextPort();
 
   const child = spawn(slidevBin, ['--port', String(port), '--open', 'false'], {
     cwd: presentationPath,
@@ -529,25 +537,32 @@ function createPresentation({ name, title, description, template = 'default' }) 
 
       regeneratePresentationsJson();
 
-      resolve({
-        success: true,
-        presentation: {
-          id: name,
-          title: frontmatter.title || name,
-          description: extractDescription(frontmatter.info) || '',
-          theme: template || 'default',
-          background: frontmatter.background || 'https://cover.sli.dev',
-          duration: frontmatter.duration || '',
-        },
-      });
+      const presentation = {
+        id: name,
+        title: frontmatter.title || name,
+        description: extractDescription(frontmatter.info) || '',
+        theme: template || 'default',
+        background: frontmatter.background || 'https://cover.sli.dev',
+        duration: frontmatter.duration || '',
+      };
 
       const install = spawn('pnpm', ['install'], {
-        cwd: workspaceRoot,
+        cwd: projectRoot,
         stdio: 'inherit',
         shell: true,
-        detached: true,
       });
-      install.unref();
+
+      install.on('close', (installCode) => {
+        if (installCode !== 0) {
+          console.error(`[create] pnpm install failed with code ${installCode}`);
+        }
+        resolve({ success: true, presentation });
+      });
+
+      install.on('error', (err) => {
+        console.error(`[create] pnpm install error:`, err);
+        resolve({ success: true, presentation });
+      });
     });
   });
 }
@@ -729,7 +744,7 @@ function importPresentation({ source, name }) {
     console.log('[import] Running pnpm install...');
 
     const install = spawn('pnpm', ['install'], {
-      cwd: workspaceRoot,
+      cwd: projectRoot,
       stdio: 'inherit',
       shell: true,
     });
@@ -887,7 +902,7 @@ function uploadPresentation({ files, name, folderName }) {
     console.log('[upload] Running pnpm install...');
 
     const install = spawn('pnpm', ['install'], {
-      cwd: workspaceRoot,
+      cwd: projectRoot,
       stdio: 'inherit',
       shell: true,
     });
