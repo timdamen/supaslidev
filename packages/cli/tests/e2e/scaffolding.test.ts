@@ -185,7 +185,7 @@ describe('Scaffolding E2E', () => {
     const packageJsonPath = join(TEST_DIR, 'test-project', 'package.json');
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
-    expect(packageJson.devDependencies['supaslidev']).toBe('^0.1.0');
+    expect(packageJson.devDependencies['supaslidev']).toBe('^0.1.3');
   });
 
   it('includes supaslidev script in package.json', async () => {
