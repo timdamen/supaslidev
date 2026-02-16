@@ -9,7 +9,6 @@ import CreatePresentationDialog from './components/CreatePresentationDialog.vue'
 import ImportPresentationDialog from './components/ImportPresentationDialog.vue';
 import EmptyState from './components/EmptyState.vue';
 import type { Presentation } from './types';
-import presentationsData from './data/presentations.json';
 import { useServers } from './composables/useServers';
 import { useToast } from '@nuxt/ui/composables';
 
@@ -93,10 +92,19 @@ function handleBeforeUnload() {
   navigator.sendBeacon('/api/servers/stop-all');
 }
 
-onMounted(() => {
+onMounted(async () => {
   startPolling();
   window.addEventListener('beforeunload', handleBeforeUnload);
   window.addEventListener('keydown', handleKeydown);
+
+  try {
+    const response = await fetch('/api/presentations');
+    if (response.ok) {
+      presentations.value = await response.json();
+    }
+  } catch {
+    // API not available yet
+  }
 });
 
 onUnmounted(() => {
@@ -106,7 +114,7 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown);
 });
 
-const presentations = ref<Presentation[]>(presentationsData);
+const presentations = ref<Presentation[]>([]);
 const searchQuery = ref('');
 
 const VIEW_MODE_STORAGE_KEY = 'supaslidev-view-mode';

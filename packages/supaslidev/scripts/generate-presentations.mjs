@@ -7,15 +7,23 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageDir = join(__dirname, '..');
 
+function resolveProjectRoot() {
+  if (process.env.SUPASLIDEV_PROJECT_ROOT) {
+    return process.env.SUPASLIDEV_PROJECT_ROOT;
+  }
+  return join(packageDir, '..', '..', '..');
+}
+
 function resolvePresentationsDir() {
   if (process.env.SUPASLIDEV_PRESENTATIONS_DIR) {
     return process.env.SUPASLIDEV_PRESENTATIONS_DIR;
   }
-  return join(packageDir, '..', '..', 'presentations');
+  return join(resolveProjectRoot(), 'presentations');
 }
 
+const projectRoot = resolveProjectRoot();
 const presentationsDir = resolvePresentationsDir();
-const outputDir = join(packageDir, 'src', 'data');
+const outputDir = join(projectRoot, '.supaslidev');
 const outputFile = join(outputDir, 'presentations.json');
 
 function parseFrontmatter(content) {

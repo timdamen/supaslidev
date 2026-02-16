@@ -43,10 +43,12 @@ export default defineConfig({
   plugins: [
     vue(),
     ui({
-      colors: {
-        primary: 'indigo',
-        secondary: 'violet',
-        neutral: 'slate',
+      ui: {
+        colors: {
+          primary: 'indigo',
+          secondary: 'violet',
+          neutral: 'slate',
+        },
       },
     }),
     serveExportsPlugin(),

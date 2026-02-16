@@ -26,6 +26,7 @@ export function findSupaslidevPackageRoot(): string {
 }
 
 const packageRoot = findSupaslidevPackageRoot();
+const isInstalledPackage = packageRoot.includes('node_modules');
 
 export async function dev(): Promise<void> {
   const projectRoot = findProjectRoot();
@@ -49,6 +50,10 @@ export async function dev(): Promise<void> {
   process.env.SUPASLIDEV_PROJECT_ROOT = projectRoot;
   process.env.SUPASLIDEV_PRESENTATIONS_DIR = presentationsDir;
 
+  if (isInstalledPackage) {
+    process.env.SUPASLIDEV_DASHBOARD_DIR = join(packageRoot, 'dist');
+  }
+
   const generateScript = join(packageRoot, 'scripts', 'generate-presentations.mjs');
   const apiServer = join(packageRoot, 'server', 'api.js');
 
@@ -69,21 +74,26 @@ export async function dev(): Promise<void> {
       detached: false,
     });
 
-    const vite = spawn('npx', ['vite', '--config', join(packageRoot, 'vite.config.ts')], {
-      cwd: packageRoot,
-      stdio: 'inherit',
-      env: process.env,
-      shell: true,
-    });
+    const processes: ChildProcess[] = [api];
 
-    const cleanup = (processes: ChildProcess[]) => {
+    if (!isInstalledPackage) {
+      const vite = spawn('npx', ['vite', '--config', join(packageRoot, 'vite.config.ts')], {
+        cwd: packageRoot,
+        stdio: 'inherit',
+        env: process.env,
+        shell: true,
+      });
+      processes.push(vite);
+    }
+
+    const cleanup = () => {
       for (const proc of processes) {
         proc.kill('SIGTERM');
       }
       process.exit(0);
     };
 
-    process.on('SIGINT', () => cleanup([api, vite]));
-    process.on('SIGTERM', () => cleanup([api, vite]));
+    process.on('SIGINT', cleanup);
+    process.on('SIGTERM', cleanup);
   });
 }

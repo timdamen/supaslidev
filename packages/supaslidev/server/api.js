@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import { spawn, execSync } from 'child_process';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, join, resolve, basename, extname, relative } from 'path';
 import {
   existsSync,
   mkdirSync,
@@ -10,8 +10,8 @@ import {
   statSync,
   cpSync,
   readFileSync,
+  createReadStream,
 } from 'fs';
-import { resolve, basename } from 'path';
 
 const IS_WINDOWS = process.platform === 'win32';
 
@@ -35,7 +35,23 @@ const projectRoot = resolveProjectRoot();
 const presentationsDir = resolvePresentationsDir();
 const workspaceRoot = join(projectRoot, '..');
 const packageDir = join(__dirname, '..');
-const presentationsJsonPath = join(packageDir, 'src', 'data', 'presentations.json');
+const presentationsJsonPath = join(projectRoot, '.supaslidev', 'presentations.json');
+const dashboardDir = process.env.SUPASLIDEV_DASHBOARD_DIR;
+
+const MIME_TYPES = {
+  '.html': 'text/html',
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.webmanifest': 'application/manifest+json',
+  '.pdf': 'application/pdf',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+};
 
 const runningServers = new Map();
 
@@ -913,10 +929,16 @@ function uploadPresentation({ files, name, folderName }) {
 }
 
 const server = createServer(async (req, res) => {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const path = url.pathname;
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Content-Type', 'application/json');
+
+  if (path.startsWith('/api/')) {
+    res.setHeader('Content-Type', 'application/json');
+  }
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
@@ -924,8 +946,22 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const path = url.pathname;
+  if (path === '/api/presentations' && req.method === 'GET') {
+    try {
+      if (existsSync(presentationsJsonPath)) {
+        const data = readFileSync(presentationsJsonPath, 'utf-8');
+        res.writeHead(200);
+        res.end(data);
+      } else {
+        res.writeHead(200);
+        res.end('[]');
+      }
+    } catch {
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: 'Failed to read presentations' }));
+    }
+    return;
+  }
 
   if (path === '/api/servers' && req.method === 'GET') {
     res.writeHead(200);
@@ -1096,14 +1132,66 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  if (path.startsWith('/exports/') && req.method === 'GET') {
+    const exportsDir = join(projectRoot, 'exports');
+    const filePath = join(exportsDir, path.slice('/exports/'.length));
+    const rel = relative(exportsDir, filePath);
+    if (
+      !rel.startsWith('..') &&
+      filePath.startsWith(exportsDir) &&
+      existsSync(filePath) &&
+      filePath.endsWith('.pdf')
+    ) {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${basename(filePath)}"`);
+      createReadStream(filePath).pipe(res);
+      return;
+    }
+  }
+
+  if (dashboardDir) {
+    const requestedFile = path === '/' ? '/index.html' : path;
+    const filePath = join(dashboardDir, requestedFile);
+    const normalizedPath = resolve(filePath);
+
+    if (
+      normalizedPath.startsWith(resolve(dashboardDir)) &&
+      existsSync(filePath) &&
+      statSync(filePath).isFile()
+    ) {
+      const ext = extname(filePath);
+      res.setHeader('Content-Type', MIME_TYPES[ext] || 'application/octet-stream');
+      createReadStream(filePath).pipe(res);
+      return;
+    }
+
+    const indexPath = join(dashboardDir, 'index.html');
+    if (existsSync(indexPath)) {
+      res.setHeader('Content-Type', 'text/html');
+      createReadStream(indexPath).pipe(res);
+      return;
+    }
+  }
+
   res.writeHead(404);
   res.end(JSON.stringify({ error: 'Not found' }));
 });
 
-const API_PORT = 7777;
+const API_PORT = dashboardDir ? 3000 : 7777;
 
 server.listen(API_PORT, () => {
-  console.log(`API server running on http://localhost:${API_PORT}`);
+  if (dashboardDir) {
+    console.log(`Supaslidev dashboard: http://localhost:${API_PORT}`);
+    const openCmd =
+      process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+    spawn(openCmd, [`http://localhost:${API_PORT}`], {
+      detached: true,
+      stdio: 'ignore',
+      shell: process.platform === 'win32',
+    }).unref();
+  } else {
+    console.log(`API server running on http://localhost:${API_PORT}`);
+  }
 });
 
 process.on('SIGINT', () => {
