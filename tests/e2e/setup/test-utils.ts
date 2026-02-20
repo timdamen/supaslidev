@@ -7,7 +7,7 @@ import { chromium, firefox, webkit, Browser, BrowserType, BrowserContext } from 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = join(__dirname, '../../..');
 const TMP_DIR = join(ROOT_DIR, '.tmp');
-const CLI_PATH = join(ROOT_DIR, 'packages/cli/src/cli.ts');
+const CLI_BINARY = join(ROOT_DIR, 'packages/cli/dist/cli.js');
 const IS_WINDOWS = process.platform === 'win32';
 
 const dashboardProcesses: Set<ChildProcess> = new Set();
@@ -17,8 +17,45 @@ export function getTmpDir(): string {
   return TMP_DIR;
 }
 
+export function getCliBinaryPath(): string {
+  return CLI_BINARY;
+}
+
 export function getBaseProjectPath(): string {
   return join(TMP_DIR, 'base-project');
+}
+
+export function getSupaslidevTarballPath(): string {
+  const tarballPathFile = join(TMP_DIR, '.supaslidev-tarball-path');
+  if (!existsSync(tarballPathFile)) {
+    throw new Error(
+      'Tarball path file not found. Did globalSetup run? Expected: ' + tarballPathFile,
+    );
+  }
+  return readFileSync(tarballPathFile, 'utf-8').trim();
+}
+
+export function runCli(
+  args: string,
+  cwd: string,
+  options?: { timeout?: number },
+): { stdout: string; stderr: string; exitCode: number } {
+  try {
+    const stdout = execSync(`node "${CLI_BINARY}" ${args}`, {
+      cwd,
+      encoding: 'utf-8',
+      timeout: options?.timeout ?? 30000,
+      env: { ...process.env, NO_COLOR: '1' },
+    });
+    return { stdout, stderr: '', exitCode: 0 };
+  } catch (error) {
+    const execError = error as { stdout?: string; stderr?: string; status?: number };
+    return {
+      stdout: execError.stdout ?? '',
+      stderr: execError.stderr ?? '',
+      exitCode: execError.status ?? 1,
+    };
+  }
 }
 
 export function scaffoldProject(name: string): string {
@@ -32,11 +69,12 @@ export function scaffoldProject(name: string): string {
 
   try {
     execSync(
-      `npx tsx ${CLI_PATH} create --name ${name} --presentation test-deck --no-git --no-install`,
+      `node "${CLI_BINARY}" create --name ${name} --presentation test-deck --no-git --no-install`,
       {
         cwd: TMP_DIR,
         stdio: 'pipe',
         shell: true,
+        env: { ...process.env, NO_COLOR: '1' },
       },
     );
   } catch (error) {
@@ -254,13 +292,18 @@ export function cleanupProject(name: string): void {
   }
 }
 
-export function installDependencies(projectPath: string): void {
+export function patchSupaslidevDependency(projectPath: string): void {
+  const tarballPath = getSupaslidevTarballPath();
   const packageJsonPath = join(projectPath, 'package.json');
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
   if (packageJson.devDependencies?.['supaslidev']) {
-    delete packageJson.devDependencies['supaslidev'];
+    packageJson.devDependencies['supaslidev'] = `file:${tarballPath}`;
   }
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+}
+
+export function installDependencies(projectPath: string): void {
+  patchSupaslidevDependency(projectPath);
 
   execSync('pnpm install', {
     cwd: projectPath,

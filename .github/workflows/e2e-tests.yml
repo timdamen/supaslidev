@@ -69,5 +69,5 @@ jobs:
           name: e2e-artifacts-${{ matrix.os }}-${{ matrix.browser }}
           path: |
             .tmp/
-            test/__snapshots__/
+            tests/__snapshots__/
           retention-days: 7

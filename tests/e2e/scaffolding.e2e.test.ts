@@ -1,29 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
-import { scaffoldProject, cleanupProject, getTmpDir } from './setup/test-utils.js';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT_DIR = join(__dirname, '../..');
-const CLI_PATH = join(ROOT_DIR, 'packages/cli/src/cli.ts');
-
-function runCliCreate(args: string, cwd: string): { output: string; exitCode: number } {
-  try {
-    const output = execSync(`npx tsx "${CLI_PATH}" create ${args} 2>&1`, {
-      cwd,
-      encoding: 'utf-8',
-    });
-    return { output, exitCode: 0 };
-  } catch (error) {
-    const execError = error as { stdout?: string; stderr?: string; status?: number };
-    return {
-      output: (execError.stdout ?? '') + (execError.stderr ?? ''),
-      exitCode: execError.status ?? 1,
-    };
-  }
-}
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+  scaffoldProject,
+  cleanupProject,
+  getTmpDir,
+  runCli,
+  installDependencies,
+} from './setup/test-utils.js';
 
 describe('CLI Scaffolding E2E', () => {
   const TEST_PROJECT_NAME = 'scaffolding-e2e-test';
@@ -175,48 +159,48 @@ describe('CLI Scaffolding E2E', () => {
 
   describe('invalid name handling', () => {
     it('rejects project name with uppercase letters', () => {
-      const result = runCliCreate(
-        '--name "InvalidName" --presentation "test" --no-git --no-install',
+      const result = runCli(
+        'create --name "InvalidName" --presentation "test" --no-git --no-install',
         getTmpDir(),
       );
 
       expect(result.exitCode).not.toBe(0);
-      expect(result.output).toContain('lowercase');
+      expect(result.stdout + result.stderr).toContain('lowercase');
     });
 
     it('rejects project name with special characters', () => {
-      const result = runCliCreate(
-        '--name "invalid_name!" --presentation "test" --no-git --no-install',
+      const result = runCli(
+        'create --name "invalid_name!" --presentation "test" --no-git --no-install',
         getTmpDir(),
       );
 
       expect(result.exitCode).not.toBe(0);
-      expect(result.output).toContain('alphanumeric');
+      expect(result.stdout + result.stderr).toContain('alphanumeric');
     });
 
     it('rejects project name starting with hyphen', () => {
-      const result = runCliCreate(
-        '--name "-invalid" --presentation "test" --no-git --no-install',
+      const result = runCli(
+        'create --name "-invalid" --presentation "test" --no-git --no-install',
         getTmpDir(),
       );
 
       expect(result.exitCode).not.toBe(0);
-      expect(result.output).toContain('hyphen');
+      expect(result.stdout + result.stderr).toContain('hyphen');
     });
 
     it('rejects project name ending with hyphen', () => {
-      const result = runCliCreate(
-        '--name "invalid-" --presentation "test" --no-git --no-install',
+      const result = runCli(
+        'create --name "invalid-" --presentation "test" --no-git --no-install',
         getTmpDir(),
       );
 
       expect(result.exitCode).not.toBe(0);
-      expect(result.output).toContain('hyphen');
+      expect(result.stdout + result.stderr).toContain('hyphen');
     });
 
     it('rejects presentation name with invalid characters', () => {
-      const result = runCliCreate(
-        '--name "valid-project" --presentation "Invalid Deck!" --no-git --no-install',
+      const result = runCli(
+        'create --name "valid-project" --presentation "Invalid Deck!" --no-git --no-install',
         getTmpDir(),
       );
 
@@ -231,29 +215,20 @@ describe('CLI Scaffolding E2E', () => {
       cleanupProject(INSTALL_TEST_PROJECT);
     });
 
-    it('pnpm install succeeds when run manually after scaffolding with --no-install', () => {
+    it('pnpm install succeeds with supaslidev tarball after scaffolding', () => {
       cleanupProject(INSTALL_TEST_PROJECT);
 
       const projectPath = join(getTmpDir(), INSTALL_TEST_PROJECT);
 
-      const result = runCliCreate(
-        `--name "${INSTALL_TEST_PROJECT}" --presentation "test-deck" --no-git --no-install`,
+      const result = runCli(
+        `create --name "${INSTALL_TEST_PROJECT}" --presentation "test-deck" --no-git --no-install`,
         getTmpDir(),
       );
 
       expect(result.exitCode).toBe(0);
       expect(existsSync(projectPath)).toBe(true);
 
-      const packageJsonPath = join(projectPath, 'package.json');
-      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-      // Remove unpublished local package to allow pnpm install to succeed in test environment
-      delete packageJson.devDependencies['supaslidev'];
-      writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
-
-      execSync('pnpm install', {
-        cwd: projectPath,
-        stdio: 'inherit',
-      });
+      installDependencies(projectPath);
 
       expect(existsSync(join(projectPath, 'node_modules'))).toBe(true);
       expect(existsSync(join(projectPath, 'pnpm-lock.yaml'))).toBe(true);
