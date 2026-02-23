@@ -13,6 +13,7 @@
     "build": "pnpm --filter @supaslidev/* run build"
   },
   "devDependencies": {
+    "playwright-chromium": "catalog:",
     "supaslidev": "workspace:*"
   },
   "engines": {
