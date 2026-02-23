@@ -3,6 +3,22 @@ import { join } from 'node:path';
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { findProjectRoot } from '../utils.js';
 
+function tryOpenBrowser(url: string): void {
+  const cmd =
+    process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'cmd' : 'xdg-open';
+  const args = process.platform === 'win32' ? ['/c', 'start', '', url] : [url];
+
+  try {
+    const child = spawn(cmd, args, { stdio: 'ignore', detached: true });
+    child.on('error', () => {
+      console.log(`\n  Open ${url} in your browser\n`);
+    });
+    child.unref();
+  } catch {
+    console.log(`\n  Open ${url} in your browser\n`);
+  }
+}
+
 function getPresentations(presentationsDir: string): string[] {
   if (!existsSync(presentationsDir)) {
     return [];
@@ -52,23 +68,39 @@ export async function present(name: string): Promise<void> {
     process.exit(1);
   }
 
-  const packageName = `@supaslidev/${name}`;
+  const presentationPath = join(projectRoot, 'presentations', name);
+  const slidevBin = join(presentationPath, 'node_modules', '.bin', 'slidev');
 
   console.log(`\nStarting dev server for ${name}...\n`);
 
   return new Promise((resolve, reject) => {
-    const pnpm = spawn('pnpm', ['--filter', packageName, 'dev'], {
-      cwd: projectRoot,
-      stdio: 'inherit',
+    const slidev = spawn(slidevBin, ['--open', 'false'], {
+      cwd: presentationPath,
+      stdio: ['inherit', 'pipe', 'inherit'],
       shell: true,
     });
 
-    pnpm.on('error', (err) => {
+    let browserOpened = false;
+
+    slidev.stdout?.on('data', (data: Buffer) => {
+      const text = data.toString();
+      process.stdout.write(text);
+
+      if (!browserOpened) {
+        const match = text.match(/https?:\/\/localhost:\d+/);
+        if (match) {
+          browserOpened = true;
+          tryOpenBrowser(match[0]);
+        }
+      }
+    });
+
+    slidev.on('error', (err) => {
       console.error(`Failed to start dev server: ${err.message}`);
       reject(err);
     });
 
-    pnpm.on('close', (code) => {
+    slidev.on('close', (code) => {
       if (code !== 0) {
         reject(new Error(`Process exited with code ${code}`));
         return;
