@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-const CLI_VERSION = '0.1.0';
+import { CLI_VERSION } from './version.js';
 const STATE_DIR = '.supaslidev';
 const STATE_FILE = 'state.json';
 

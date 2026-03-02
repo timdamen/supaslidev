@@ -1,8 +1,13 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 
-export const CLI_VERSION = '0.1.0';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8')) as {
+  version: string;
+};
+export const CLI_VERSION = pkg.version;
 export const PACKAGE_NAME = '@supaslidev/cli';
 
 const CACHE_DIR = join(tmpdir(), 'supaslidev-cli');
@@ -69,12 +74,12 @@ function writeCache(latestVersion: string): void {
   }
 }
 
-export async function fetchLatestVersion(): Promise<string | null> {
+export async function fetchLatestPackageVersion(packageName: string): Promise<string | null> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const response = await fetch(`https://registry.npmjs.org/${PACKAGE_NAME}`, {
+    const response = await fetch(`https://registry.npmjs.org/${packageName}`, {
       signal: controller.signal,
     });
 
@@ -84,12 +89,18 @@ export async function fetchLatestVersion(): Promise<string | null> {
       return null;
     }
     const data = (await response.json()) as NpmVersionResponse;
-    const version = data['dist-tags'].latest;
-    writeCache(version);
-    return version;
+    return data['dist-tags'].latest;
   } catch {
     return null;
   }
+}
+
+export async function fetchLatestVersion(): Promise<string | null> {
+  const version = await fetchLatestPackageVersion(PACKAGE_NAME);
+  if (version) {
+    writeCache(version);
+  }
+  return version;
 }
 
 export function getCachedLatestVersion(): string | null {

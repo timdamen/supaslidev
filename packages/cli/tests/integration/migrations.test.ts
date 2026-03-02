@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createInitialState, writeState, readState, addMigration } from '../../src/state.js';
+import { CLI_VERSION } from '../../src/version.js';
 import {
   writeManifest,
   validateManifest,
@@ -375,7 +376,7 @@ describe('Migrations E2E', () => {
     it('creates initial state with correct structure', () => {
       const state = createInitialState();
 
-      expect(state.cliVersion).toBe('0.1.0');
+      expect(state.cliVersion).toBe(CLI_VERSION);
       expect(state.appliedMigrations).toEqual([]);
       expect(state.createdAt).toBeDefined();
       expect(state.lastUpdatedAt).toBeDefined();
@@ -386,7 +387,7 @@ describe('Migrations E2E', () => {
 
       const state = readState(workspaceDir);
       expect(state).not.toBeNull();
-      expect(state?.cliVersion).toBe('0.1.0');
+      expect(state?.cliVersion).toBe(CLI_VERSION);
     });
 
     it('adds migrations to state', () => {

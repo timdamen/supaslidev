@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { create } from '../../src/create.js';
+import { CLI_VERSION } from '../../src/version.js';
 
 const TEST_DIR = join(tmpdir(), 'supaslidev-e2e-scaffolding');
 
@@ -138,7 +139,7 @@ describe('Scaffolding E2E', () => {
     const statePath = join(TEST_DIR, 'test-project', '.supaslidev', 'state.json');
     const state = JSON.parse(readFileSync(statePath, 'utf-8'));
 
-    expect(state.cliVersion).toBe('0.1.0');
+    expect(state.cliVersion).toBe(CLI_VERSION);
     expect(state.appliedMigrations).toEqual([]);
     expect(state.createdAt).toBeDefined();
     expect(state.lastUpdatedAt).toBeDefined();
@@ -185,7 +186,7 @@ describe('Scaffolding E2E', () => {
     const packageJsonPath = join(TEST_DIR, 'test-project', 'package.json');
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
-    expect(packageJson.devDependencies['supaslidev']).toBe('^0.1.4');
+    expect(packageJson.devDependencies['supaslidev']).toMatch(/^\^\d+\.\d+\.\d+$/);
   });
 
   it('includes supaslidev script in package.json', async () => {

@@ -4,13 +4,14 @@ import { status } from './commands/status.js';
 import { migrate, type MigrateOptions } from './commands/migrate.js';
 import { update } from './commands/update.js';
 import { startBackgroundUpdateCheck } from './background-update.js';
+import { CLI_VERSION } from './version.js';
 
 const program = new Command();
 
 program
   .name('create-supaslidev')
   .description('CLI tool for scaffolding Supaslidev presentations')
-  .version('0.1.0');
+  .version(CLI_VERSION);
 
 program
   .command('create', { isDefault: true })

@@ -6,7 +6,8 @@ import * as p from '@clack/prompts';
 import ejs from 'ejs';
 import pc from 'picocolors';
 
-const CLI_VERSION = '0.1.0';
+import { CLI_VERSION, fetchLatestPackageVersion } from './version.js';
+const SUPASLIDEV_FALLBACK_VERSION = '0.1.4';
 
 interface SafeSpinner {
   start: (msg?: string) => void;
@@ -50,6 +51,7 @@ interface TemplateData {
   description: string;
   cliVersion: string;
   createdAt: string;
+  supaslidevVersion: string;
 }
 
 const createdPaths: string[] = [];
@@ -506,12 +508,16 @@ export async function create(options: CreateOptions = {}): Promise<void> {
 
     createDirectoryStructure(targetDir);
 
+    const latestSupaslidev = await fetchLatestPackageVersion('supaslidev');
+    const supaslidevVersion = `^${latestSupaslidev ?? SUPASLIDEV_FALLBACK_VERSION}`;
+
     const templateData: TemplateData = {
       projectName,
       presentationName,
       description: `${projectName} - Slidev presentations monorepo`,
       cliVersion: CLI_VERSION,
       createdAt: new Date().toISOString(),
+      supaslidevVersion,
     };
 
     const templateName = options.template ?? 'default';
