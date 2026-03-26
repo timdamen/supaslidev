@@ -10,11 +10,53 @@ catalog:
   '@slidev/theme-default': latest
   '@slidev/theme-seriph': latest
   '@slidev/theme-apple-basic': latest
-  '@vue/compiler-sfc': ^3.5.27
-  typescript: ^5.3.3
   playwright-chromium: ^1.58.2
   vue: ^3.5.26
-  vue-tsc: ^2.0.0
+
+catalogMode: prefer
+
+catalogs:
+  cli:
+    '@clack/prompts': ^0.9.1
+    commander: ^13.1.0
+    ejs: ^3.1.10
+    js-yaml: ^4.1.1
+    picocolors: ^1.1.1
+    ts-morph: ^24.0.0
+    yaml: ^2.7.0
+  core:
+    '@nuxt/ui': ^4.4.0
+    '@vitejs/plugin-vue': ^5.2.1
+    '@vue/compiler-sfc': ^3.5.27
+    tailwindcss: ^4.1.18
+    vite: ^6.0.7
+    vue-router: ^4.6.4
+    vue-tsc: ^2.0.0
+  dev:
+    '@commitlint/cli': ^20.3.1
+    '@commitlint/config-conventional': ^20.3.1
+    '@semantic-release/changelog': ^6.0.3
+    '@semantic-release/git': ^10.0.1
+    '@semantic-release/github': ^12.0.2
+    '@types/ejs': ^3.1.5
+    '@types/js-yaml': ^4.0.9
+    '@types/node': ^22.10.0
+    '@vitest/browser': 4.0.17
+    '@vitest/browser-playwright': 4.0.17
+    '@vitest/coverage-v8': 4.0.17
+    '@vitest/ui': ^4.0.18
+    husky: ^9.1.7
+    lint-staged: ^16.2.7
+    oxfmt: ^0.26.0
+    oxlint: ^1.41.0
+    playwright: ^1.49.0
+    playwright-chromium: ^1.58.2
+    semantic-release: ^25.0.2
+    tsdown: ^0.12.5
+    tsx: ^4.19.0
+    turbo: ^2.7.5
+    typescript: ^5.3.3
+    vitest: ^4.0.0
 
 ignoredOptionalDependencies:
   - '@resvg/resvg-js-android-arm-eabi'
@@ -29,6 +71,8 @@ ignoredOptionalDependencies:
   - '@resvg/resvg-js-win32-ia32-msvc'
   - '@resvg/resvg-js-win32-x64-msvc'
 
+linkWorkspacePackages: true
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - better-sqlite3
@@ -36,3 +80,15 @@ onlyBuiltDependencies:
   - playwright-chromium
   - sharp
   - vue-demi
+
+shellEmulator: true
+
+trustPolicy: no-downgrade
+
+trustPolicyExclude:
+  - axios
+  - chokidar
+  - semver
+  - undici
+  - undici-types
+  - vite

@@ -48,23 +48,23 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.4.0",
-    "commander": "^13.1.0",
+    "@nuxt/ui": "catalog:core",
+    "commander": "catalog:cli",
     "create-supaslidev": "workspace:^",
-    "js-yaml": "^4.1.1",
-    "tailwindcss": "^4.1.18",
-    "vue": "^3.5.0",
-    "vue-router": "^4.6.4"
+    "js-yaml": "catalog:cli",
+    "tailwindcss": "catalog:core",
+    "vue": "catalog:",
+    "vue-router": "catalog:core"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.10.0",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "tsdown": "^0.12.5",
-    "tsx": "^4.19.0",
-    "typescript": "^5.3.3",
-    "vite": "^6.0.7",
-    "vitest": "^3.0.0",
-    "vue-tsc": "^2.0.0"
+    "@types/js-yaml": "catalog:dev",
+    "@types/node": "catalog:dev",
+    "@vitejs/plugin-vue": "catalog:core",
+    "tsdown": "catalog:dev",
+    "tsx": "catalog:dev",
+    "typescript": "catalog:dev",
+    "vite": "catalog:core",
+    "vitest": "catalog:dev",
+    "vue-tsc": "catalog:core"
   }
 }

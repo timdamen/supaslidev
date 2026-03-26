@@ -305,9 +305,16 @@ export function patchSupaslidevDependency(projectPath: string): void {
 export function installDependencies(projectPath: string): void {
   patchSupaslidevDependency(projectPath);
 
+  // Strip inherited npm_config_* env vars from the parent pnpm process
+  // so the scaffolded project uses its own pnpm-workspace.yaml settings
+  const cleanEnv = Object.fromEntries(
+    Object.entries(process.env).filter(([key]) => !key.startsWith('npm_config_')),
+  );
+
   execSync('pnpm install', {
     cwd: projectPath,
     stdio: 'inherit',
+    env: cleanEnv,
   });
 }
 
