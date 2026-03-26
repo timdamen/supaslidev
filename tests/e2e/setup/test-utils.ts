@@ -314,7 +314,7 @@ export function installDependencies(projectPath: string): void {
   execSync('pnpm install', {
     cwd: projectPath,
     stdio: 'inherit',
-    env: { ...cleanEnv, npm_config_trust_policy: '' },
+    env: { ...cleanEnv, npm_config_trust_policy: 'accept' },
   });
 }
 

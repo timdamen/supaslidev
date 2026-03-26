@@ -38,7 +38,7 @@ function runPnpmInstall(cwd: string): Promise<{ success: boolean; output: string
       cwd,
       shell: true,
       stdio: ['pipe', 'pipe', 'pipe'],
-      env: { ...process.env, npm_config_trust_policy: '' },
+      env: { ...process.env, npm_config_trust_policy: 'accept' },
     });
 
     child.stdout?.on('data', (data) => {
