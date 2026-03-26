@@ -16,16 +16,25 @@ function cleanTestDir(): void {
 function removeUnpublishedPackages(projectDir: string): void {
   const packageJsonPath = join(projectDir, 'package.json');
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-  if (packageJson.devDependencies?.['supaslidev']) {
-    delete packageJson.devDependencies['supaslidev'];
-  }
+  delete packageJson.devDependencies;
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+
+  // Ensure .npmrc has ignore-workspace-root-check for pnpm 10 compatibility
+  const npmrcPath = join(projectDir, '.npmrc');
+  let npmrc = '';
+  try {
+    npmrc = readFileSync(npmrcPath, 'utf-8');
+  } catch {}
+  if (!npmrc.includes('ignore-workspace-root-check')) {
+    npmrc += '\nignore-workspace-root-check=true\n';
+    writeFileSync(npmrcPath, npmrc);
+  }
 }
 
 function runPnpmInstall(cwd: string): Promise<{ success: boolean; output: string }> {
   return new Promise((resolve) => {
     const output: string[] = [];
-    const child = spawn('pnpm', ['install'], {
+    const child = spawn('pnpm', ['install', '--trust-policy-exclude', "'*'"], {
       cwd,
       shell: true,
       stdio: ['pipe', 'pipe', 'pipe'],
