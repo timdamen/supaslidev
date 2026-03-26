@@ -34,10 +34,11 @@ function removeUnpublishedPackages(projectDir: string): void {
 function runPnpmInstall(cwd: string): Promise<{ success: boolean; output: string }> {
   return new Promise((resolve) => {
     const output: string[] = [];
-    const child = spawn('pnpm', ['install', '--trust-policy-exclude', "'*'"], {
+    const child = spawn('pnpm', ['install'], {
       cwd,
       shell: true,
       stdio: ['pipe', 'pipe', 'pipe'],
+      env: { ...process.env, npm_config_trust_policy: '' },
     });
 
     child.stdout?.on('data', (data) => {
