@@ -302,8 +302,20 @@ export function patchSupaslidevDependency(projectPath: string): void {
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 }
 
+export function patchTrustPolicy(projectPath: string): void {
+  const workspaceYamlPath = join(projectPath, 'pnpm-workspace.yaml');
+  if (existsSync(workspaceYamlPath)) {
+    let content = readFileSync(workspaceYamlPath, 'utf-8');
+    if (!content.includes('trustPolicy')) {
+      content += '\ntrustPolicy: accept\n';
+      writeFileSync(workspaceYamlPath, content);
+    }
+  }
+}
+
 export function installDependencies(projectPath: string): void {
   patchSupaslidevDependency(projectPath);
+  patchTrustPolicy(projectPath);
 
   // Strip inherited npm_config_* env vars from the parent pnpm process
   // so the scaffolded project uses its own pnpm-workspace.yaml settings
@@ -314,7 +326,7 @@ export function installDependencies(projectPath: string): void {
   execSync('pnpm install', {
     cwd: projectPath,
     stdio: 'inherit',
-    env: { ...cleanEnv, npm_config_trust_policy: 'accept' },
+    env: cleanEnv,
   });
 }
 
