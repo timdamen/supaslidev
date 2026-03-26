@@ -311,7 +311,7 @@ export function installDependencies(projectPath: string): void {
     Object.entries(process.env).filter(([key]) => !key.startsWith('npm_config_')),
   );
 
-  execSync('pnpm install', {
+  execSync("pnpm install --trust-policy-exclude '*'", {
     cwd: projectPath,
     stdio: 'inherit',
     env: cleanEnv,
