@@ -70,6 +70,7 @@
     "tsdown": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
-    "vitest": "catalog:dev"
+    "vitest": "catalog:dev",
+    "vue-tsc": "catalog:core"
   }
 }
