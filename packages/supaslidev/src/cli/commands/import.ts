@@ -1,16 +1,27 @@
 import { spawn } from 'node:child_process';
 import { join, basename, resolve, dirname } from 'node:path';
-import {
-  existsSync,
-  readdirSync,
-  statSync,
-  mkdirSync,
-  cpSync,
-  readFileSync,
-  writeFileSync,
-} from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { addImportedPresentation, findWorkspaceRoot } from 'create-supaslidev';
 import { findProjectRoot, getPresentations } from '../utils.js';
+import {
+  IGNORE_PATTERNS,
+  validateName,
+  validateSourceDirectory,
+  copyDirectorySelective,
+  hasSharedPackage,
+  addSharedAddonToSlides,
+  addSharedDependencyToPackageJson,
+} from '../../shared/index.js';
+import type { PackageJson } from '../../shared/types.js';
+
+// Re-export for tests and other consumers
+export {
+  IGNORE_PATTERNS,
+  validateName,
+  shouldIgnore,
+  validateSourceDirectory,
+  copyDirectorySelective,
+} from '../../shared/index.js';
 
 export function findPnpmWorkspaceRoot(startDir: string): string | null {
   let currentDir = startDir;
@@ -21,146 +32,6 @@ export function findPnpmWorkspaceRoot(startDir: string): string | null {
     currentDir = dirname(currentDir);
   }
   return null;
-}
-
-export const IGNORE_PATTERNS = [
-  'node_modules',
-  '.git',
-  'dist',
-  '.nuxt',
-  '.output',
-  'pnpm-lock.yaml',
-  'package-lock.json',
-  'yarn.lock',
-  '.DS_Store',
-];
-
-function hasSharedPackage(projectRoot: string): boolean {
-  const sharedPackagePath = join(projectRoot, 'packages', 'shared', 'package.json');
-  return existsSync(sharedPackagePath);
-}
-
-function addSharedAddonToSlides(slidesPath: string): void {
-  const content = readFileSync(slidesPath, 'utf-8');
-  const frontmatterMatch = content.match(/^(---\n)([\s\S]*?)\n(---)/);
-  if (!frontmatterMatch) return;
-
-  const [fullMatch, openDelim, frontmatter, closeDelim] = frontmatterMatch;
-  const restOfFile = content.slice(fullMatch.length);
-  const sharedAddon = '@supaslidev/shared';
-
-  if (frontmatter.includes(sharedAddon)) return;
-
-  let updatedFrontmatter = frontmatter;
-
-  const addonsMatch = frontmatter.match(/^(addons:\s*)(\[.*?\])?$/m);
-  if (addonsMatch) {
-    if (addonsMatch[2]) {
-      const arrayContent = addonsMatch[2].slice(1, -1).trim();
-      if (arrayContent === '') {
-        updatedFrontmatter = frontmatter.replace(addonsMatch[0], `addons: ['${sharedAddon}']`);
-      } else {
-        updatedFrontmatter = frontmatter.replace(
-          addonsMatch[0],
-          `addons: [${arrayContent}, '${sharedAddon}']`,
-        );
-      }
-    } else {
-      const addonsBlockMatch = frontmatter.match(/^addons:\s*\n((?:  - .+\n?)*)/m);
-      if (addonsBlockMatch) {
-        const existingBlock = addonsBlockMatch[0].trimEnd();
-        updatedFrontmatter = frontmatter.replace(
-          existingBlock,
-          `${existingBlock}\n  - '${sharedAddon}'`,
-        );
-      }
-    }
-  } else {
-    const themeMatch = frontmatter.match(/^(theme:\s*.+)$/m);
-    if (themeMatch) {
-      updatedFrontmatter = frontmatter.replace(
-        themeMatch[1],
-        `${themeMatch[1]}\naddons:\n  - '${sharedAddon}'`,
-      );
-    }
-  }
-
-  if (updatedFrontmatter !== frontmatter) {
-    writeFileSync(slidesPath, `${openDelim}${updatedFrontmatter}\n${closeDelim}${restOfFile}`);
-  }
-}
-
-function addSharedDependencyToPackageJson(packageJson: PackageJson): void {
-  if (!packageJson.dependencies) {
-    packageJson.dependencies = {};
-  }
-  if (!packageJson.dependencies['@supaslidev/shared']) {
-    packageJson.dependencies['@supaslidev/shared'] = 'workspace:*';
-  }
-}
-
-interface PackageJson {
-  name?: string;
-  private?: boolean;
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  [key: string]: unknown;
-}
-
-export function validateName(name: string): void {
-  if (!/^[a-z0-9-]+$/.test(name)) {
-    throw new Error('Name must be lowercase alphanumeric with hyphens only');
-  }
-  if (name.startsWith('-') || name.endsWith('-')) {
-    throw new Error('Name cannot start or end with a hyphen');
-  }
-}
-
-export function validateSourceDirectory(sourcePath: string): void {
-  if (!existsSync(sourcePath)) {
-    throw new Error(`Source directory does not exist: ${sourcePath}`);
-  }
-
-  if (!statSync(sourcePath).isDirectory()) {
-    throw new Error(`Source path is not a directory: ${sourcePath}`);
-  }
-
-  const slidesPath = join(sourcePath, 'slides.md');
-  if (!existsSync(slidesPath)) {
-    throw new Error(`No slides.md found in source directory: ${sourcePath}`);
-  }
-
-  const packageJsonPath = join(sourcePath, 'package.json');
-  if (!existsSync(packageJsonPath)) {
-    throw new Error(`No package.json found in source directory: ${sourcePath}`);
-  }
-}
-
-export function shouldIgnore(name: string): boolean {
-  return IGNORE_PATTERNS.includes(name);
-}
-
-export function copyDirectorySelective(source: string, destination: string): void {
-  mkdirSync(destination, { recursive: true });
-
-  const entries = readdirSync(source);
-
-  for (const entry of entries) {
-    if (shouldIgnore(entry)) {
-      continue;
-    }
-
-    const sourcePath = join(source, entry);
-    const destPath = join(destination, entry);
-    const stat = statSync(sourcePath);
-
-    if (stat.isDirectory()) {
-      cpSync(sourcePath, destPath, { recursive: true });
-    } else {
-      cpSync(sourcePath, destPath);
-    }
-  }
 }
 
 export function transformPackageJson(

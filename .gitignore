@@ -8,6 +8,8 @@ deploy
 *.ralph-tui
 tasks
 .turbo
+.nuxt
+.output
 coverage
 .vitest
 .tmp

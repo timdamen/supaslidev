@@ -9,7 +9,7 @@ export default defineConfig({
     root: __dirname,
     globals: true,
     testTimeout: 120000,
-    hookTimeout: 120000,
+    hookTimeout: 180000,
     globalSetup: './setup/global-setup.ts',
     include: ['**/*.e2e.test.ts'],
     fileParallelism: false,

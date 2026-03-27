@@ -6,7 +6,15 @@ catalog:
   '@slidev/cli': ^52.11.3
   '@slidev/theme-default': latest
   '@slidev/theme-seriph': latest
+  '@slidev/theme-apple-basic': latest
   vue: ^3.5.26
-  '@vue/compiler-sfc': ^3.5.27
-  typescript: ^5.3.3
-  vue-tsc: ^2.0.0
+  playwright-chromium: ^1.58.2
+
+catalogs:
+  core:
+    nuxt: ^4.4.2
+    '@vue/compiler-sfc': ^3.5.27
+    typescript: ^5.3.3
+    vue-tsc: ^2.0.0
+
+catalogMode: prefer

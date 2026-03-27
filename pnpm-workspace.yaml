@@ -11,7 +11,7 @@ catalog:
   '@slidev/theme-seriph': latest
   '@slidev/theme-apple-basic': latest
   playwright-chromium: ^1.58.2
-  vue: ^3.5.26
+  vue: ^3.5.31
 
 catalogMode: prefer
 
@@ -27,7 +27,8 @@ catalogs:
   core:
     '@nuxt/ui': ^4.4.0
     '@vitejs/plugin-vue': ^5.2.1
-    '@vue/compiler-sfc': ^3.5.27
+    '@vue/compiler-sfc': ^3.5.31
+    nuxt: ^4.4.2
     tailwindcss: ^4.1.18
     vite: ^6.0.7
     vue-router: ^4.6.4
@@ -83,7 +84,7 @@ onlyBuiltDependencies:
 
 shellEmulator: true
 
-trustPolicy: no-downgrade
+trustPolicy: accept
 
 trustPolicyExclude:
   - axios

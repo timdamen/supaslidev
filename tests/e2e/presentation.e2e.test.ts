@@ -46,8 +46,8 @@ describe('Presentation Viewing E2E', () => {
     dashboardUrl = dashboardInfo.url;
 
     await waitForServer(dashboardUrl);
-    await waitForServer('http://localhost:7777/api/servers');
-  }, 120000);
+    await waitForServer(`${dashboardUrl}/api/servers`);
+  }, 180000);
 
   afterAll(async () => {
     await context?.close();

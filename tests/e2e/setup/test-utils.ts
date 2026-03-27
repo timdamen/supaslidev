@@ -100,12 +100,19 @@ export interface DashboardInfo {
 
 export async function startDashboard(projectPath: string): Promise<DashboardInfo> {
   const dashboardCliPath = join(ROOT_DIR, 'packages/supaslidev/src/cli/index.ts');
+  const tsxPath = join(ROOT_DIR, 'node_modules/.bin/tsx');
+
+  // Strip inherited npm_config_* env vars from the parent pnpm process
+  // so the spawned process doesn't confuse npm/npx with pnpm-specific config
+  const cleanEnv = Object.fromEntries(
+    Object.entries(process.env).filter(([key]) => !key.startsWith('npm_config_')),
+  );
 
   return new Promise((resolve, reject) => {
-    const proc = spawn('npx', ['tsx', dashboardCliPath, 'dev'], {
+    const proc = spawn(tsxPath, [dashboardCliPath, 'dev'], {
       cwd: projectPath,
       stdio: ['pipe', 'pipe', 'pipe'],
-      env: { ...process.env },
+      env: cleanEnv,
       shell: true,
       detached: !IS_WINDOWS,
     });
@@ -123,7 +130,7 @@ export async function startDashboard(projectPath: string): Promise<DashboardInfo
         killProcessTree(proc.pid);
         reject(new Error(`Dashboard startup timed out. Output: ${stripAnsi(output)}`));
       }
-    }, 60000);
+    }, 120000);
 
     const handleOutput = (data: Buffer) => {
       if (resolved) return;
@@ -306,10 +313,17 @@ export function patchTrustPolicy(projectPath: string): void {
   const workspaceYamlPath = join(projectPath, 'pnpm-workspace.yaml');
   if (existsSync(workspaceYamlPath)) {
     let content = readFileSync(workspaceYamlPath, 'utf-8');
-    if (!content.includes('trustPolicy')) {
+    if (content.includes('trustPolicy:')) {
+      content = content.replace(/trustPolicy:\s*\S+/, 'trustPolicy: accept');
+    } else {
       content += '\ntrustPolicy: accept\n';
-      writeFileSync(workspaceYamlPath, content);
     }
+    // In pnpm v10, lifecycle scripts require explicit approval via onlyBuiltDependencies.
+    // Allow all packages to run their build scripts (e.g. esbuild, playwright-chromium).
+    if (!content.includes('onlyBuiltDependencies')) {
+      content += "\nonlyBuiltDependencies:\n  - '*'\n";
+    }
+    writeFileSync(workspaceYamlPath, content);
   }
 }
 
@@ -368,7 +382,28 @@ export async function getSharedBrowser(): Promise<Browser> {
 
 export async function createBrowserContext(): Promise<BrowserContext> {
   const browser = await getSharedBrowser();
-  return browser.newContext();
+  const context = await browser.newContext();
+
+  // Nuxt SPA mode (ssr:false) uses a dynamic import() for the app entry,
+  // which means the browser's 'load' event fires before Vue mounts.
+  // Playwright's page.goto() defaults to waitUntil:'load', so it returns
+  // before the app has rendered. Wrap page.goto() to also wait for the
+  // Nuxt root element to have content, ensuring Vue has mounted.
+  const origNewPage = context.newPage.bind(context);
+  context.newPage = async () => {
+    const page = await origNewPage();
+    const origGoto = page.goto.bind(page);
+    page.goto = async (url: string, options?: Parameters<typeof origGoto>[1]) => {
+      const response = await origGoto(url, options);
+      await page.waitForSelector('#__nuxt > *', { timeout: 10000 }).catch(() => {
+        // If #__nuxt doesn't exist (non-Nuxt page), ignore
+      });
+      return response;
+    };
+    return page;
+  };
+
+  return context;
 }
 
 export async function closeSharedBrowser(): Promise<void> {

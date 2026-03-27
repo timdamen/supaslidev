@@ -10,6 +10,7 @@ import {
   getTmpDir,
   cleanupProject,
   createBrowserContext,
+  installDependencies,
 } from './setup/test-utils.js';
 
 function createSecondPresentation(projectPath: string): void {
@@ -71,6 +72,7 @@ describe('Dashboard Display E2E', () => {
     projectPath = join(getTmpDir(), DASHBOARD_TEST_PROJECT);
 
     cpSync(baseProjectPath, projectPath, { recursive: true });
+    installDependencies(projectPath);
 
     context = await createBrowserContext();
     page = await context.newPage();
@@ -79,7 +81,7 @@ describe('Dashboard Display E2E', () => {
     dashboardUrl = dashboardInfo.url;
 
     await waitForServer(dashboardUrl);
-  }, 120000);
+  }, 180000);
 
   afterAll(async () => {
     await context?.close();

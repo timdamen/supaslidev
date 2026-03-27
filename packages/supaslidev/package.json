@@ -21,28 +21,35 @@
     "supaslidev": "./dist/cli/index.js"
   },
   "files": [
+    "app",
     "dist",
-    "scripts",
-    "server"
+    "nuxt.config.ts",
+    "public",
+    "server",
+    "src"
   ],
   "type": "module",
-  "main": "./dist/cli/index.js",
+  "main": "./nuxt.config.ts",
   "exports": {
     ".": {
-      "import": "./dist/cli/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./src/index.ts"
+    },
+    "./layer": "./nuxt.config.ts",
+    "./nuxt": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js",
+      "default": "./src/module.ts"
     }
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "dev": "tsx src/cli/index.ts",
-    "dev:api": "node server/api.js",
-    "build": "vite build && tsdown",
-    "build:cli": "tsdown",
-    "preview": "vite preview",
-    "generate": "node scripts/generate-presentations.mjs",
-    "typecheck": "vue-tsc --noEmit && tsc --noEmit -p tsconfig.cli.json",
+    "dev": "nuxt dev",
+    "build": "tsdown",
+    "typecheck": "nuxt typecheck",
     "lint": "oxlint --config ../../oxlint.json .",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -50,21 +57,19 @@
   "dependencies": {
     "@nuxt/ui": "catalog:core",
     "commander": "catalog:cli",
-    "create-supaslidev": "workspace:^",
     "js-yaml": "catalog:cli",
+    "nuxt": "catalog:core",
     "tailwindcss": "catalog:core",
-    "vue": "catalog:",
-    "vue-router": "catalog:core"
+    "vue": "catalog:"
   },
   "devDependencies": {
+    "@nuxt/kit": "latest",
     "@types/js-yaml": "catalog:dev",
     "@types/node": "catalog:dev",
-    "@vitejs/plugin-vue": "catalog:core",
+    "create-supaslidev": "workspace:^",
     "tsdown": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
-    "vite": "catalog:core",
-    "vitest": "catalog:dev",
-    "vue-tsc": "catalog:core"
+    "vitest": "catalog:dev"
   }
 }
