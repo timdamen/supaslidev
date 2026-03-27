@@ -44,7 +44,13 @@ export default defineEventHandler(async (event) => {
   const presentationsDir = getPresentationsDir();
 
   const presentationName =
-    name || (folderName || 'presentation').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    name ||
+    (folderName || 'presentation')
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-+|-+$/g, '')
+    || 'presentation';
 
   if (!SLUG_REGEX.test(presentationName)) {
     throw createError({
@@ -157,6 +163,10 @@ export default defineEventHandler(async (event) => {
     if (code !== 0) {
       console.error(`[upload] pnpm install failed with code ${code}`);
     }
+  });
+
+  install.on('error', (err) => {
+    console.error(`[upload] pnpm install spawn error: ${err.message}`);
   });
 
   setResponseStatus(event, 201);

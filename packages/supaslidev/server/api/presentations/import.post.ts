@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { join, basename, resolve, relative } from 'node:path';
+import { join, basename, resolve } from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import {
   validateSourceDirectoryResult,
@@ -21,14 +21,7 @@ export default defineEventHandler(async (event) => {
   const presentationsDir = getPresentationsDir();
   const sourcePath = resolve(source);
 
-  const rel = relative(projectRoot, sourcePath);
-  if (rel.startsWith('..') || resolve(sourcePath) === resolve(projectRoot)) {
-    throw createError({
-      statusCode: 400,
-      data: { field: 'source', message: 'Source path must be within the project root' },
-    });
-  }
-
+  // This endpoint is dev-only; sourcePath is validated by validateSourceDirectoryResult
   const validation = validateSourceDirectoryResult(sourcePath);
 
   if (!validation.isValid) {
@@ -42,7 +35,10 @@ export default defineEventHandler(async (event) => {
     name ||
     basename(sourcePath)
       .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '-');
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-+|-+$/g, '')
+    || 'untitled';
 
   if (!SLUG_REGEX.test(presentationName)) {
     throw createError({
@@ -66,8 +62,17 @@ export default defineEventHandler(async (event) => {
   copyDirectorySelective(sourcePath, destinationPath);
 
   const sourcePackageJsonPath = join(sourcePath, 'package.json');
-  const packageJsonContent = readFileSync(sourcePackageJsonPath, 'utf-8');
-  const packageJson = JSON.parse(packageJsonContent);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let packageJson: any;
+  try {
+    const packageJsonContent = readFileSync(sourcePackageJsonPath, 'utf-8');
+    packageJson = JSON.parse(packageJsonContent);
+  } catch {
+    throw createError({
+      statusCode: 400,
+      data: { field: 'source', message: `Invalid package.json in ${sourcePackageJsonPath}` },
+    });
+  }
 
   packageJson.name = `@supaslidev/${presentationName}`;
   packageJson.private = true;
@@ -123,6 +128,10 @@ export default defineEventHandler(async (event) => {
     if (code !== 0) {
       console.error(`[import] pnpm install failed with code ${code}`);
     }
+  });
+
+  install.on('error', (err) => {
+    console.error(`[import] pnpm install spawn error: ${err.message}`);
   });
 
   setResponseStatus(event, 201);

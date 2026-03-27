@@ -48,6 +48,8 @@ export function addSharedAddonToSlides(slidesPath: string): void {
           existingBlock,
           `${existingBlock}\n  - '${sharedAddon}'`,
         );
+      } else {
+        updatedFrontmatter = frontmatter.replace(addonsMatch[0], `addons:\n  - '${sharedAddon}'`);
       }
     }
   } else {
