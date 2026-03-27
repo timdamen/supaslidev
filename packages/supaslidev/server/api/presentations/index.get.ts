@@ -6,7 +6,12 @@ export default defineEventHandler(() => {
 
   if (existsSync(presentationsJsonPath)) {
     const data = readFileSync(presentationsJsonPath, 'utf-8');
-    return JSON.parse(data);
+    try {
+      return JSON.parse(data);
+    } catch (err) {
+      console.error(`Failed to parse ${presentationsJsonPath}: ${(err as Error).message}`);
+      return [];
+    }
   }
 
   return [];

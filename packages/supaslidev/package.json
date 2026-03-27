@@ -63,7 +63,7 @@
     "vue": "catalog:"
   },
   "devDependencies": {
-    "@nuxt/kit": "latest",
+    "@nuxt/kit": "catalog:core",
     "@types/js-yaml": "catalog:dev",
     "@types/node": "catalog:dev",
     "create-supaslidev": "workspace:^",

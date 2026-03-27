@@ -115,7 +115,7 @@ describe('importPresentation', () => {
         'process.exit(1)',
       );
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Error: Name cannot start or end with a hyphen'),
+        expect.stringContaining('Error: Name must be lowercase alphanumeric'),
       );
     });
 

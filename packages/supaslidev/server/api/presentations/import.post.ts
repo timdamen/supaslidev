@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { join, basename, resolve } from 'node:path';
+import { join, basename, resolve, relative } from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import {
   validateSourceDirectoryResult,
@@ -20,6 +20,15 @@ export default defineEventHandler(async (event) => {
   const projectRoot = getProjectRoot();
   const presentationsDir = getPresentationsDir();
   const sourcePath = resolve(source);
+
+  const rel = relative(projectRoot, sourcePath);
+  if (rel.startsWith('..') || resolve(sourcePath) === resolve(projectRoot)) {
+    throw createError({
+      statusCode: 400,
+      data: { field: 'source', message: 'Source path must be within the project root' },
+    });
+  }
+
   const validation = validateSourceDirectoryResult(sourcePath);
 
   if (!validation.isValid) {

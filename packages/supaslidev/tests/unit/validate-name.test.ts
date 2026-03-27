@@ -3,44 +3,30 @@ import { validateName } from '../../src/cli/commands/import.js';
 
 describe('validateName', () => {
   it('rejects names with uppercase letters', () => {
-    expect(() => validateName('MyPresentation')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
-    expect(() => validateName('UPPERCASE')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
-    expect(() => validateName('mixedCase')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
+    expect(() => validateName('MyPresentation')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('UPPERCASE')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('mixedCase')).toThrow('Name must be lowercase alphanumeric');
   });
 
   it('rejects names with special characters', () => {
-    expect(() => validateName('my_presentation')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
-    expect(() => validateName('my.presentation')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
-    expect(() => validateName('my@presentation')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
-    expect(() => validateName('my presentation')).toThrow(
-      'Name must be lowercase alphanumeric with hyphens only',
-    );
+    expect(() => validateName('my_presentation')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('my.presentation')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('my@presentation')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('my presentation')).toThrow('Name must be lowercase alphanumeric');
   });
 
   it('rejects names with leading hyphens', () => {
-    expect(() => validateName('-my-presentation')).toThrow(
-      'Name cannot start or end with a hyphen',
-    );
-    expect(() => validateName('-presentation')).toThrow('Name cannot start or end with a hyphen');
+    expect(() => validateName('-my-presentation')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('-presentation')).toThrow('Name must be lowercase alphanumeric');
   });
 
   it('rejects names with trailing hyphens', () => {
-    expect(() => validateName('my-presentation-')).toThrow(
-      'Name cannot start or end with a hyphen',
-    );
-    expect(() => validateName('presentation-')).toThrow('Name cannot start or end with a hyphen');
+    expect(() => validateName('my-presentation-')).toThrow('Name must be lowercase alphanumeric');
+    expect(() => validateName('presentation-')).toThrow('Name must be lowercase alphanumeric');
+  });
+
+  it('rejects names with consecutive hyphens', () => {
+    expect(() => validateName('my--presentation')).toThrow('Name must be lowercase alphanumeric');
   });
 
   it('accepts valid lowercase-hyphenated names', () => {

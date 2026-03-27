@@ -1,5 +1,5 @@
 import { cpSync, mkdirSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, basename } from 'node:path';
 import { shouldIgnore } from './validation.js';
 
 export function copyDirectorySelective(source: string, destination: string): void {
@@ -17,7 +17,10 @@ export function copyDirectorySelective(source: string, destination: string): voi
     const stat = statSync(sourcePath);
 
     if (stat.isDirectory()) {
-      cpSync(sourcePath, destPath, { recursive: true });
+      cpSync(sourcePath, destPath, {
+        recursive: true,
+        filter: (src) => !shouldIgnore(basename(src)),
+      });
     } else {
       cpSync(sourcePath, destPath);
     }

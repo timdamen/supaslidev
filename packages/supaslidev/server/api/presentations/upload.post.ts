@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { join, dirname } from 'node:path';
+import { join, dirname, normalize, resolve, sep } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import {
   SLUG_REGEX,
@@ -67,12 +67,20 @@ export default defineEventHandler(async (event) => {
 
   mkdirSync(destinationPath, { recursive: true });
 
+  const resolvedDest = resolve(destinationPath);
   for (const file of files) {
     if (shouldIgnore(file.path.split('/')[0])) {
       continue;
     }
 
-    const filePath = join(destinationPath, file.path);
+    const normalizedPath = normalize(file.path).replace(/^(\.\.[\\/])+/, '');
+    if (normalizedPath.includes('..') || normalizedPath.startsWith('/') || normalizedPath.includes('\0')) {
+      continue;
+    }
+    const filePath = resolve(destinationPath, normalizedPath);
+    if (!filePath.startsWith(resolvedDest + sep) && filePath !== resolvedDest) {
+      continue;
+    }
     const fileDir = dirname(filePath);
 
     if (!existsSync(fileDir)) {
@@ -87,8 +95,16 @@ export default defineEventHandler(async (event) => {
   }
 
   const packageJsonPath = join(destinationPath, 'package.json');
-  const packageJsonContent = readFileSync(packageJsonPath, 'utf-8');
-  const packageJson = JSON.parse(packageJsonContent);
+  let packageJson: Record<string, unknown>;
+  try {
+    const packageJsonContent = readFileSync(packageJsonPath, 'utf-8');
+    packageJson = JSON.parse(packageJsonContent);
+  } catch {
+    throw createError({
+      statusCode: 400,
+      data: { field: 'files', message: 'Malformed package.json in uploaded files' },
+    });
+  }
 
   packageJson.name = `@supaslidev/${presentationName}`;
   packageJson.private = true;

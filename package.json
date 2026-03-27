@@ -54,7 +54,7 @@
     "oxlint": "catalog:dev",
     "playwright": "catalog:dev",
     "semantic-release": "catalog:dev",
-    "supaslidev": "file:/Users/tim/dev/supaslidev/.tmp/.packs/supaslidev-0.1.5.tgz",
+    "supaslidev": "workspace:*",
     "tsx": "catalog:dev",
     "turbo": "catalog:dev",
     "typescript": "catalog:dev",

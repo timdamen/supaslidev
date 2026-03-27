@@ -21,11 +21,10 @@ export function isValidPresentationId(id: string): boolean {
 }
 
 export function validateName(name: string): void {
-  if (!/^[a-z0-9-]+$/.test(name)) {
-    throw new Error('Name must be lowercase alphanumeric with hyphens only');
-  }
-  if (name.startsWith('-') || name.endsWith('-')) {
-    throw new Error('Name cannot start or end with a hyphen');
+  if (!SLUG_REGEX.test(name)) {
+    throw new Error(
+      'Name must be lowercase alphanumeric with single hyphens only (no leading, trailing, or consecutive hyphens)',
+    );
   }
 }
 
@@ -92,9 +91,12 @@ export function validatePath(path: string): PathValidationResult {
     };
   }
 
-  const suggestedName = basename(sourcePath)
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-');
+  const suggestedName =
+    basename(sourcePath)
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-+|-+$/g, '') || 'untitled';
 
   return {
     path,

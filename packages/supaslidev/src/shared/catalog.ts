@@ -57,6 +57,8 @@ export function addSharedAddonToSlides(slidesPath: string): void {
         themeMatch[1],
         `${themeMatch[1]}\naddons:\n  - '${sharedAddon}'`,
       );
+    } else {
+      updatedFrontmatter = `${frontmatter}\naddons:\n  - '${sharedAddon}'`;
     }
   }
 
