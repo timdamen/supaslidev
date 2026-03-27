@@ -75,7 +75,7 @@ export async function dev(): Promise<void> {
   // Build a clean env for nuxt dev: always run in development mode
   // and strip test runner env vars (VITEST, etc.) that cause Nuxt to
   // skip the dev server startup.
-  const nuxtEnv = { ...process.env, NODE_ENV: 'development' };
+  const nuxtEnv: Record<string, string | undefined> = { ...process.env, NODE_ENV: 'development' };
   for (const key of Object.keys(nuxtEnv)) {
     if (key === 'VITEST' || key.startsWith('VITEST_') || key === 'TEST') {
       delete nuxtEnv[key];

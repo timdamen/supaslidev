@@ -15,7 +15,9 @@
     "better-sqlite3": "^12.2.0",
     "docus": "^5.4.4",
     "mermaid": "^11.12.2",
-    "nuxt": "^4.0.0"
+    "nuxt": "^4.0.0",
+    "zod": "^3.24.0",
+    "zod-to-json-schema": "^3.24.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
