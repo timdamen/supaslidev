@@ -20,6 +20,7 @@
     "zod-to-json-schema": "catalog:core"
   },
   "devDependencies": {
+    "@nuxt/devtools-kit": "catalog:core",
     "typescript": "catalog:dev",
     "vue-tsc": "catalog:core"
   }
