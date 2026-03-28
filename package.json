@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.5",
   "private": true,
   "keywords": [
     "slidev",
@@ -36,24 +36,23 @@
     "coderabbit:review": "coderabbit --prompt-only --type uncommitted",
     "coderabbit:review:committed": "coderabbit --prompt-only --type committed",
     "coderabbit:review:full": "coderabbit --prompt-only",
-    "semantic-release": "semantic-release"
+    "release": "bumpp package.json packages/*/package.json --all -x \"npx changelogen --no-output\""
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:dev",
     "@commitlint/config-conventional": "catalog:dev",
-    "@semantic-release/changelog": "catalog:dev",
-    "@semantic-release/git": "catalog:dev",
-    "@semantic-release/github": "catalog:dev",
     "@vitest/browser": "catalog:dev",
     "@vitest/browser-playwright": "catalog:dev",
     "@vitest/coverage-v8": "catalog:dev",
     "@vitest/ui": "catalog:dev",
+    "bumpp": "catalog:dev",
+    "changelogen": "catalog:dev",
+    "changelogithub": "catalog:dev",
     "husky": "catalog:dev",
     "lint-staged": "catalog:dev",
     "oxfmt": "catalog:dev",
     "oxlint": "catalog:dev",
     "playwright": "catalog:dev",
-    "semantic-release": "catalog:dev",
     "supaslidev": "workspace:*",
     "tsx": "catalog:dev",
     "turbo": "catalog:dev",

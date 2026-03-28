@@ -7,6 +7,10 @@
     "**/dist",
     ".turbo",
     "**/.turbo",
+    ".nuxt",
+    "**/.nuxt",
+    ".output",
+    "**/.output",
     "presentations"
   ],
   "plugins": ["import"],

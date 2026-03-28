@@ -57,11 +57,25 @@ describe('createSharedPackage', () => {
     expect(existsSync(badgePath)).toBe(true);
 
     const content = readFileSync(badgePath, 'utf-8');
+    expect(content).toContain('<script setup lang="ts">');
+    expect(content).toContain('text?: string');
+    expect(content).toContain("{{ text ?? 'Shared' }}");
     expect(content).toContain('<template>');
     expect(content).toContain('</template>');
   });
 
-  it('creates README.md', () => {
+  it('creates SharedBadge.vue with gradient styling', () => {
+    createSharedPackage(TEST_DIR);
+
+    const badgePath = join(TEST_DIR, 'packages', 'shared', 'components', 'SharedBadge.vue');
+    const content = readFileSync(badgePath, 'utf-8');
+
+    expect(content).toContain('linear-gradient');
+    expect(content).toContain('border-radius: 9999px');
+    expect(content).toContain('text-transform: uppercase');
+  });
+
+  it('creates README.md with addon documentation', () => {
     createSharedPackage(TEST_DIR);
 
     const readmePath = join(TEST_DIR, 'packages', 'shared', 'README.md');
@@ -69,17 +83,9 @@ describe('createSharedPackage', () => {
 
     const content = readFileSync(readmePath, 'utf-8');
     expect(content).toContain('@supaslidev/shared');
-  });
-
-  it('creates tsconfig.json', () => {
-    createSharedPackage(TEST_DIR);
-
-    const tsconfigPath = join(TEST_DIR, 'packages', 'shared', 'tsconfig.json');
-    expect(existsSync(tsconfigPath)).toBe(true);
-
-    const content = readFileSync(tsconfigPath, 'utf-8');
-    const tsconfig = JSON.parse(content);
-
-    expect(tsconfig.compilerOptions).toBeDefined();
+    expect(content).toContain('Slidev addon pattern');
+    expect(content).toContain('sli.dev/guide/write-addon');
+    expect(content).toContain('<SharedBadge text="New" />');
+    expect(content).toContain('Adding New Components');
   });
 });

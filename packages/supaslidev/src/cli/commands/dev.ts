@@ -25,9 +25,6 @@ export function findSupaslidevPackageRoot(): string {
   throw new Error('Could not find supaslidev package root');
 }
 
-const packageRoot = findSupaslidevPackageRoot();
-const isInstalledPackage = packageRoot.includes('node_modules');
-
 export async function dev(): Promise<void> {
   const projectRoot = findProjectRoot();
 
@@ -50,50 +47,70 @@ export async function dev(): Promise<void> {
   process.env.SUPASLIDEV_PROJECT_ROOT = projectRoot;
   process.env.SUPASLIDEV_PRESENTATIONS_DIR = presentationsDir;
 
-  if (isInstalledPackage) {
-    process.env.SUPASLIDEV_DASHBOARD_DIR = join(packageRoot, 'dist');
+  // Run Nuxt from the supaslidev package root so its nuxt.config.ts,
+  // app/, server/, and public/ directories are used directly — this avoids
+  // the Nuxt layer `extends` mechanism which can trigger Vite module
+  // resolution conflicts when the package is installed from a tarball.
+  const supaslidevRoot = findSupaslidevPackageRoot();
+
+  // Find the nuxt binary — prefer the project's node_modules, then
+  // the supaslidev package's own node_modules, then fall back to npx.
+  const projectNuxtBin = join(projectRoot, 'node_modules', '.bin', 'nuxt');
+  const packageNuxtBin = join(supaslidevRoot, 'node_modules', '.bin', 'nuxt');
+
+  let command: string;
+  let args: string[];
+
+  if (existsSync(projectNuxtBin)) {
+    command = projectNuxtBin;
+    args = ['dev'];
+  } else if (existsSync(packageNuxtBin)) {
+    command = packageNuxtBin;
+    args = ['dev'];
+  } else {
+    command = 'npx';
+    args = ['nuxt', 'dev'];
   }
 
-  const generateScript = join(packageRoot, 'scripts', 'generate-presentations.mjs');
-  const apiServer = join(packageRoot, 'server', 'api.js');
+  // Build a clean env for nuxt dev: always run in development mode
+  // and strip test runner env vars (VITEST, etc.) that cause Nuxt to
+  // skip the dev server startup.
+  const nuxtEnv: Record<string, string | undefined> = { ...process.env, NODE_ENV: 'development' };
+  for (const key of Object.keys(nuxtEnv)) {
+    if (key === 'VITEST' || key.startsWith('VITEST_') || key === 'TEST') {
+      delete nuxtEnv[key];
+    }
+  }
 
-  const generate = spawn('node', [generateScript], {
+  const nuxt = spawn(command, args, {
+    cwd: supaslidevRoot,
     stdio: 'inherit',
-    env: process.env,
+    env: nuxtEnv,
+    shell: process.platform === 'win32',
+    detached: false,
   });
 
-  generate.on('close', (code) => {
-    if (code !== 0) {
-      console.error('Failed to generate presentations data');
-      process.exit(1);
-    }
+  const processes: ChildProcess[] = [nuxt];
 
-    const api = spawn('node', [apiServer], {
-      stdio: 'inherit',
-      env: process.env,
-      detached: false,
-    });
-
-    const processes: ChildProcess[] = [api];
-
-    if (!isInstalledPackage) {
-      const vite = spawn('npx', ['vite', '--config', join(packageRoot, 'vite.config.ts')], {
-        cwd: packageRoot,
-        stdio: 'inherit',
-        env: process.env,
-        shell: true,
-      });
-      processes.push(vite);
-    }
-
-    const cleanup = () => {
-      for (const proc of processes) {
-        proc.kill('SIGTERM');
-      }
-      process.exit(0);
-    };
-
-    process.on('SIGINT', cleanup);
-    process.on('SIGTERM', cleanup);
+  nuxt.on('error', (err) => {
+    console.error(`Failed to start Nuxt: ${err.message}`);
+    process.exit(1);
   });
+
+  nuxt.on('close', (code, signal) => {
+    if (signal) {
+      process.kill(process.pid, signal);
+    } else {
+      process.exit(code ?? 1);
+    }
+  });
+
+  const cleanup = () => {
+    for (const proc of processes) {
+      proc.kill('SIGTERM');
+    }
+  };
+
+  process.on('SIGINT', cleanup);
+  process.on('SIGTERM', cleanup);
 }

@@ -10,6 +10,7 @@ import {
   getTmpDir,
   cleanupProject,
   createBrowserContext,
+  installDependencies,
 } from './setup/test-utils.js';
 
 function createSecondPresentation(projectPath: string): void {
@@ -54,7 +55,6 @@ Content for the second slide
 
   writeFileSync(join(secondPresentationDir, 'slides.md'), slidesContent);
   writeFileSync(join(secondPresentationDir, '.gitignore'), 'node_modules\ndist\n');
-  writeFileSync(join(secondPresentationDir, '.npmrc'), 'shamefully-hoist=true\n');
 }
 
 describe('Dashboard Display E2E', () => {
@@ -71,6 +71,7 @@ describe('Dashboard Display E2E', () => {
     projectPath = join(getTmpDir(), DASHBOARD_TEST_PROJECT);
 
     cpSync(baseProjectPath, projectPath, { recursive: true });
+    installDependencies(projectPath);
 
     context = await createBrowserContext();
     page = await context.newPage();
@@ -79,7 +80,7 @@ describe('Dashboard Display E2E', () => {
     dashboardUrl = dashboardInfo.url;
 
     await waitForServer(dashboardUrl);
-  }, 120000);
+  }, 180000);
 
   afterAll(async () => {
     await context?.close();
@@ -237,6 +238,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('Ne');
 
@@ -251,6 +253,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('Present');
 
@@ -267,6 +270,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('new');
       await terminalInput.press('Enter');
@@ -282,6 +286,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('present non-existent-deck');
       await terminalInput.press('Enter');
@@ -296,6 +301,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('export non-existent-deck');
       await terminalInput.press('Enter');
@@ -310,6 +316,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('unknowncommand');
       await terminalInput.press('Enter');
@@ -324,6 +331,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('new');
       await terminalInput.press('Enter');
@@ -339,6 +347,7 @@ describe('Dashboard Display E2E', () => {
     async function openCreateDialog() {
       await page.goto(dashboardUrl);
       const newButton = page.locator('.btn-new');
+      await newButton.waitFor({ state: 'visible' });
       await newButton.click();
       await page.locator('[role="dialog"]').waitFor({ state: 'visible', timeout: 5000 });
     }

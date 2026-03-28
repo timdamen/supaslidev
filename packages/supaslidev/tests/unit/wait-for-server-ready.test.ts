@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { useServers } from '../../src/composables/useServers';
+import { useServers } from '../../app/composables/useServers';
 
 describe('waitForServerReady', () => {
   const { waitForServerReady } = useServers();

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runCli, getTmpDir, cleanupProject, installDependencies } from './setup/test-utils.js';
@@ -110,6 +111,40 @@ describe('Full Production Workflow', { timeout: 180000 }, () => {
       const slidesPath = join(projectDir, 'presentations', 'first-deck', 'slides.md');
       const content = readFileSync(slidesPath, 'utf-8');
       expect(content).toContain("'@supaslidev/shared'");
+    });
+  });
+
+  describe('typescript via nuxt layer', () => {
+    let nuxtPrepareSucceeded = false;
+
+    beforeAll(() => {
+      // Strip inherited npm_config_* env vars so pnpm uses the project's own config
+      const cleanEnv = Object.fromEntries(
+        Object.entries(process.env).filter(([key]) => !key.startsWith('npm_config_')),
+      );
+
+      execSync('pnpm exec nuxt prepare', {
+        cwd: projectDir,
+        stdio: 'pipe',
+        timeout: 60000,
+        env: cleanEnv,
+      });
+      nuxtPrepareSucceeded = true;
+    }, 90000);
+
+    it('nuxt prepare generates .nuxt directory', () => {
+      expect(nuxtPrepareSucceeded).toBe(true);
+      expect(existsSync(join(projectDir, '.nuxt'))).toBe(true);
+    });
+
+    it('nuxt prepare generates tsconfig.json', () => {
+      expect(existsSync(join(projectDir, '.nuxt', 'tsconfig.json'))).toBe(true);
+    });
+
+    it('generated tsconfig contains compiler options', () => {
+      const tsconfigPath = join(projectDir, '.nuxt', 'tsconfig.json');
+      const content = readFileSync(tsconfigPath, 'utf-8');
+      expect(content).toContain('compilerOptions');
     });
   });
 });

@@ -96,7 +96,6 @@ describe('Shared Package Integration E2E', () => {
       expect(existsSync(join(sharedDir, 'layouts'))).toBe(true);
       expect(existsSync(join(sharedDir, 'styles'))).toBe(true);
       expect(existsSync(join(sharedDir, 'package.json'))).toBe(true);
-      expect(existsSync(join(sharedDir, 'tsconfig.json'))).toBe(true);
       expect(existsSync(join(sharedDir, 'README.md'))).toBe(true);
     });
 

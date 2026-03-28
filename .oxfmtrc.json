@@ -8,6 +8,10 @@
     "**/dist",
     ".turbo",
     "**/.turbo",
+    ".nuxt",
+    "**/.nuxt",
+    ".output",
+    "**/.output",
     "pnpm-lock.yaml",
     "presentations",
     "docs/content/**/*.md"

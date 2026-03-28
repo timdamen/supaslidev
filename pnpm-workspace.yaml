@@ -11,7 +11,7 @@ catalog:
   '@slidev/theme-seriph': latest
   '@slidev/theme-apple-basic': latest
   playwright-chromium: ^1.58.2
-  vue: ^3.5.26
+  vue: ^3.5.31
 
 catalogMode: prefer
 
@@ -27,17 +27,25 @@ catalogs:
   core:
     '@nuxt/ui': ^4.4.0
     '@vitejs/plugin-vue': ^5.2.1
-    '@vue/compiler-sfc': ^3.5.27
+    '@vue/compiler-sfc': ^3.5.31
+    '@nuxt/kit': ^4.4.2
+    '@nuxt/schema': ^4.4.2
+    better-sqlite3: ^12.2.0
+    docus: ^5.4.4
+    mermaid: ^11.12.2
+    nuxt: ^4.4.2
     tailwindcss: ^4.1.18
     vite: ^6.0.7
     vue-router: ^4.6.4
     vue-tsc: ^2.0.0
+    zod: ^3.24.0
+    zod-to-json-schema: ^3.24.0
   dev:
     '@commitlint/cli': ^20.3.1
     '@commitlint/config-conventional': ^20.3.1
-    '@semantic-release/changelog': ^6.0.3
-    '@semantic-release/git': ^10.0.1
-    '@semantic-release/github': ^12.0.2
+    bumpp: ^11.0.1
+    changelogen: ^0.6.2
+    changelogithub: ^14.0.0
     '@types/ejs': ^3.1.5
     '@types/js-yaml': ^4.0.9
     '@types/node': ^22.10.0
@@ -51,7 +59,6 @@ catalogs:
     oxlint: ^1.41.0
     playwright: ^1.49.0
     playwright-chromium: ^1.58.2
-    semantic-release: ^25.0.2
     tsdown: ^0.12.5
     tsx: ^4.19.0
     turbo: ^2.7.5
@@ -83,7 +90,7 @@ onlyBuiltDependencies:
 
 shellEmulator: true
 
-trustPolicy: no-downgrade
+trustPolicy: accept
 
 trustPolicyExclude:
   - axios

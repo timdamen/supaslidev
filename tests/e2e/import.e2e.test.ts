@@ -130,7 +130,7 @@ describe('Import E2E', () => {
     dashboardUrl = dashboardInfo.url;
 
     await waitForServer(dashboardUrl);
-  }, 120000);
+  }, 180000);
 
   afterAll(async () => {
     await context?.close();
