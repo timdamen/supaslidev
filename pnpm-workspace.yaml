@@ -31,7 +31,7 @@ catalogs:
     '@nuxt/kit': ^4.4.2
     '@nuxt/schema': ^4.4.2
     better-sqlite3: ^12.2.0
-    docus: ^5.4.4
+    docus: ^5.8.1
     mermaid: ^11.12.2
     nuxt: ^4.4.2
     tailwindcss: ^4.1.18
