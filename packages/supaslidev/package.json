@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "@nuxt/kit": "catalog:core",
+    "@nuxt/schema": "catalog:core",
     "@types/js-yaml": "catalog:dev",
     "@types/node": "catalog:dev",
     "create-supaslidev": "workspace:^",
