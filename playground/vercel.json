@@ -1,0 +1,6 @@
+{
+  "framework": null,
+  "installCommand": "pnpm install",
+  "buildCommand": "SUPASLIDEV_PROJECT_ROOT=$PWD SUPASLIDEV_PRESENTATIONS_DIR=$PWD/presentations NUXT_PUBLIC_DEPLOY_MODE=true node_modules/.bin/nuxt generate --cwd ../packages/supaslidev && cp -r ../packages/supaslidev/.output/public dist",
+  "outputDirectory": "dist"
+}
