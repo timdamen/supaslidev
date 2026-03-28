@@ -15,7 +15,7 @@
   "devDependencies": {
     "nuxt": "catalog:core",
     "playwright-chromium": "catalog:",
-    "supaslidev": "workspace:*"
+    "supaslidev": "link:../packages/supaslidev"
   },
   "engines": {
     "node": ">=18.0.0"
