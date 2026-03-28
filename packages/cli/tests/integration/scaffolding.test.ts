@@ -41,7 +41,6 @@ describe('Scaffolding E2E', () => {
     expect(existsSync(projectDir)).toBe(true);
     expect(existsSync(join(projectDir, 'package.json'))).toBe(true);
     expect(existsSync(join(projectDir, 'pnpm-workspace.yaml'))).toBe(true);
-    expect(existsSync(join(projectDir, 'tsconfig.json'))).toBe(true);
     expect(existsSync(join(projectDir, '.supaslidev', 'state.json'))).toBe(true);
 
     expect(existsSync(join(projectDir, 'presentations'))).toBe(true);
@@ -62,7 +61,6 @@ describe('Scaffolding E2E', () => {
     expect(existsSync(join(presentationDir, 'slides.md'))).toBe(true);
     expect(existsSync(join(presentationDir, 'package.json'))).toBe(true);
     expect(existsSync(join(presentationDir, '.gitignore'))).toBe(true);
-    expect(existsSync(join(presentationDir, '.npmrc'))).toBe(true);
 
     const slidesContent = readFileSync(join(presentationDir, 'slides.md'), 'utf-8');
     expect(slidesContent).toContain('title: my-deck');
@@ -224,21 +222,6 @@ describe('Scaffolding E2E', () => {
     expect(content).toContain('.vite-inspect');
     expect(content).toContain('.remote-assets');
     expect(content).toContain('components.d.ts');
-  });
-
-  it('creates presentation .npmrc with auto-install-peers', async () => {
-    await create({
-      name: 'test-project',
-      presentation: 'test-deck',
-      git: false,
-      install: false,
-    });
-
-    const npmrcPath = join(TEST_DIR, 'test-project', 'presentations', 'test-deck', '.npmrc');
-    const content = readFileSync(npmrcPath, 'utf-8');
-
-    expect(content).toContain('shamefully-hoist=true');
-    expect(content).toContain('auto-install-peers=true');
   });
 
   it('creates pnpm-workspace.yaml with pnpm configuration options', async () => {

@@ -55,7 +55,6 @@ Content for the second slide
 
   writeFileSync(join(secondPresentationDir, 'slides.md'), slidesContent);
   writeFileSync(join(secondPresentationDir, '.gitignore'), 'node_modules\ndist\n');
-  writeFileSync(join(secondPresentationDir, '.npmrc'), 'shamefully-hoist=true\n');
 }
 
 describe('Dashboard Display E2E', () => {

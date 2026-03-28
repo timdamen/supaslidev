@@ -33,7 +33,6 @@ describe('CLI Scaffolding E2E', () => {
     it('creates workspace configuration files', () => {
       expect(existsSync(join(projectPath, 'package.json'))).toBe(true);
       expect(existsSync(join(projectPath, 'pnpm-workspace.yaml'))).toBe(true);
-      expect(existsSync(join(projectPath, 'tsconfig.json'))).toBe(true);
       expect(existsSync(join(projectPath, 'turbo.json'))).toBe(true);
     });
 
@@ -48,7 +47,6 @@ describe('CLI Scaffolding E2E', () => {
       expect(existsSync(join(presentationDir, 'package.json'))).toBe(true);
       expect(existsSync(join(presentationDir, 'slides.md'))).toBe(true);
       expect(existsSync(join(presentationDir, '.gitignore'))).toBe(true);
-      expect(existsSync(join(presentationDir, '.npmrc'))).toBe(true);
     });
   });
 
@@ -131,14 +129,6 @@ describe('CLI Scaffolding E2E', () => {
       expect(content).toContain('.remote-assets');
       expect(content).toContain('components.d.ts');
     });
-
-    it('creates presentation .npmrc with auto-install-peers', () => {
-      const npmrcPath = join(projectPath, 'presentations', 'test-deck', '.npmrc');
-      const content = readFileSync(npmrcPath, 'utf-8');
-
-      expect(content).toContain('shamefully-hoist=true');
-      expect(content).toContain('auto-install-peers=true');
-    });
   });
 
   describe('shared package', () => {
@@ -156,18 +146,6 @@ describe('CLI Scaffolding E2E', () => {
       expect(content).toContain('text?: string');
       expect(content).toContain("{{ text ?? 'Shared' }}");
       expect(content).toContain('linear-gradient');
-    });
-
-    it('creates shared tsconfig.json with correct compiler options', () => {
-      const tsconfigPath = join(projectPath, 'packages', 'shared', 'tsconfig.json');
-      const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf-8'));
-
-      expect(tsconfig.compilerOptions.resolveJsonModule).toBe(true);
-      expect(tsconfig.compilerOptions.isolatedModules).toBe(true);
-      expect(tsconfig.compilerOptions.esModuleInterop).toBe(true);
-      expect(tsconfig.compilerOptions.noEmit).toBe(true);
-      expect(tsconfig.include).toEqual(['components/**/*.ts', 'components/**/*.vue']);
-      expect(tsconfig.exclude).toEqual(['node_modules']);
     });
 
     it('creates shared README.md with addon usage documentation', () => {

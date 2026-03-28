@@ -217,11 +217,6 @@ Add your content here
     'node_modules\n.DS_Store\ndist\n*.local\n.vite-inspect\n.remote-assets\ncomponents.d.ts\n',
     'utf-8',
   );
-  writeFileSync(
-    join(presentationDir, '.npmrc'),
-    '# for pnpm\nshamefully-hoist=true\nauto-install-peers=true\n',
-    'utf-8',
-  );
 }
 
 export function createSharedPackage(targetDir: string): void {
@@ -350,30 +345,6 @@ The component is immediately available in all presentations using this addon.
 `;
 
   writeFileSync(join(sharedDir, 'README.md'), readmeContent, 'utf-8');
-
-  const tsconfig = {
-    compilerOptions: {
-      target: 'ESNext',
-      module: 'ESNext',
-      moduleResolution: 'bundler',
-      strict: true,
-      jsx: 'preserve',
-      resolveJsonModule: true,
-      isolatedModules: true,
-      esModuleInterop: true,
-      lib: ['ESNext', 'DOM'],
-      skipLibCheck: true,
-      noEmit: true,
-    },
-    include: ['components/**/*.ts', 'components/**/*.vue'],
-    exclude: ['node_modules'],
-  };
-
-  writeFileSync(
-    join(sharedDir, 'tsconfig.json'),
-    JSON.stringify(tsconfig, null, 2) + '\n',
-    'utf-8',
-  );
 }
 
 export async function create(options: CreateOptions = {}): Promise<void> {
