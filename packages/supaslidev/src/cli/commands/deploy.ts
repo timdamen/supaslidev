@@ -146,7 +146,7 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
       `Output directory "${outputDir}" is outside the project root "${resolvedProjectRoot}". Use a path within your project.`,
     );
   }
-  const basePath = options.base ?? '/';
+  const basePath = (options.base ?? '/').replace(/\/*$/, '/');
 
   const supaslidevRoot = findSupaslidevPackageRoot();
   const presentationsJsonPath = join(projectRoot, '.supaslidev', 'presentations.json');
