@@ -92,7 +92,7 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
     });
 
     child.on('error', reject);
-    child.on('close', (code) => {
+    child.on('close', (code: number | null) => {
       if (code === 0) {
         resolve();
       } else {
@@ -403,7 +403,7 @@ export async function create(options: CreateOptions = {}): Promise<void> {
         process.exit(0);
       }
 
-      projectName = projectNameResult;
+      projectName = projectNameResult as string;
 
       const presentationNameResult = await p.text({
         message: 'What is the name of your first presentation?',
@@ -426,7 +426,7 @@ export async function create(options: CreateOptions = {}): Promise<void> {
         process.exit(0);
       }
 
-      presentationName = presentationNameResult;
+      presentationName = presentationNameResult as string;
 
       const initGitResult = await p.confirm({
         message: 'Initialize a git repository?',
@@ -438,7 +438,7 @@ export async function create(options: CreateOptions = {}): Promise<void> {
         process.exit(0);
       }
 
-      initGit = initGitResult;
+      initGit = initGitResult as boolean;
 
       const runInstallResult = await p.confirm({
         message: 'Run pnpm install after scaffolding?',
@@ -450,7 +450,7 @@ export async function create(options: CreateOptions = {}): Promise<void> {
         process.exit(0);
       }
 
-      runInstall = runInstallResult;
+      runInstall = runInstallResult as boolean;
     }
 
     const targetDir = join(process.cwd(), projectName);

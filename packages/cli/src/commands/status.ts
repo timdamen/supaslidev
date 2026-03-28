@@ -42,7 +42,7 @@ function getAllPresentations(workspaceDir: string): string[] {
   }
 
   return readdirSync(presentationsDir)
-    .filter((name) => {
+    .filter((name: string) => {
       const fullPath = join(presentationsDir, name);
       return statSync(fullPath).isDirectory() && existsSync(join(fullPath, 'slides.md'));
     })
