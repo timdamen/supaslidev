@@ -22,7 +22,7 @@ catalogs:
     ejs: ^3.1.10
     js-yaml: ^4.1.1
     picocolors: ^1.1.1
-    ts-morph: ^24.0.0
+    ts-morph: ^27.0.0
     yaml: ^2.7.0
   core:
     '@nuxt/ui': ^4.4.0
