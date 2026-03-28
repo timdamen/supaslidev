@@ -46,6 +46,7 @@ export default defineNuxtConfig({
     },
     public: {
       supaslidevVersion: pkg.version,
+      deployMode: false,
     },
   },
 

@@ -11,6 +11,7 @@ const {
   openInEditor,
   waitForServerReady,
 } = useServers();
+const { deployMode } = useDeployMode();
 const toast = useToast();
 const colorMode = useColorMode();
 
@@ -85,12 +86,15 @@ function handleBeforeUnload() {
 const presentations = ref<Presentation[]>([]);
 
 onMounted(async () => {
-  startPolling();
-  window.addEventListener('beforeunload', handleBeforeUnload);
+  if (!deployMode.value) {
+    startPolling();
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  }
   window.addEventListener('keydown', handleKeydown);
 
   try {
-    const response = await fetch('/api/presentations');
+    const url = deployMode.value ? '/presentations.json' : '/api/presentations';
+    const response = await fetch(url);
     if (response.ok) {
       presentations.value = await response.json();
     }
@@ -100,9 +104,11 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  stopPolling();
-  stopAllServers();
-  window.removeEventListener('beforeunload', handleBeforeUnload);
+  if (!deployMode.value) {
+    stopPolling();
+    stopAllServers();
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  }
   window.removeEventListener('keydown', handleKeydown);
 });
 const searchQuery = ref('');
@@ -123,6 +129,10 @@ watch(viewMode, (newMode) => {
 
 async function handlePresentCommand(presentation: Presentation) {
   isCommandPaletteOpen.value = false;
+  if (deployMode.value) {
+    window.open(`/presentations/${presentation.id}/`, '_blank');
+    return;
+  }
   const result = await startServer(presentation.id);
   if (result.success && result.port) {
     const isReady = await waitForServerReady(result.port);
@@ -277,11 +287,11 @@ function handleExecuteCommand(command: string) {
   });
 }
 
-const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => [
-  {
-    id: 'actions',
-    label: 'Actions',
-    items: [
+const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
+  const actionItems: CommandPaletteItem[] = [];
+
+  if (!deployMode.value) {
+    actionItems.push(
       {
         label: 'New',
         suffix: 'Create a new presentation',
@@ -294,57 +304,71 @@ const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => [
         icon: 'i-lucide-import',
         onSelect: handleImportCommand,
       },
+    );
+  }
+
+  actionItems.push(
+    {
+      label: 'Toggle theme',
+      suffix: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
+      icon: colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon',
+      onSelect: handleToggleThemeCommand,
+    },
+    {
+      label: 'Toggle view',
+      suffix: viewMode.value === 'grid' ? 'Switch to list layout' : 'Switch to grid layout',
+      icon: viewMode.value === 'grid' ? 'i-lucide-list' : 'i-lucide-layout-grid',
+      onSelect: handleToggleViewModeCommand,
+    },
+  );
+
+  const groups: CommandPaletteGroup[] = [
+    { id: 'actions', label: 'Actions', items: actionItems },
+    {
+      id: 'presentations',
+      label: 'Present',
+      items: presentations.value.map(
+        (p: Presentation): CommandPaletteItem => ({
+          label: `Present > ${p.title}`,
+          suffix: deployMode.value ? 'Open presentation' : 'Start dev server and open in browser',
+          icon: 'i-lucide-play',
+          onSelect: () => handlePresentCommand(p),
+        }),
+      ),
+    },
+  ];
+
+  if (!deployMode.value) {
+    groups.push(
       {
-        label: 'Toggle theme',
-        suffix: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
-        icon: colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon',
-        onSelect: handleToggleThemeCommand,
+        id: 'export',
+        label: 'Export',
+        items: presentations.value.map(
+          (p: Presentation): CommandPaletteItem => ({
+            label: `Export > ${p.title}`,
+            suffix: 'Export to PDF',
+            icon: 'i-lucide-download',
+            onSelect: () => handleExportCommand(p),
+          }),
+        ),
       },
       {
-        label: 'Toggle view',
-        suffix: viewMode.value === 'grid' ? 'Switch to list layout' : 'Switch to grid layout',
-        icon: viewMode.value === 'grid' ? 'i-lucide-list' : 'i-lucide-layout-grid',
-        onSelect: handleToggleViewModeCommand,
+        id: 'edit',
+        label: 'Edit',
+        items: presentations.value.map(
+          (p: Presentation): CommandPaletteItem => ({
+            label: `Edit > ${p.title}`,
+            suffix: 'Open in VS Code',
+            icon: 'i-lucide-pencil',
+            onSelect: () => handleEditCommand(p),
+          }),
+        ),
       },
-    ],
-  },
-  {
-    id: 'presentations',
-    label: 'Present',
-    items: presentations.value.map(
-      (p): CommandPaletteItem => ({
-        label: `Present > ${p.title}`,
-        suffix: 'Start dev server and open in browser',
-        icon: 'i-lucide-play',
-        onSelect: () => handlePresentCommand(p),
-      }),
-    ),
-  },
-  {
-    id: 'export',
-    label: 'Export',
-    items: presentations.value.map(
-      (p): CommandPaletteItem => ({
-        label: `Export > ${p.title}`,
-        suffix: 'Export to PDF',
-        icon: 'i-lucide-download',
-        onSelect: () => handleExportCommand(p),
-      }),
-    ),
-  },
-  {
-    id: 'edit',
-    label: 'Edit',
-    items: presentations.value.map(
-      (p): CommandPaletteItem => ({
-        label: `Edit > ${p.title}`,
-        suffix: 'Open in VS Code',
-        icon: 'i-lucide-pencil',
-        onSelect: () => handleEditCommand(p),
-      }),
-    ),
-  },
-]);
+    );
+  }
+
+  return groups;
+});
 
 const filteredPresentations = computed(() => {
   if (!searchQuery.value.trim()) {
@@ -355,13 +379,20 @@ const filteredPresentations = computed(() => {
 });
 
 const commandOptions = computed(() => {
-  const options: { label: string; description?: string; onSelect: () => void }[] = [
-    { label: 'New', description: 'Create a new presentation', onSelect: handleCreateCommand },
-    {
-      label: 'Import',
-      description: 'Import existing Sli.dev presentation(s)',
-      onSelect: handleImportCommand,
-    },
+  const options: { label: string; description?: string; onSelect: () => void }[] = [];
+
+  if (!deployMode.value) {
+    options.push(
+      { label: 'New', description: 'Create a new presentation', onSelect: handleCreateCommand },
+      {
+        label: 'Import',
+        description: 'Import existing Sli.dev presentation(s)',
+        onSelect: handleImportCommand,
+      },
+    );
+  }
+
+  options.push(
     {
       label: 'Toggle theme',
       description: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
@@ -372,24 +403,26 @@ const commandOptions = computed(() => {
       description: viewMode.value === 'grid' ? 'Switch to list layout' : 'Switch to grid layout',
       onSelect: handleToggleViewModeCommand,
     },
-  ];
+  );
 
   presentations.value.forEach((p) => {
     options.push({
       label: `Present > ${p.title}`,
-      description: 'Start dev server and open in browser',
+      description: deployMode.value ? 'Open presentation' : 'Start dev server and open in browser',
       onSelect: () => handlePresentCommand(p),
     });
-    options.push({
-      label: `Export > ${p.title}`,
-      description: 'Export to PDF',
-      onSelect: () => handleExportCommand(p),
-    });
-    options.push({
-      label: `Edit > ${p.title}`,
-      description: 'Open in VS Code',
-      onSelect: () => handleEditCommand(p),
-    });
+    if (!deployMode.value) {
+      options.push({
+        label: `Export > ${p.title}`,
+        description: 'Export to PDF',
+        onSelect: () => handleExportCommand(p),
+      });
+      options.push({
+        label: `Edit > ${p.title}`,
+        description: 'Open in VS Code',
+        onSelect: () => handleEditCommand(p),
+      });
+    }
   });
 
   return options;
@@ -411,7 +444,7 @@ const commandOptions = computed(() => {
           filteredPresentations.length !== 1 ? 's' : ''
         }}
       </p>
-      <div class="flex items-center gap-3">
+      <div v-if="!deployMode" class="flex items-center gap-3">
         <UButton variant="outline" class="font-mono" @click="isImportDialogOpen = true">
           <template #leading>
             <span class="opacity-70">$</span>
@@ -440,10 +473,14 @@ const commandOptions = computed(() => {
     <template v-if="presentations.length === 0">
       <EmptyState
         icon="i-lucide-presentation"
-        title="No presentations yet"
-        description="Create your first presentation to get started with supaslidev."
+        :title="deployMode ? 'No presentations' : 'No presentations yet'"
+        :description="
+          deployMode
+            ? 'No presentations have been deployed.'
+            : 'Create your first presentation to get started with supaslidev.'
+        "
       >
-        <UButton class="font-mono" @click="isDialogOpen = true">
+        <UButton v-if="!deployMode" class="font-mono" @click="isDialogOpen = true">
           <template #leading>
             <span class="opacity-70">$</span>
           </template>
@@ -497,17 +534,19 @@ const commandOptions = computed(() => {
       </EmptyState>
     </template>
 
-    <CreatePresentationDialog
-      :open="isDialogOpen"
-      @close="isDialogOpen = false"
-      @created="handlePresentationCreated"
-    />
+    <template v-if="!deployMode">
+      <CreatePresentationDialog
+        :open="isDialogOpen"
+        @close="isDialogOpen = false"
+        @created="handlePresentationCreated"
+      />
 
-    <ImportPresentationDialog
-      :open="isImportDialogOpen"
-      @close="isImportDialogOpen = false"
-      @imported="handlePresentationImported"
-    />
+      <ImportPresentationDialog
+        :open="isImportDialogOpen"
+        @close="isImportDialogOpen = false"
+        @imported="handlePresentationImported"
+      />
+    </template>
 
     <UModal v-model:open="isCommandPaletteOpen" @after-leave="initialSearchQuery = ''">
       <template #body>

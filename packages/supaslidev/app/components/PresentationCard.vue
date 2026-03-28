@@ -5,6 +5,8 @@ const props = defineProps<{
   presentation: Presentation;
 }>();
 
+const { deployMode } = useDeployMode();
+
 const {
   isRunning,
   getPort,
@@ -103,13 +105,22 @@ function handleCardClick(event: Event) {
 
 <template>
   <UCard
-    :as="running && port ? 'a' : 'div'"
-    :href="running && port ? `http://localhost:${port}` : undefined"
-    :target="running && port ? '_blank' : undefined"
-    :rel="running && port ? 'noopener noreferrer' : undefined"
-    :title="running && port ? `Open ${presentation.title}` : undefined"
+    :as="deployMode || (running && port) ? 'a' : 'div'"
+    :href="
+      deployMode
+        ? `/presentations/${presentation.id}/`
+        : running && port
+          ? `http://localhost:${port}`
+          : undefined
+    "
+    :target="deployMode || (running && port) ? '_blank' : undefined"
+    :rel="deployMode || (running && port) ? 'noopener noreferrer' : undefined"
+    :title="deployMode || (running && port) ? `Open ${presentation.title}` : undefined"
     class="card terminal-card group transition-all duration-300"
-    :class="{ 'terminal-card--running': running, 'cursor-default': !running }"
+    :class="{
+      'terminal-card--running': !deployMode && running,
+      'cursor-default': !deployMode && !running,
+    }"
     :ui="{
       root: 'overflow-hidden',
       header: 'p-0 sm:px-0 bg-[var(--supaslidev-header-bg)]',
@@ -124,25 +135,27 @@ function handleCardClick(event: Event) {
         <UIcon name="i-lucide-folder" class="chevron-icon" />
         <span class="font-mono text-xs opacity-80">~/{{ presentation.id }}</span>
         <div class="flex-1" />
-        <UBadge
-          v-if="running"
-          color="success"
-          variant="subtle"
-          size="xs"
-          class="terminal-badge terminal-badge--live font-mono uppercase tracking-wider"
-        >
-          <span class="inline-block w-1.5 h-1.5 rounded-full bg-current mr-1 animate-pulse" />
-          live
-        </UBadge>
-        <UBadge
-          v-else
-          color="neutral"
-          variant="subtle"
-          size="xs"
-          class="terminal-badge font-mono uppercase tracking-wider"
-        >
-          idle
-        </UBadge>
+        <template v-if="!deployMode">
+          <UBadge
+            v-if="running"
+            color="success"
+            variant="subtle"
+            size="xs"
+            class="terminal-badge terminal-badge--live font-mono uppercase tracking-wider"
+          >
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-current mr-1 animate-pulse" />
+            live
+          </UBadge>
+          <UBadge
+            v-else
+            color="neutral"
+            variant="subtle"
+            size="xs"
+            class="terminal-badge font-mono uppercase tracking-wider"
+          >
+            idle
+          </UBadge>
+        </template>
       </div>
     </template>
 
@@ -182,76 +195,75 @@ function handleCardClick(event: Event) {
       </div>
 
       <div class="terminal-actions flex gap-2">
-        <UButton
-          :color="running ? 'error' : 'success'"
-          variant="soft"
-          size="sm"
-          class="present-button flex-1 terminal-btn font-mono"
-          :loading="loading.dev"
-          :disabled="loading.dev"
-          loading-icon="i-lucide-loader-circle"
-          @click="handleDev"
-        >
-          <template v-if="!loading.dev" #leading>
-            <span class="terminal-prompt-symbol">$</span>
-          </template>
-          {{ running ? 'stop' : 'dev' }}
-        </UButton>
+        <template v-if="deployMode">
+          <UButton
+            as="a"
+            :href="`/presentations/${presentation.id}/`"
+            target="_blank"
+            rel="noopener noreferrer"
+            color="success"
+            variant="soft"
+            size="sm"
+            class="present-button flex-1 terminal-btn font-mono"
+          >
+            <template #leading>
+              <span class="terminal-prompt-symbol">$</span>
+            </template>
+            present
+          </UButton>
+        </template>
+        <template v-else>
+          <UButton
+            :color="running ? 'error' : 'success'"
+            variant="soft"
+            size="sm"
+            class="present-button flex-1 terminal-btn font-mono"
+            :loading="loading.dev"
+            :disabled="loading.dev"
+            loading-icon="i-lucide-loader-circle"
+            @click="handleDev"
+          >
+            <template v-if="!loading.dev" #leading>
+              <span class="terminal-prompt-symbol">$</span>
+            </template>
+            {{ running ? 'stop' : 'dev' }}
+          </UButton>
 
-        <UButton
-          color="primary"
-          variant="soft"
-          size="sm"
-          class="flex-1 terminal-btn font-mono"
-          :loading="loading.export"
-          :disabled="loading.export"
-          loading-icon="i-lucide-loader-circle"
-          @click="handleExport"
-        >
-          <template v-if="!loading.export" #leading>
-            <span class="terminal-prompt-symbol">$</span>
-          </template>
-          export
-        </UButton>
+          <UButton
+            color="primary"
+            variant="soft"
+            size="sm"
+            class="flex-1 terminal-btn font-mono"
+            :loading="loading.export"
+            :disabled="loading.export"
+            loading-icon="i-lucide-loader-circle"
+            @click="handleExport"
+          >
+            <template v-if="!loading.export" #leading>
+              <span class="terminal-prompt-symbol">$</span>
+            </template>
+            export
+          </UButton>
 
-        <UButton
-          color="neutral"
-          variant="soft"
-          size="sm"
-          class="flex-1 terminal-btn font-mono"
-          :loading="loading.edit"
-          :disabled="loading.edit"
-          @click="handleEdit"
-        >
-          <template #leading>
-            <span class="terminal-prompt-symbol">$</span>
-          </template>
-          edit
-        </UButton>
-
-        <!-- TODO: Re-enable when deploy functionality is implemented
-        <UButton
-          color="neutral"
-          variant="soft"
-          size="sm"
-          class="flex-1 terminal-btn font-mono"
-          :loading="loading.deploy"
-          :disabled="loading.deploy"
-          @click="handleDeploy"
-        >
-          <template #leading>
-            <span class="terminal-prompt-symbol">$</span>
-          </template>
-          deploy
-          <template #trailing>
-            <UKbd size="xs" class="terminal-kbd">P</UKbd>
-          </template>
-        </UButton>
-        -->
+          <UButton
+            color="neutral"
+            variant="soft"
+            size="sm"
+            class="flex-1 terminal-btn font-mono"
+            :loading="loading.edit"
+            :disabled="loading.edit"
+            @click="handleEdit"
+          >
+            <template #leading>
+              <span class="terminal-prompt-symbol">$</span>
+            </template>
+            edit
+          </UButton>
+        </template>
       </div>
 
       <div
-        v-if="running && port"
+        v-if="!deployMode && running && port"
         class="terminal-status font-mono text-xs text-[var(--ui-text-muted)] flex items-center gap-2 pt-3 border-t border-[var(--ui-border-muted)]"
       >
         <span class="text-[var(--ui-success)] animate-pulse">●</span>
