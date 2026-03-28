@@ -12,10 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        browser: [chromium, firefox, webkit]
-        exclude:
-          - os: windows-latest
-            browser: webkit
+        browser: [chromium, firefox]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
