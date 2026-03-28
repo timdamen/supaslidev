@@ -14,7 +14,7 @@ catalogs:
   core:
     nuxt: ^4.4.2
     '@vue/compiler-sfc': ^3.5.27
-    typescript: ^5.3.3
+    typescript: ^6.0.0
     vue-tsc: ^2.0.0
 
 catalogMode: prefer
