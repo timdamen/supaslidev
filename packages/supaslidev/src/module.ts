@@ -1,6 +1,6 @@
-import { defineNuxtModule } from '@nuxt/kit';
+import { type NuxtModule, defineNuxtModule } from '@nuxt/kit';
 
-export default defineNuxtModule({
+const module: NuxtModule = defineNuxtModule({
   meta: {
     name: 'supaslidev',
     configKey: 'supaslidev',
@@ -10,3 +10,5 @@ export default defineNuxtModule({
     // This module is a placeholder for future supaslidev-specific setup
   },
 });
+
+export default module;
