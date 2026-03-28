@@ -387,11 +387,11 @@ export async function create(options: CreateOptions = {}): Promise<void> {
         message: 'What is your project name?',
         placeholder: 'my-presentations',
         validate: (value) => {
-          if (!value.trim()) return 'Project name is required';
-          if (!/^[a-z0-9-]+$/.test(value)) {
+          if (!value?.trim()) return 'Project name is required';
+          if (!/^[a-z0-9-]+$/.test(value!)) {
             return 'Project name must be lowercase alphanumeric with hyphens only';
           }
-          if (value.startsWith('-') || value.endsWith('-')) {
+          if (value!.startsWith('-') || value!.endsWith('-')) {
             return 'Project name cannot start or end with a hyphen';
           }
           return undefined;
@@ -410,11 +410,11 @@ export async function create(options: CreateOptions = {}): Promise<void> {
         placeholder: 'my-first-deck',
         initialValue: 'my-first-deck',
         validate: (value) => {
-          if (!value.trim()) return 'Presentation name is required';
-          if (!/^[a-z0-9-]+$/.test(value)) {
+          if (!value?.trim()) return 'Presentation name is required';
+          if (!/^[a-z0-9-]+$/.test(value!)) {
             return 'Presentation name must be lowercase alphanumeric with hyphens only';
           }
-          if (value.startsWith('-') || value.endsWith('-')) {
+          if (value!.startsWith('-') || value!.endsWith('-')) {
             return 'Presentation name cannot start or end with a hyphen';
           }
           return undefined;
