@@ -239,6 +239,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('Ne');
 
@@ -253,6 +254,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('Present');
 
@@ -269,6 +271,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('new');
       await terminalInput.press('Enter');
@@ -284,6 +287,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('present non-existent-deck');
       await terminalInput.press('Enter');
@@ -298,6 +302,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('export non-existent-deck');
       await terminalInput.press('Enter');
@@ -312,6 +317,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('unknowncommand');
       await terminalInput.press('Enter');
@@ -326,6 +332,7 @@ describe('Dashboard Display E2E', () => {
       await page.goto(dashboardUrl);
 
       const terminalInput = page.locator('.terminal-input');
+      await terminalInput.waitFor({ state: 'visible' });
       await terminalInput.focus();
       await terminalInput.fill('new');
       await terminalInput.press('Enter');
@@ -341,6 +348,7 @@ describe('Dashboard Display E2E', () => {
     async function openCreateDialog() {
       await page.goto(dashboardUrl);
       const newButton = page.locator('.btn-new');
+      await newButton.waitFor({ state: 'visible' });
       await newButton.click();
       await page.locator('[role="dialog"]').waitFor({ state: 'visible', timeout: 5000 });
     }

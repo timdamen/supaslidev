@@ -57,11 +57,25 @@ describe('createSharedPackage', () => {
     expect(existsSync(badgePath)).toBe(true);
 
     const content = readFileSync(badgePath, 'utf-8');
+    expect(content).toContain('<script setup lang="ts">');
+    expect(content).toContain('text?: string');
+    expect(content).toContain("{{ text ?? 'Shared' }}");
     expect(content).toContain('<template>');
     expect(content).toContain('</template>');
   });
 
-  it('creates README.md', () => {
+  it('creates SharedBadge.vue with gradient styling', () => {
+    createSharedPackage(TEST_DIR);
+
+    const badgePath = join(TEST_DIR, 'packages', 'shared', 'components', 'SharedBadge.vue');
+    const content = readFileSync(badgePath, 'utf-8');
+
+    expect(content).toContain('linear-gradient');
+    expect(content).toContain('border-radius: 9999px');
+    expect(content).toContain('text-transform: uppercase');
+  });
+
+  it('creates README.md with addon documentation', () => {
     createSharedPackage(TEST_DIR);
 
     const readmePath = join(TEST_DIR, 'packages', 'shared', 'README.md');
@@ -69,9 +83,13 @@ describe('createSharedPackage', () => {
 
     const content = readFileSync(readmePath, 'utf-8');
     expect(content).toContain('@supaslidev/shared');
+    expect(content).toContain('Slidev addon pattern');
+    expect(content).toContain('sli.dev/guide/write-addon');
+    expect(content).toContain('<SharedBadge text="New" />');
+    expect(content).toContain('Adding New Components');
   });
 
-  it('creates tsconfig.json', () => {
+  it('creates tsconfig.json with full compiler options', () => {
     createSharedPackage(TEST_DIR);
 
     const tsconfigPath = join(TEST_DIR, 'packages', 'shared', 'tsconfig.json');
@@ -80,6 +98,22 @@ describe('createSharedPackage', () => {
     const content = readFileSync(tsconfigPath, 'utf-8');
     const tsconfig = JSON.parse(content);
 
-    expect(tsconfig.compilerOptions).toBeDefined();
+    expect(tsconfig.compilerOptions.target).toBe('ESNext');
+    expect(tsconfig.compilerOptions.moduleResolution).toBe('bundler');
+    expect(tsconfig.compilerOptions.resolveJsonModule).toBe(true);
+    expect(tsconfig.compilerOptions.isolatedModules).toBe(true);
+    expect(tsconfig.compilerOptions.esModuleInterop).toBe(true);
+    expect(tsconfig.compilerOptions.lib).toEqual(['ESNext', 'DOM']);
+    expect(tsconfig.compilerOptions.noEmit).toBe(true);
+  });
+
+  it('creates tsconfig.json scoped to components directory', () => {
+    createSharedPackage(TEST_DIR);
+
+    const tsconfigPath = join(TEST_DIR, 'packages', 'shared', 'tsconfig.json');
+    const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf-8'));
+
+    expect(tsconfig.include).toEqual(['components/**/*.ts', 'components/**/*.vue']);
+    expect(tsconfig.exclude).toEqual(['node_modules']);
   });
 });

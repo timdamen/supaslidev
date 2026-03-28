@@ -212,8 +212,16 @@ Add your content here
 
   writeFileSync(join(presentationDir, 'slides.md'), slidesContent, 'utf-8');
 
-  writeFileSync(join(presentationDir, '.gitignore'), 'node_modules\ndist\n.slidev\n', 'utf-8');
-  writeFileSync(join(presentationDir, '.npmrc'), 'shamefully-hoist=true\n', 'utf-8');
+  writeFileSync(
+    join(presentationDir, '.gitignore'),
+    'node_modules\n.DS_Store\ndist\n*.local\n.vite-inspect\n.remote-assets\ncomponents.d.ts\n',
+    'utf-8',
+  );
+  writeFileSync(
+    join(presentationDir, '.npmrc'),
+    '# for pnpm\nshamefully-hoist=true\nauto-install-peers=true\n',
+    'utf-8',
+  );
 }
 
 function createScripts(targetDir: string): void {
@@ -331,21 +339,28 @@ export function createSharedPackage(targetDir: string): void {
     'utf-8',
   );
 
-  const sharedBadgeContent = `<template>
-  <span class="shared-badge">
-    <slot />
-  </span>
+  const sharedBadgeContent = `<script setup lang="ts">
+defineProps<{
+  text?: string;
+}>();
+</script>
+
+<template>
+  <span class="shared-badge">{{ text ?? 'Shared' }}</span>
 </template>
 
 <style scoped>
 .shared-badge {
   display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  background-color: var(--slidev-theme-primary, #3b82f6);
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 9999px;
 }
 </style>
 `;
@@ -354,17 +369,71 @@ export function createSharedPackage(targetDir: string): void {
 
   const readmeContent = `# @supaslidev/shared
 
-Shared components, layouts, and styles for your Slidev presentations.
+A local Slidev addon for sharing components, layouts, and styles across all presentations in your workspace.
 
-## Usage
+## How It Works
 
-This package is configured as a Slidev addon. Components in the \`components\` directory are automatically available in all presentations that include this addon.
+This package follows the [Slidev addon pattern](https://sli.dev/guide/write-addon). Slidev automatically discovers and imports resources from the following directories:
 
-## Structure
+- **components/** - Vue components available in all slides
+- **layouts/** - Custom slide layouts
+- **styles/** - Shared CSS/SCSS styles
 
-- \`components/\` - Shared Vue components
-- \`layouts/\` - Custom slide layouts
-- \`styles/\` - Global styles
+## Using This Addon
+
+Add the addon to your presentation's frontmatter:
+
+\\\`\\\`\\\`yaml
+---
+addons:
+  - '@supaslidev/shared'
+---
+\\\`\\\`\\\`
+
+## Example: Using SharedBadge
+
+The \\\`SharedBadge\\\` component is available globally once the addon is configured:
+
+\\\`\\\`\\\`md
+---
+addons:
+  - '@supaslidev/shared'
+---
+
+# My Slide
+
+<SharedBadge text="New" />
+\\\`\\\`\\\`
+
+## Directory Structure
+
+\\\`\\\`\\\`
+shared/
+├── components/       # Vue components (auto-imported)
+│   └── SharedBadge.vue
+├── layouts/          # Custom layouts
+├── styles/           # Shared styles
+├── package.json
+└── README.md
+\\\`\\\`\\\`
+
+## Adding New Components
+
+Create a \\\`.vue\\\` file in \\\`components/\\\`:
+
+\\\`\\\`\\\`vue
+<script setup lang="ts">
+defineProps<{
+  label: string;
+}>();
+</script>
+
+<template>
+  <div class="my-component">{{ label }}</div>
+</template>
+\\\`\\\`\\\`
+
+The component is immediately available in all presentations using this addon.
 `;
 
   writeFileSync(join(sharedDir, 'README.md'), readmeContent, 'utf-8');
@@ -376,9 +445,15 @@ This package is configured as a Slidev addon. Components in the \`components\` d
       moduleResolution: 'bundler',
       strict: true,
       jsx: 'preserve',
+      resolveJsonModule: true,
+      isolatedModules: true,
+      esModuleInterop: true,
+      lib: ['ESNext', 'DOM'],
       skipLibCheck: true,
+      noEmit: true,
     },
-    include: ['**/*.ts', '**/*.vue'],
+    include: ['components/**/*.ts', 'components/**/*.vue'],
+    exclude: ['node_modules'],
   };
 
   writeFileSync(

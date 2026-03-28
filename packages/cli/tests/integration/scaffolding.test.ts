@@ -203,6 +203,78 @@ describe('Scaffolding E2E', () => {
     expect(packageJson.scripts.dev).toBe('supaslidev');
   });
 
+  it('includes build script in root package.json', async () => {
+    await create({
+      name: 'test-project',
+      presentation: 'test-deck',
+      git: false,
+      install: false,
+    });
+
+    const packageJsonPath = join(TEST_DIR, 'test-project', 'package.json');
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+
+    expect(packageJson.scripts.build).toBe('pnpm --filter @supaslidev/* run build');
+  });
+
+  it('creates presentation .gitignore with all required entries', async () => {
+    await create({
+      name: 'test-project',
+      presentation: 'test-deck',
+      git: false,
+      install: false,
+    });
+
+    const gitignorePath = join(
+      TEST_DIR,
+      'test-project',
+      'presentations',
+      'test-deck',
+      '.gitignore',
+    );
+    const content = readFileSync(gitignorePath, 'utf-8');
+
+    expect(content).toContain('node_modules');
+    expect(content).toContain('.DS_Store');
+    expect(content).toContain('dist');
+    expect(content).toContain('*.local');
+    expect(content).toContain('.vite-inspect');
+    expect(content).toContain('.remote-assets');
+    expect(content).toContain('components.d.ts');
+  });
+
+  it('creates presentation .npmrc with auto-install-peers', async () => {
+    await create({
+      name: 'test-project',
+      presentation: 'test-deck',
+      git: false,
+      install: false,
+    });
+
+    const npmrcPath = join(TEST_DIR, 'test-project', 'presentations', 'test-deck', '.npmrc');
+    const content = readFileSync(npmrcPath, 'utf-8');
+
+    expect(content).toContain('shamefully-hoist=true');
+    expect(content).toContain('auto-install-peers=true');
+  });
+
+  it('creates pnpm-workspace.yaml with pnpm configuration options', async () => {
+    await create({
+      name: 'test-project',
+      presentation: 'test-deck',
+      git: false,
+      install: false,
+    });
+
+    const workspacePath = join(TEST_DIR, 'test-project', 'pnpm-workspace.yaml');
+    const content = readFileSync(workspacePath, 'utf-8');
+
+    expect(content).toContain('linkWorkspacePackages: true');
+    expect(content).toContain('shellEmulator: true');
+    expect(content).toContain('trustPolicy: no-downgrade');
+    expect(content).toContain('catalogMode: prefer');
+  });
+
   it('creates shared package.json with Slidev addon keywords', async () => {
     await create({
       name: 'test-project',

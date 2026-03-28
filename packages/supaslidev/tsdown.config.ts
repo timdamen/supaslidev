@@ -13,7 +13,7 @@ export default defineConfig([
   {
     entry: ['src/module.ts'],
     format: 'esm',
-    dts: false,
+    dts: true,
     outDir: 'dist',
     hash: false,
     deps: {

@@ -82,6 +82,7 @@ describe('CLI Scaffolding E2E', () => {
 
       expect(packageJson.scripts).toBeDefined();
       expect(packageJson.scripts.dev).toBe('supaslidev');
+      expect(packageJson.scripts.build).toBe('pnpm --filter @supaslidev/* run build');
     });
 
     it('includes supaslidev in devDependencies', () => {
@@ -117,6 +118,74 @@ describe('CLI Scaffolding E2E', () => {
       expect(presPackageJson.scripts.dev).toBe('slidev --open');
       expect(presPackageJson.scripts.build).toBe('slidev build');
       expect(presPackageJson.scripts.export).toBe('slidev export');
+    });
+  });
+
+  describe('presentation config files', () => {
+    let projectPath: string;
+
+    beforeAll(() => {
+      projectPath = join(getTmpDir(), TEST_PROJECT_NAME);
+    });
+
+    it('creates presentation .gitignore with all required entries', () => {
+      const gitignorePath = join(projectPath, 'presentations', 'test-deck', '.gitignore');
+      const content = readFileSync(gitignorePath, 'utf-8');
+
+      expect(content).toContain('node_modules');
+      expect(content).toContain('.DS_Store');
+      expect(content).toContain('dist');
+      expect(content).toContain('*.local');
+      expect(content).toContain('.vite-inspect');
+      expect(content).toContain('.remote-assets');
+      expect(content).toContain('components.d.ts');
+    });
+
+    it('creates presentation .npmrc with auto-install-peers', () => {
+      const npmrcPath = join(projectPath, 'presentations', 'test-deck', '.npmrc');
+      const content = readFileSync(npmrcPath, 'utf-8');
+
+      expect(content).toContain('shamefully-hoist=true');
+      expect(content).toContain('auto-install-peers=true');
+    });
+  });
+
+  describe('shared package', () => {
+    let projectPath: string;
+
+    beforeAll(() => {
+      projectPath = join(getTmpDir(), TEST_PROJECT_NAME);
+    });
+
+    it('creates SharedBadge.vue with text prop and gradient styling', () => {
+      const badgePath = join(projectPath, 'packages', 'shared', 'components', 'SharedBadge.vue');
+      expect(existsSync(badgePath)).toBe(true);
+
+      const content = readFileSync(badgePath, 'utf-8');
+      expect(content).toContain('text?: string');
+      expect(content).toContain("{{ text ?? 'Shared' }}");
+      expect(content).toContain('linear-gradient');
+    });
+
+    it('creates shared tsconfig.json with correct compiler options', () => {
+      const tsconfigPath = join(projectPath, 'packages', 'shared', 'tsconfig.json');
+      const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf-8'));
+
+      expect(tsconfig.compilerOptions.resolveJsonModule).toBe(true);
+      expect(tsconfig.compilerOptions.isolatedModules).toBe(true);
+      expect(tsconfig.compilerOptions.esModuleInterop).toBe(true);
+      expect(tsconfig.compilerOptions.noEmit).toBe(true);
+      expect(tsconfig.include).toEqual(['components/**/*.ts', 'components/**/*.vue']);
+      expect(tsconfig.exclude).toEqual(['node_modules']);
+    });
+
+    it('creates shared README.md with addon usage documentation', () => {
+      const readmePath = join(projectPath, 'packages', 'shared', 'README.md');
+      const content = readFileSync(readmePath, 'utf-8');
+
+      expect(content).toContain('Slidev addon pattern');
+      expect(content).toContain('<SharedBadge text="New" />');
+      expect(content).toContain('Adding New Components');
     });
   });
 

@@ -92,11 +92,23 @@ export async function dev(): Promise<void> {
 
   const processes: ChildProcess[] = [nuxt];
 
+  nuxt.on('error', (err) => {
+    console.error(`Failed to start Nuxt: ${err.message}`);
+    process.exit(1);
+  });
+
+  nuxt.on('close', (code, signal) => {
+    if (signal) {
+      process.kill(process.pid, signal);
+    } else {
+      process.exit(code ?? 1);
+    }
+  });
+
   const cleanup = () => {
     for (const proc of processes) {
       proc.kill('SIGTERM');
     }
-    process.exit(0);
   };
 
   process.on('SIGINT', cleanup);
