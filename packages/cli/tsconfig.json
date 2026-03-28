@@ -13,7 +13,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "allowImportingTsExtensions": true,
-    "allowJs": true
+    "allowJs": true,
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "bin/**/*.mjs"]
 }
