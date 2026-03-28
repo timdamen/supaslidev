@@ -33,7 +33,7 @@ describe('CLI Scaffolding E2E', () => {
     it('creates workspace configuration files', () => {
       expect(existsSync(join(projectPath, 'package.json'))).toBe(true);
       expect(existsSync(join(projectPath, 'pnpm-workspace.yaml'))).toBe(true);
-      expect(existsSync(join(projectPath, 'turbo.json'))).toBe(true);
+      expect(existsSync(join(projectPath, '.gitignore'))).toBe(true);
     });
 
     it('creates state directory with state.json', () => {

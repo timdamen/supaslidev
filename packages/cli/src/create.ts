@@ -291,18 +291,18 @@ This package follows the [Slidev addon pattern](https://sli.dev/guide/write-addo
 
 Add the addon to your presentation's frontmatter:
 
-\\\`\\\`\\\`yaml
+\`\`\`yaml
 ---
 addons:
   - '@supaslidev/shared'
 ---
-\\\`\\\`\\\`
+\`\`\`
 
 ## Example: Using SharedBadge
 
-The \\\`SharedBadge\\\` component is available globally once the addon is configured:
+The \`SharedBadge\` component is available globally once the addon is configured:
 
-\\\`\\\`\\\`md
+\`\`\`md
 ---
 addons:
   - '@supaslidev/shared'
@@ -311,11 +311,11 @@ addons:
 # My Slide
 
 <SharedBadge text="New" />
-\\\`\\\`\\\`
+\`\`\`
 
 ## Directory Structure
 
-\\\`\\\`\\\`
+\`\`\`
 shared/
 ├── components/       # Vue components (auto-imported)
 │   └── SharedBadge.vue
@@ -323,13 +323,13 @@ shared/
 ├── styles/           # Shared styles
 ├── package.json
 └── README.md
-\\\`\\\`\\\`
+\`\`\`
 
 ## Adding New Components
 
-Create a \\\`.vue\\\` file in \\\`components/\\\`:
+Create a \`.vue\` file in \`components/\`:
 
-\\\`\\\`\\\`vue
+\`\`\`vue
 <script setup lang="ts">
 defineProps<{
   label: string;
@@ -339,7 +339,7 @@ defineProps<{
 <template>
   <div class="my-component">{{ label }}</div>
 </template>
-\\\`\\\`\\\`
+\`\`\`
 
 The component is immediately available in all presentations using this addon.
 `;
