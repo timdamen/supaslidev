@@ -37,7 +37,7 @@ catalogs:
     tailwindcss: ^4.1.18
     vite: ^6.0.7
     vue-router: ^4.6.4
-    vue-tsc: ^2.0.0
+    vue-tsc: ^3.0.0
     zod: ^3.24.0
     zod-to-json-schema: ^3.24.0
   dev:
