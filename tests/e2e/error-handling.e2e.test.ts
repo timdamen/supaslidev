@@ -134,18 +134,6 @@ describe('Error Handling E2E', () => {
       expect(result.stderr).toContain('not found');
       expect(result.stderr).toContain('Available presentations');
     });
-
-    it('deploy command fails for non-existent presentation', () => {
-      expect(scaffoldingSucceeded, 'Scaffolding must succeed before running dependent tests').toBe(
-        true,
-      );
-
-      const result = runDashboardCli('deploy non-existent-deck', projectPath);
-
-      expect(result.exitCode).not.toBe(0);
-      expect(result.stderr).toContain('not found');
-      expect(result.stderr).toContain('Available presentations');
-    });
   });
 
   describe('project not found', () => {
@@ -177,13 +165,6 @@ describe('Error Handling E2E', () => {
 
     it('export command fails when no project is found', () => {
       const result = runDashboardCli('export my-deck', ISOLATED_DIR);
-
-      expect(result.exitCode).not.toBe(0);
-      expect(result.stderr).toContain('Could not find a Supaslidev project');
-    });
-
-    it('deploy command fails when no project is found', () => {
-      const result = runDashboardCli('deploy my-deck', ISOLATED_DIR);
 
       expect(result.exitCode).not.toBe(0);
       expect(result.stderr).toContain('Could not find a Supaslidev project');

@@ -5,7 +5,6 @@ import { dev } from './commands/dev.js';
 import { create } from './commands/create.js';
 import { present } from './commands/present.js';
 import { exportPdf } from './commands/export.js';
-import { deploy } from './commands/deploy.js';
 import { importPresentation } from './commands/import.js';
 
 const program = new Command();
@@ -42,15 +41,6 @@ program
   .option('-o, --output <path>', 'Output path for the PDF')
   .action(async (name: string, options: { output?: string }) => {
     await exportPdf(name, options);
-  });
-
-program
-  .command('deploy')
-  .description('Build and prepare a presentation for deployment')
-  .argument('<name>', 'Name of the presentation to deploy')
-  .option('-o, --output <path>', 'Output directory for deployment files')
-  .action(async (name: string, options: { output?: string }) => {
-    await deploy(name, options);
   });
 
 program

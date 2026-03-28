@@ -72,12 +72,6 @@ describe('CLI Help & Version', () => {
     expect(stdout).toContain('export');
     expect(stdout).toContain('PDF');
   });
-
-  it('shows help for deploy command', () => {
-    const { stdout } = runCLI('deploy --help', process.cwd());
-    expect(stdout).toContain('deploy');
-    expect(stdout).toContain('deployment');
-  });
 });
 
 describe('CLI Project Detection', () => {
@@ -113,12 +107,6 @@ describe('CLI Project Detection', () => {
     expect(exitCode).not.toBe(0);
     expect(stderr).toContain('Could not find a Supaslidev project');
   });
-
-  it('fails deploy command when no project is found', () => {
-    const { stderr, exitCode } = runCLI('deploy test-deck', TEST_DIR);
-    expect(exitCode).not.toBe(0);
-    expect(stderr).toContain('Could not find a Supaslidev project');
-  });
 });
 
 describe('CLI Presentation Validation', () => {
@@ -135,14 +123,6 @@ describe('CLI Presentation Validation', () => {
 
   it('export command fails for non-existent presentation', () => {
     const { stderr, exitCode } = runCLI('export non-existent', TEST_DIR);
-    expect(exitCode).not.toBe(0);
-    expect(stderr).toContain('not found');
-    expect(stderr).toContain('Available presentations');
-    expect(stderr).toContain('existing-deck');
-  });
-
-  it('deploy command fails for non-existent presentation', () => {
-    const { stderr, exitCode } = runCLI('deploy non-existent', TEST_DIR);
     expect(exitCode).not.toBe(0);
     expect(stderr).toContain('not found');
     expect(stderr).toContain('Available presentations');
@@ -170,25 +150,6 @@ describe('CLI Export Options', () => {
 
   it('export command accepts -o flag', () => {
     const { stdout } = runCLI('export --help', TEST_DIR);
-    expect(stdout).toContain('-o');
-    expect(stdout).toContain('--output');
-  });
-});
-
-describe('CLI Deploy Options', () => {
-  beforeEach(() => {
-    cleanTestDir();
-    mkdirSync(join(TEST_DIR, 'presentations', 'my-deck'), { recursive: true });
-    writeFileSync(join(TEST_DIR, 'package.json'), '{}');
-    writeFileSync(join(TEST_DIR, 'presentations', 'my-deck', 'slides.md'), '# Test');
-  });
-
-  afterEach(() => {
-    cleanTestDir();
-  });
-
-  it('deploy command accepts -o flag', () => {
-    const { stdout } = runCLI('deploy --help', TEST_DIR);
     expect(stdout).toContain('-o');
     expect(stdout).toContain('--output');
   });

@@ -2,13 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import {
-  findProjectRoot,
-  getPresentations,
-  createVercelConfig,
-  createNetlifyConfig,
-  createDeployPackageJson,
-} from '../../src/cli/utils.js';
+import { findProjectRoot, getPresentations } from '../../src/cli/utils.js';
 
 const TEST_DIR = join(tmpdir(), 'supaslidev-utils-test');
 
@@ -149,77 +143,5 @@ describe('getPresentations', () => {
 
     const result = getPresentations(presentationsDir);
     expect(result).toEqual(['alpha', 'middle', 'zebra']);
-  });
-});
-
-describe('createVercelConfig', () => {
-  it('returns valid JSON with correct structure', () => {
-    const config = createVercelConfig();
-    const parsed = JSON.parse(config);
-
-    expect(parsed.buildCommand).toBe('npm run build');
-    expect(parsed.outputDirectory).toBe('dist');
-    expect(parsed.rewrites).toEqual([{ source: '/(.*)', destination: '/index.html' }]);
-  });
-
-  it('returns formatted JSON with newline at end', () => {
-    const config = createVercelConfig();
-    expect(config.endsWith('\n')).toBe(true);
-  });
-});
-
-describe('createNetlifyConfig', () => {
-  it('contains required build configuration', () => {
-    const config = createNetlifyConfig();
-
-    expect(config).toContain('[build]');
-    expect(config).toContain('publish = "dist"');
-    expect(config).toContain('command = "npm run build"');
-  });
-
-  it('contains Node version environment variable', () => {
-    const config = createNetlifyConfig();
-
-    expect(config).toContain('[build.environment]');
-    expect(config).toContain('NODE_VERSION = "20"');
-  });
-
-  it('contains SPA redirect configuration', () => {
-    const config = createNetlifyConfig();
-
-    expect(config).toContain('[[redirects]]');
-    expect(config).toContain('from = "/*"');
-    expect(config).toContain('to = "/index.html"');
-    expect(config).toContain('status = 200');
-  });
-});
-
-describe('createDeployPackageJson', () => {
-  it('returns valid JSON with correct name format', () => {
-    const config = createDeployPackageJson('my-presentation');
-    const parsed = JSON.parse(config);
-
-    expect(parsed.name).toBe('my-presentation-deploy');
-  });
-
-  it('includes correct version and private flag', () => {
-    const config = createDeployPackageJson('test');
-    const parsed = JSON.parse(config);
-
-    expect(parsed.version).toBe('1.0.0');
-    expect(parsed.private).toBe(true);
-  });
-
-  it('includes build and start scripts', () => {
-    const config = createDeployPackageJson('demo');
-    const parsed = JSON.parse(config);
-
-    expect(parsed.scripts.build).toBeDefined();
-    expect(parsed.scripts.start).toBe('npx serve dist');
-  });
-
-  it('returns formatted JSON with newline at end', () => {
-    const config = createDeployPackageJson('test');
-    expect(config.endsWith('\n')).toBe(true);
   });
 });

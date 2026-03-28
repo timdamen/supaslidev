@@ -19,7 +19,6 @@ pnpm dev                   # Interactive dashboard
 pnpm new <name>            # New presentation
 pnpm present <name>        # Dev server for presentation
 pnpm export <name>         # Export PDF
-pnpm deploy <name>         # Build for deployment
 pnpm test                  # Run tests
 pnpm lint                  # Linting
 pnpm typecheck             # Type checking
