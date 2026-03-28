@@ -26,7 +26,7 @@ catalogs:
     yaml: ^2.7.0
   core:
     '@nuxt/ui': ^4.4.0
-    '@vitejs/plugin-vue': ^5.2.1
+    '@vitejs/plugin-vue': ^6.0.0
     '@vue/compiler-sfc': ^3.5.31
     '@nuxt/kit': ^4.4.2
     '@nuxt/schema': ^4.4.2
