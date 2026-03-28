@@ -1,6 +1,6 @@
 {
   "framework": null,
   "installCommand": "pnpm install",
-  "buildCommand": "ln -sf $PWD/node_modules ../packages/supaslidev/node_modules && SUPASLIDEV_PROJECT_ROOT=$PWD SUPASLIDEV_PRESENTATIONS_DIR=$PWD/presentations NUXT_PUBLIC_DEPLOY_MODE=true node_modules/.bin/nuxt generate ../packages/supaslidev && cp -r ../packages/supaslidev/.output/public dist",
+  "buildCommand": "bash scripts/vercel-build.sh",
   "outputDirectory": "dist"
 }
