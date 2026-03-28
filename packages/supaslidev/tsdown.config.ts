@@ -26,12 +26,8 @@ export default defineConfig([
     format: 'esm',
     outDir: 'dist/cli',
     hash: false,
-    deps: {
-      inline: ['create-supaslidev'],
-    },
-    outputOptions: {
-      banner: '#!/usr/bin/env node\n',
-    },
+    shims: true,
+    banner: '#!/usr/bin/env node',
     outExtensions: () => ({ js: '.js' }),
   },
 ]);

@@ -1,13 +1,9 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import pkg from '../package.json' with { type: 'json' };
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8')) as {
-  version: string;
-};
-export const CLI_VERSION = pkg.version;
+export const CLI_VERSION: string = pkg.version;
 export const PACKAGE_NAME = '@supaslidev/cli';
 
 const CACHE_DIR = join(tmpdir(), 'supaslidev-cli');

@@ -8,6 +8,7 @@ export default defineConfig([
     outDir: 'dist',
     clean: true,
     hash: false,
+    outExtensions: () => ({ js: '.js' }),
   },
   {
     entry: ['src/cli.ts'],
@@ -15,8 +16,8 @@ export default defineConfig([
     dts: true,
     outDir: 'dist',
     hash: false,
-    outputOptions: {
-      banner: '#!/usr/bin/env node\n',
-    },
+    shims: true,
+    banner: '#!/usr/bin/env node',
+    outExtensions: () => ({ js: '.js' }),
   },
 ]);

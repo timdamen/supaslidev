@@ -55,10 +55,9 @@ export async function run(): Promise<void> {
 }
 
 import { basename } from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 const scriptName = process.argv[1] ? basename(process.argv[1]) : '';
-if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href || scriptName === 'cli.js') {
+if (scriptName === 'cli.js') {
   run().catch((err) => {
     console.error(err);
     process.exit(1);
