@@ -58,6 +58,9 @@ catalogs:
     zod:
       specifier: ^3.24.0
       version: 3.25.76
+    zod-to-json-schema:
+      specifier: ^3.24.0
+      version: 3.25.2
   default:
     '@slidev/cli':
       specifier: ^52.11.3
@@ -74,9 +77,6 @@ catalogs:
     vue:
       specifier: ^3.5.31
       version: 3.5.31
-    zod-to-json-schema:
-      specifier: 3.25.2
-      version: 3.25.2
   dev:
     '@commitlint/cli':
       specifier: ^20.3.1
