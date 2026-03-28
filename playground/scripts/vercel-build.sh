@@ -9,3 +9,6 @@ NUXT_PUBLIC_DEPLOY_MODE=true \
 
 # Copy output to dist for Vercel (vercel-static preset outputs here)
 cp -r ../packages/supaslidev/.vercel/output/static dist
+
+# Include presentations.json so the dashboard can load presentation data
+cp .supaslidev/presentations.json dist/presentations.json
