@@ -5,7 +5,7 @@ set -euo pipefail
 for dir in presentations/*/; do
   id=$(basename "$dir")
   echo "Building presentation: $id"
-  npx slidev build --base "/presentations/$id/" --out dist --cwd "$dir"
+  (cd "$dir" && npx slidev build --base "/presentations/$id/" --out dist)
 done
 
 # Step 2: Generate the Nuxt dashboard in deploy mode
