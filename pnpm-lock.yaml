@@ -37,6 +37,9 @@ catalogs:
     '@nuxt/ui':
       specifier: ^4.4.0
       version: 4.4.0
+    better-sqlite3:
+      specifier: ^12.2.0
+      version: 12.8.0
     docus:
       specifier: ^5.4.4
       version: 5.4.4
@@ -68,9 +71,6 @@ catalogs:
     '@slidev/theme-seriph':
       specifier: latest
       version: 0.25.0
-    better-sqlite3:
-      specifier: 12.8.0
-      version: 12.8.0
     playwright-chromium:
       specifier: ^1.58.2
       version: 1.58.2
