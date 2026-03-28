@@ -28,7 +28,6 @@ describe('CLI Scaffolding E2E', () => {
       expect(existsSync(projectPath)).toBe(true);
       expect(existsSync(join(projectPath, 'presentations'))).toBe(true);
       expect(existsSync(join(projectPath, 'packages'))).toBe(true);
-      expect(existsSync(join(projectPath, 'scripts'))).toBe(true);
     });
 
     it('creates workspace configuration files', () => {
@@ -41,14 +40,6 @@ describe('CLI Scaffolding E2E', () => {
     it('creates state directory with state.json', () => {
       expect(existsSync(join(projectPath, '.supaslidev'))).toBe(true);
       expect(existsSync(join(projectPath, '.supaslidev', 'state.json'))).toBe(true);
-    });
-
-    it('creates scripts directory with dev script', () => {
-      const devScriptPath = join(projectPath, 'scripts', 'dev-presentation.mjs');
-      expect(existsSync(devScriptPath)).toBe(true);
-
-      const scriptContent = readFileSync(devScriptPath, 'utf-8');
-      expect(scriptContent).toContain('#!/usr/bin/env node');
     });
 
     it('creates presentation directory with expected files', () => {

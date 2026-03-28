@@ -46,7 +46,6 @@ describe('Scaffolding E2E', () => {
 
     expect(existsSync(join(projectDir, 'presentations'))).toBe(true);
     expect(existsSync(join(projectDir, 'packages'))).toBe(true);
-    expect(existsSync(join(projectDir, 'scripts'))).toBe(true);
   });
 
   it('creates the specified presentation with slides.md', async () => {
@@ -143,22 +142,6 @@ describe('Scaffolding E2E', () => {
     expect(state.appliedMigrations).toEqual([]);
     expect(state.createdAt).toBeDefined();
     expect(state.lastUpdatedAt).toBeDefined();
-  });
-
-  it('creates dev script for running presentations', async () => {
-    await create({
-      name: 'test-project',
-      presentation: 'test-deck',
-      git: false,
-      install: false,
-    });
-
-    const devScriptPath = join(TEST_DIR, 'test-project', 'scripts', 'dev-presentation.mjs');
-    expect(existsSync(devScriptPath)).toBe(true);
-
-    const scriptContent = readFileSync(devScriptPath, 'utf-8');
-    expect(scriptContent).toContain('#!/usr/bin/env node');
-    expect(scriptContent).toContain('getPresentations');
   });
 
   it('uses default values when options are provided', async () => {

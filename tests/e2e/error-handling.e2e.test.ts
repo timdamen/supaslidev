@@ -40,33 +40,6 @@ function runDashboardCli(
   }
 }
 
-function runDevScript(
-  name: string,
-  projectPath: string,
-): { stdout: string; stderr: string; exitCode: number } {
-  const scriptPath = join(projectPath, 'scripts', 'dev-presentation.mjs');
-  try {
-    const stdout = execSync(`node "${scriptPath}" ${name}`, {
-      cwd: projectPath,
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      timeout: 5000,
-    });
-    return { stdout, stderr: '', exitCode: 0 };
-  } catch (error) {
-    const execError = error as {
-      stdout?: Buffer | string;
-      stderr?: Buffer | string;
-      status?: number;
-    };
-    return {
-      stdout: execError.stdout?.toString() ?? '',
-      stderr: execError.stderr?.toString() ?? '',
-      exitCode: execError.status ?? 1,
-    };
-  }
-}
-
 describe('Error Handling E2E', () => {
   const TEST_PROJECT_NAME = 'error-handling-e2e-test';
   let projectPath: string;
@@ -150,29 +123,6 @@ describe('Error Handling E2E', () => {
   });
 
   describe('non-existent presentation', () => {
-    it('dev script fails for non-existent presentation', () => {
-      expect(scaffoldingSucceeded, 'Scaffolding must succeed before running dependent tests').toBe(
-        true,
-      );
-
-      const result = runDevScript('non-existent-deck', projectPath);
-
-      expect(result.exitCode).not.toBe(0);
-      expect(result.stderr).toContain('not found');
-      expect(result.stderr).toContain('Available presentations');
-    });
-
-    it('dev script shows available presentations in error', () => {
-      expect(scaffoldingSucceeded, 'Scaffolding must succeed before running dependent tests').toBe(
-        true,
-      );
-
-      const result = runDevScript('missing-deck', projectPath);
-
-      expect(result.exitCode).not.toBe(0);
-      expect(result.stderr).toContain('test-deck');
-    });
-
     it('export command fails for non-existent presentation', () => {
       expect(scaffoldingSucceeded, 'Scaffolding must succeed before running dependent tests').toBe(
         true,
