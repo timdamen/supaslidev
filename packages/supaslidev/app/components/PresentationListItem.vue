@@ -5,6 +5,8 @@ const props = defineProps<{
   presentation: Presentation;
 }>();
 
+const { deployMode } = useDeployMode();
+
 const {
   isRunning,
   getPort,
@@ -110,14 +112,22 @@ function handleOpen(event: Event) {
 </script>
 
 <template>
-  <div
+  <component
+    :is="deployMode ? 'a' : 'div'"
+    :href="deployMode ? `/presentations/${presentation.id}/` : undefined"
+    :target="deployMode ? '_blank' : undefined"
+    :rel="deployMode ? 'noopener noreferrer' : undefined"
     :class="[
       'list-item-v font-mono flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
-      { 'list-item--running': running, 'cursor-pointer': running && port },
+      {
+        'list-item--running': !deployMode && running,
+        'cursor-pointer': deployMode || (running && port),
+      },
     ]"
-    @click="handleRowClick"
+    @click="deployMode ? undefined : handleRowClick($event)"
   >
     <span
+      v-if="!deployMode"
       class="status-dot w-2 h-2 rounded-full shrink-0"
       :class="running ? 'bg-[var(--ui-success)] animate-pulse' : 'bg-[var(--ui-text-muted)]'"
     />
@@ -147,67 +157,84 @@ function handleOpen(event: Event) {
       {{ presentation.duration }}
     </UBadge>
 
-    <div v-if="running && port" class="flex items-center gap-1 shrink-0">
-      <a
-        :href="`http://localhost:${port}`"
+    <template v-if="deployMode">
+      <UButton
+        as="a"
+        :href="`/presentations/${presentation.id}/`"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-xs text-[var(--ui-success)] hover:underline"
-        @click.stop
-      >
-        :{{ port }}
-      </a>
-      <UButton
         color="success"
         variant="ghost"
         size="xs"
-        icon="i-lucide-external-link"
-        class="action-btn"
-        title="Open in browser"
-        @click="handleOpen"
+        icon="i-lucide-play"
+        class="action-btn shrink-0"
+        title="Open presentation"
+        @click.stop
       />
-    </div>
+    </template>
+    <template v-else>
+      <div v-if="running && port" class="flex items-center gap-1 shrink-0">
+        <a
+          :href="`http://localhost:${port}`"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-[var(--ui-success)] hover:underline"
+          @click.stop
+        >
+          :{{ port }}
+        </a>
+        <UButton
+          color="success"
+          variant="ghost"
+          size="xs"
+          icon="i-lucide-external-link"
+          class="action-btn"
+          title="Open in browser"
+          @click="handleOpen"
+        />
+      </div>
 
-    <div class="flex items-center gap-1 shrink-0">
-      <UButton
-        :color="running ? 'error' : 'success'"
-        variant="ghost"
-        size="xs"
-        :icon="loading.dev ? '' : running ? 'i-lucide-square' : 'i-lucide-play'"
-        :loading="loading.dev"
-        :disabled="loading.dev"
-        loading-icon="i-lucide-loader-circle"
-        class="action-btn"
-        :title="running ? 'Stop server' : 'Start dev server'"
-        @click="handleDev"
-      />
+      <div class="flex items-center gap-1 shrink-0">
+        <UButton
+          :color="running ? 'error' : 'success'"
+          variant="ghost"
+          size="xs"
+          :icon="loading.dev ? '' : running ? 'i-lucide-square' : 'i-lucide-play'"
+          :loading="loading.dev"
+          :disabled="loading.dev"
+          loading-icon="i-lucide-loader-circle"
+          class="action-btn"
+          :title="running ? 'Stop server' : 'Start dev server'"
+          @click="handleDev"
+        />
 
-      <UButton
-        color="primary"
-        variant="ghost"
-        size="xs"
-        :icon="loading.export ? '' : 'i-lucide-download'"
-        :loading="loading.export"
-        :disabled="loading.export"
-        loading-icon="i-lucide-loader-circle"
-        class="action-btn"
-        title="Export to PDF"
-        @click="handleExport"
-      />
+        <UButton
+          color="primary"
+          variant="ghost"
+          size="xs"
+          :icon="loading.export ? '' : 'i-lucide-download'"
+          :loading="loading.export"
+          :disabled="loading.export"
+          loading-icon="i-lucide-loader-circle"
+          class="action-btn"
+          title="Export to PDF"
+          @click="handleExport"
+        />
 
-      <UButton
-        color="neutral"
-        variant="ghost"
-        size="xs"
-        icon="i-lucide-pencil"
-        :loading="loading.edit"
-        :disabled="loading.edit"
-        class="action-btn"
-        title="Edit in VS Code"
-        @click="handleEdit"
-      />
-    </div>
-  </div>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          icon="i-lucide-pencil"
+          :loading="loading.edit"
+          :disabled="loading.edit"
+          class="action-btn"
+          title="Edit in VS Code"
+          @click="handleEdit"
+        />
+      </div>
+    </template>
+  </component>
 </template>
 
 <style scoped>

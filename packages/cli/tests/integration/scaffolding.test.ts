@@ -198,6 +198,20 @@ describe('Scaffolding E2E', () => {
     expect(packageJson.scripts.build).toBe('pnpm --filter @supaslidev/* run build');
   });
 
+  it('includes deploy script in root package.json', async () => {
+    await create({
+      name: 'test-project',
+      presentation: 'test-deck',
+      git: false,
+      install: false,
+    });
+
+    const packageJsonPath = join(TEST_DIR, 'test-project', 'package.json');
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+
+    expect(packageJson.scripts.deploy).toBe('supaslidev deploy');
+  });
+
   it('creates presentation .gitignore with all required entries', async () => {
     await create({
       name: 'test-project',

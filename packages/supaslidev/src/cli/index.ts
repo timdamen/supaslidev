@@ -6,6 +6,7 @@ import { create } from './commands/create.js';
 import { present } from './commands/present.js';
 import { exportPdf } from './commands/export.js';
 import { importPresentation } from './commands/import.js';
+import { deploy } from './commands/deploy.js';
 
 const program = new Command();
 
@@ -54,6 +55,20 @@ program
   .option('--no-install', 'Skip pnpm install after import')
   .action(async (source: string, options: { name?: string; install?: boolean }) => {
     await importPresentation(source, { name: options.name, install: options.install ?? true });
+  });
+
+program
+  .command('deploy')
+  .description('Build all presentations into a static deployable site')
+  .option('-o, --output <dir>', 'Output directory for the deploy package')
+  .option('--base <path>', 'Base path for the deployed site (default: /)')
+  .action(async (options: { output?: string; base?: string }) => {
+    try {
+      await deploy(options);
+    } catch (error) {
+      console.error(`Error: ${error instanceof Error ? error.message : error}`);
+      process.exit(1);
+    }
   });
 
 export async function run(): Promise<void> {
