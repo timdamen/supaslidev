@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { findProjectRoot } from '../utils.js';
 
-export function findSupaslidevPackageRoot(): string {
+function findSupaslidevPackageRoot(): string {
   let dir = dirname(fileURLToPath(import.meta.url));
 
   while (dir !== dirname(dir)) {

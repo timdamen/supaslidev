@@ -24,6 +24,7 @@
     "typecheck": "turbo run typecheck --continue",
     "format": "oxfmt --write",
     "format:check": "oxfmt --check",
+    "knip": "knip",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:browser": "vitest run --config tests/vitest.config.ts",
@@ -32,10 +33,6 @@
     "test:e2e": "vitest run --config tests/e2e/vitest.config.ts",
     "test:e2e:ui": "vitest --config tests/e2e/vitest.config.ts --ui",
     "prepare": "husky",
-    "coderabbit:auth": "coderabbit auth login",
-    "coderabbit:review": "coderabbit --prompt-only --type uncommitted",
-    "coderabbit:review:committed": "coderabbit --prompt-only --type committed",
-    "coderabbit:review:full": "coderabbit --prompt-only",
     "release": "bumpp package.json packages/*/package.json --all -x \"npx changelogen --no-output\""
   },
   "devDependencies": {
@@ -49,6 +46,7 @@
     "changelogen": "catalog:dev",
     "changelogithub": "catalog:dev",
     "husky": "catalog:dev",
+    "knip": "catalog:",
     "lint-staged": "catalog:dev",
     "oxfmt": "catalog:dev",
     "oxlint": "catalog:dev",

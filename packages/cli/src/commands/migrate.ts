@@ -9,7 +9,7 @@ export interface MigrateOptions {
   apply?: boolean;
 }
 
-export interface MigrateResult {
+interface MigrateResult {
   success: boolean;
   dryRun: boolean;
   migrationsToApply: number;
@@ -17,7 +17,7 @@ export interface MigrateResult {
   output: string;
 }
 
-export async function getMigrateResult(options: MigrateOptions = {}): Promise<MigrateResult> {
+async function getMigrateResult(options: MigrateOptions = {}): Promise<MigrateResult> {
   const workspaceDir = findWorkspaceRoot();
 
   if (!workspaceDir) {
@@ -112,7 +112,7 @@ export async function getMigrateResult(options: MigrateOptions = {}): Promise<Mi
   }
 }
 
-export function formatMigrateOutput(result: MigrateResult): string {
+function formatMigrateOutput(result: MigrateResult): string {
   const lines: string[] = [];
 
   lines.push(pc.bold('Supaslidev Migrate'));

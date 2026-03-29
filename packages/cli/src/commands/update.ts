@@ -1,14 +1,14 @@
 import pc from 'picocolors';
 import { PACKAGE_NAME, checkForUpdates } from '../version.js';
 
-export interface UpdateResult {
+interface UpdateResult {
   currentVersion: string;
   latestVersion: string | null;
   updateAvailable: boolean;
   error: string | null;
 }
 
-export async function getUpdateResult(): Promise<UpdateResult> {
+async function getUpdateResult(): Promise<UpdateResult> {
   const check = await checkForUpdates();
 
   return {
@@ -19,7 +19,7 @@ export async function getUpdateResult(): Promise<UpdateResult> {
   };
 }
 
-export function formatUpdateResult(result: UpdateResult): string {
+function formatUpdateResult(result: UpdateResult): string {
   const lines: string[] = [];
 
   lines.push(pc.bold('Supaslidev Update Check'));

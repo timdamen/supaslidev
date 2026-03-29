@@ -25,5 +25,6 @@ jobs:
 
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm knip
       - run: pnpm format:check
       - run: pnpm test:ci

@@ -99,12 +99,12 @@ export async function fetchLatestVersion(): Promise<string | null> {
   return version;
 }
 
-export function getCachedLatestVersion(): string | null {
+function getCachedLatestVersion(): string | null {
   const cache = readCache();
   return cache?.latestVersion ?? null;
 }
 
-export interface UpdateCheckResult {
+interface UpdateCheckResult {
   currentVersion: string;
   latestVersion: string | null;
   updateAvailable: boolean;
