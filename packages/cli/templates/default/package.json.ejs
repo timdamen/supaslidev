@@ -11,7 +11,7 @@
     "export": "supaslidev export",
     "deploy": "supaslidev deploy",
     "build": "pnpm --filter @supaslidev/* run build",
-    "postinstall": "npx nuxi prepare"
+    "postinstall": "nuxi prepare || true"
   },
   "devDependencies": {
     "nuxt": "catalog:core",
