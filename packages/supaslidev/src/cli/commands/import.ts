@@ -11,6 +11,7 @@ import {
   hasSharedPackage,
   addSharedAddonToSlides,
   addSharedDependencyToPackageJson,
+  normalizeVueToCatalog,
 } from '../../shared/index.js';
 import type { PackageJson } from '../../shared/types.js';
 
@@ -51,6 +52,8 @@ export function transformPackageJson(
     build: 'slidev build',
     export: 'slidev export',
   };
+
+  normalizeVueToCatalog(packageJson);
 
   if (hasSharedPackage(projectRoot)) {
     addSharedDependencyToPackageJson(packageJson);

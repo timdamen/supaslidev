@@ -5,7 +5,8 @@ const props = defineProps<{
   presentation: Presentation;
 }>();
 
-const { deployMode } = useDeployMode();
+const { deployMode, showDeployDemoToast } = useDeployMode();
+const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 const {
   isRunning,
@@ -35,6 +36,11 @@ async function handleDev(event: Event) {
   event.preventDefault();
   event.stopPropagation();
 
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
   if (loading.value.dev) return;
 
   loading.value.dev = true;
@@ -59,6 +65,11 @@ async function handleExport(event: Event) {
   event.preventDefault();
   event.stopPropagation();
 
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
   if (loading.value.export) return;
 
   loading.value.export = true;
@@ -80,6 +91,11 @@ async function handleEdit(event: Event) {
   event.preventDefault();
   event.stopPropagation();
 
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
   if (loading.value.edit) return;
 
   loading.value.edit = true;
@@ -95,9 +111,10 @@ async function handleEdit(event: Event) {
   }
 }
 
-function handleRowClick(event: Event) {
-  if (running.value && port.value) {
-    event.preventDefault();
+function handleRowClick() {
+  if (deployMode.value) {
+    window.open(`${deployBasePath.value}/presentations/${props.presentation.id}/`, '_blank');
+  } else if (running.value && port.value) {
     window.open(`http://localhost:${port.value}`, '_blank');
   }
 }
@@ -112,11 +129,7 @@ function handleOpen(event: Event) {
 </script>
 
 <template>
-  <component
-    :is="deployMode ? 'a' : 'div'"
-    :href="deployMode ? `/presentations/${presentation.id}/` : undefined"
-    :target="deployMode ? '_blank' : undefined"
-    :rel="deployMode ? 'noopener noreferrer' : undefined"
+  <div
     :class="[
       'list-item-v font-mono flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
       {
@@ -124,10 +137,9 @@ function handleOpen(event: Event) {
         'cursor-pointer': deployMode || (running && port),
       },
     ]"
-    @click="deployMode ? undefined : handleRowClick($event)"
+    @click="handleRowClick"
   >
     <span
-      v-if="!deployMode"
       class="status-dot w-2 h-2 rounded-full shrink-0"
       :class="running ? 'bg-[var(--ui-success)] animate-pulse' : 'bg-[var(--ui-text-muted)]'"
     />
@@ -157,84 +169,67 @@ function handleOpen(event: Event) {
       {{ presentation.duration }}
     </UBadge>
 
-    <template v-if="deployMode">
-      <UButton
-        as="a"
-        :href="`/presentations/${presentation.id}/`"
+    <div v-if="running && port" class="flex items-center gap-1 shrink-0">
+      <a
+        :href="`http://localhost:${port}`"
         target="_blank"
         rel="noopener noreferrer"
+        class="text-xs text-[var(--ui-success)] hover:underline"
+        @click.stop
+      >
+        :{{ port }}
+      </a>
+      <UButton
         color="success"
         variant="ghost"
         size="xs"
-        icon="i-lucide-play"
-        class="action-btn shrink-0"
-        title="Open presentation"
-        @click.stop
+        icon="i-lucide-external-link"
+        class="action-btn"
+        title="Open in browser"
+        @click="handleOpen"
       />
-    </template>
-    <template v-else>
-      <div v-if="running && port" class="flex items-center gap-1 shrink-0">
-        <a
-          :href="`http://localhost:${port}`"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-xs text-[var(--ui-success)] hover:underline"
-          @click.stop
-        >
-          :{{ port }}
-        </a>
-        <UButton
-          color="success"
-          variant="ghost"
-          size="xs"
-          icon="i-lucide-external-link"
-          class="action-btn"
-          title="Open in browser"
-          @click="handleOpen"
-        />
-      </div>
+    </div>
 
-      <div class="flex items-center gap-1 shrink-0">
-        <UButton
-          :color="running ? 'error' : 'success'"
-          variant="ghost"
-          size="xs"
-          :icon="loading.dev ? '' : running ? 'i-lucide-square' : 'i-lucide-play'"
-          :loading="loading.dev"
-          :disabled="loading.dev"
-          loading-icon="i-lucide-loader-circle"
-          class="action-btn"
-          :title="running ? 'Stop server' : 'Start dev server'"
-          @click="handleDev"
-        />
+    <div class="flex items-center gap-1 shrink-0">
+      <UButton
+        :color="running ? 'error' : 'success'"
+        variant="ghost"
+        size="xs"
+        :icon="loading.dev ? '' : running ? 'i-lucide-square' : 'i-lucide-play'"
+        :loading="loading.dev"
+        :disabled="loading.dev"
+        loading-icon="i-lucide-loader-circle"
+        class="action-btn"
+        :title="running ? 'Stop server' : 'Start dev server'"
+        @click="handleDev"
+      />
 
-        <UButton
-          color="primary"
-          variant="ghost"
-          size="xs"
-          :icon="loading.export ? '' : 'i-lucide-download'"
-          :loading="loading.export"
-          :disabled="loading.export"
-          loading-icon="i-lucide-loader-circle"
-          class="action-btn"
-          title="Export to PDF"
-          @click="handleExport"
-        />
+      <UButton
+        color="primary"
+        variant="ghost"
+        size="xs"
+        :icon="loading.export ? '' : 'i-lucide-download'"
+        :loading="loading.export"
+        :disabled="loading.export"
+        loading-icon="i-lucide-loader-circle"
+        class="action-btn"
+        title="Export to PDF"
+        @click="handleExport"
+      />
 
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="xs"
-          icon="i-lucide-pencil"
-          :loading="loading.edit"
-          :disabled="loading.edit"
-          class="action-btn"
-          title="Edit in VS Code"
-          @click="handleEdit"
-        />
-      </div>
-    </template>
-  </component>
+      <UButton
+        color="neutral"
+        variant="ghost"
+        size="xs"
+        icon="i-lucide-pencil"
+        :loading="loading.edit"
+        :disabled="loading.edit"
+        class="action-btn"
+        title="Edit in VS Code"
+        @click="handleEdit"
+      />
+    </div>
+  </div>
 </template>
 
 <style scoped>

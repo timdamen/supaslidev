@@ -5,7 +5,8 @@ const props = defineProps<{
   presentation: Presentation;
 }>();
 
-const { deployMode } = useDeployMode();
+const { deployMode, showDeployDemoToast } = useDeployMode();
+const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 const {
   isRunning,
@@ -35,6 +36,11 @@ async function handleDev(event: Event) {
   event.preventDefault();
   event.stopPropagation();
 
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
   if (loading.value.dev) return;
 
   loading.value.dev = true;
@@ -59,6 +65,11 @@ async function handleExport(event: Event) {
   event.preventDefault();
   event.stopPropagation();
 
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
   if (loading.value.export) return;
 
   loading.value.export = true;
@@ -80,6 +91,11 @@ async function handleEdit(event: Event) {
   event.preventDefault();
   event.stopPropagation();
 
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
   if (loading.value.edit) return;
 
   loading.value.edit = true;
@@ -95,9 +111,10 @@ async function handleEdit(event: Event) {
   }
 }
 
-function handleCardClick(event: Event) {
-  if (running.value && port.value) {
-    event.preventDefault();
+function handleCardClick() {
+  if (deployMode.value) {
+    window.open(`${deployBasePath.value}/presentations/${props.presentation.id}/`, '_blank');
+  } else if (running.value && port.value) {
     window.open(`http://localhost:${port.value}`, '_blank');
   }
 }
@@ -105,20 +122,12 @@ function handleCardClick(event: Event) {
 
 <template>
   <UCard
-    :as="deployMode || (running && port) ? 'a' : 'div'"
-    :href="
-      deployMode
-        ? `/presentations/${presentation.id}/`
-        : running && port
-          ? `http://localhost:${port}`
-          : undefined
-    "
-    :target="deployMode || (running && port) ? '_blank' : undefined"
-    :rel="deployMode || (running && port) ? 'noopener noreferrer' : undefined"
+    as="div"
     :title="deployMode || (running && port) ? `Open ${presentation.title}` : undefined"
     class="card terminal-card group transition-all duration-300"
     :class="{
       'terminal-card--running': !deployMode && running,
+      'cursor-pointer': deployMode || (running && port),
       'cursor-default': !deployMode && !running,
     }"
     :ui="{
@@ -135,27 +144,25 @@ function handleCardClick(event: Event) {
         <UIcon name="i-lucide-folder" class="chevron-icon" />
         <span class="font-mono text-xs opacity-80">~/{{ presentation.id }}</span>
         <div class="flex-1" />
-        <template v-if="!deployMode">
-          <UBadge
-            v-if="running"
-            color="success"
-            variant="subtle"
-            size="xs"
-            class="terminal-badge terminal-badge--live font-mono uppercase tracking-wider"
-          >
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-current mr-1 animate-pulse" />
-            live
-          </UBadge>
-          <UBadge
-            v-else
-            color="neutral"
-            variant="subtle"
-            size="xs"
-            class="terminal-badge font-mono uppercase tracking-wider"
-          >
-            idle
-          </UBadge>
-        </template>
+        <UBadge
+          v-if="running"
+          color="success"
+          variant="subtle"
+          size="xs"
+          class="terminal-badge terminal-badge--live font-mono uppercase tracking-wider"
+        >
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-current mr-1 animate-pulse" />
+          live
+        </UBadge>
+        <UBadge
+          v-else
+          color="neutral"
+          variant="subtle"
+          size="xs"
+          class="terminal-badge font-mono uppercase tracking-wider"
+        >
+          idle
+        </UBadge>
       </div>
     </template>
 
@@ -195,71 +202,52 @@ function handleCardClick(event: Event) {
       </div>
 
       <div class="terminal-actions flex gap-2">
-        <template v-if="deployMode">
-          <UButton
-            as="a"
-            :href="`/presentations/${presentation.id}/`"
-            target="_blank"
-            rel="noopener noreferrer"
-            color="success"
-            variant="soft"
-            size="sm"
-            class="present-button flex-1 terminal-btn font-mono"
-          >
-            <template #leading>
-              <span class="terminal-prompt-symbol">$</span>
-            </template>
-            present
-          </UButton>
-        </template>
-        <template v-else>
-          <UButton
-            :color="running ? 'error' : 'success'"
-            variant="soft"
-            size="sm"
-            class="present-button flex-1 terminal-btn font-mono"
-            :loading="loading.dev"
-            :disabled="loading.dev"
-            loading-icon="i-lucide-loader-circle"
-            @click="handleDev"
-          >
-            <template v-if="!loading.dev" #leading>
-              <span class="terminal-prompt-symbol">$</span>
-            </template>
-            {{ running ? 'stop' : 'dev' }}
-          </UButton>
+        <UButton
+          :color="running ? 'error' : 'success'"
+          variant="soft"
+          size="sm"
+          class="present-button flex-1 terminal-btn font-mono"
+          :loading="loading.dev"
+          :disabled="loading.dev"
+          loading-icon="i-lucide-loader-circle"
+          @click="handleDev"
+        >
+          <template v-if="!loading.dev" #leading>
+            <span class="terminal-prompt-symbol">$</span>
+          </template>
+          {{ running ? 'stop' : 'dev' }}
+        </UButton>
 
-          <UButton
-            color="primary"
-            variant="soft"
-            size="sm"
-            class="flex-1 terminal-btn font-mono"
-            :loading="loading.export"
-            :disabled="loading.export"
-            loading-icon="i-lucide-loader-circle"
-            @click="handleExport"
-          >
-            <template v-if="!loading.export" #leading>
-              <span class="terminal-prompt-symbol">$</span>
-            </template>
-            export
-          </UButton>
+        <UButton
+          color="primary"
+          variant="soft"
+          size="sm"
+          class="flex-1 terminal-btn font-mono"
+          :loading="loading.export"
+          :disabled="loading.export"
+          loading-icon="i-lucide-loader-circle"
+          @click="handleExport"
+        >
+          <template v-if="!loading.export" #leading>
+            <span class="terminal-prompt-symbol">$</span>
+          </template>
+          export
+        </UButton>
 
-          <UButton
-            color="neutral"
-            variant="soft"
-            size="sm"
-            class="flex-1 terminal-btn font-mono"
-            :loading="loading.edit"
-            :disabled="loading.edit"
-            @click="handleEdit"
-          >
-            <template #leading>
-              <span class="terminal-prompt-symbol">$</span>
-            </template>
-            edit
-          </UButton>
-        </template>
+        <UButton
+          color="neutral"
+          variant="soft"
+          size="sm"
+          class="flex-1 terminal-btn font-mono"
+          :loading="loading.edit"
+          :disabled="loading.edit"
+          @click="handleEdit"
+        >
+          <template #leading>
+            <span class="terminal-prompt-symbol">$</span>
+          </template>
+          edit
+        </UButton>
       </div>
 
       <div

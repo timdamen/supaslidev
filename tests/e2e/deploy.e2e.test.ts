@@ -175,7 +175,7 @@ describe('Deploy E2E', () => {
 
     cpSync(getBaseProjectPath(), projectPath, { recursive: true });
     createSecondPresentation(projectPath);
-    installDependencies(projectPath);
+    installDependencies(projectPath, { noFrozenLockfile: true });
   }, 180000);
 
   afterAll(() => {
@@ -318,54 +318,62 @@ describe('Deploy E2E', () => {
       expect(html).toContain('deployMode:true');
     });
 
-    it('new and import buttons are hidden', async () => {
+    it('new and import buttons are visible in deploy mode', async () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
       const newButton = page.locator('.btn-new');
-      expect(await newButton.count()).toBe(0);
+      expect(await newButton.count()).toBe(1);
 
       const importButton = page.locator('button:has-text("import")');
-      expect(await importButton.count()).toBe(0);
+      expect(await importButton.count()).toBe(1);
     });
 
-    it('present button is a link to static path', async () => {
+    it('new button shows deploy demo toast when clicked', async () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
-      const presentButton = page.locator('.present-button').first();
-      expect(await presentButton.isVisible()).toBe(true);
+      await page.locator('.btn-new').click();
+      await page.waitForSelector('text=Dev Mode Only', { timeout: 15000 });
 
-      const tag = await presentButton.evaluate((el) => el.tagName.toLowerCase());
-      expect(tag).toBe('a');
-
-      const href = await presentButton.getAttribute('href');
-      expect(href).toMatch(/\/presentations\/[a-z-]+/);
+      const toast = page.locator('text=Dev Mode Only');
+      expect(await toast.count()).toBeGreaterThan(0);
     });
 
-    it('live/idle badges are hidden', async () => {
+    it('dev export and edit buttons are visible on cards', async () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
-      const liveBadge = page.locator('.terminal-badge--live');
-      expect(await liveBadge.count()).toBe(0);
-
-      const idleBadge = page.locator('.terminal-badge:has-text("idle")');
-      expect(await idleBadge.count()).toBe(0);
-    });
-
-    it('export and edit buttons are hidden on cards', async () => {
-      await page.goto(serveUrl);
-      await page.waitForSelector('.card', { timeout: 15000 });
+      const devButton = page.locator('.card button:has-text("dev")');
+      expect(await devButton.count()).toBeGreaterThan(0);
 
       const exportButton = page.locator('.card button:has-text("export")');
-      expect(await exportButton.count()).toBe(0);
+      expect(await exportButton.count()).toBeGreaterThan(0);
 
       const editButton = page.locator('.card button:has-text("edit")');
-      expect(await editButton.count()).toBe(0);
+      expect(await editButton.count()).toBeGreaterThan(0);
     });
 
-    it('command palette hides export and edit groups', async () => {
+    it('dev button shows deploy demo toast when clicked', async () => {
+      await page.goto(serveUrl);
+      await page.waitForSelector('.card', { timeout: 15000 });
+
+      await page.locator('.card button:has-text("dev")').first().click();
+      await page.waitForSelector('text=Dev Mode Only', { timeout: 15000 });
+
+      const toast = page.locator('text=Dev Mode Only');
+      expect(await toast.count()).toBeGreaterThan(0);
+    });
+
+    it('idle badges are visible in deploy mode', async () => {
+      await page.goto(serveUrl);
+      await page.waitForSelector('.card', { timeout: 15000 });
+
+      const idleBadge = page.locator('.terminal-badge:has-text("idle")');
+      expect(await idleBadge.count()).toBeGreaterThan(0);
+    });
+
+    it('command palette shows all groups including export and edit', async () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
@@ -373,24 +381,21 @@ describe('Deploy E2E', () => {
       await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
 
       const dialogText = await page.locator('[role="dialog"]').textContent();
-      expect(dialogText).not.toContain('Export >');
-      expect(dialogText).not.toContain('Edit >');
+      expect(dialogText).toContain('Export >');
+      expect(dialogText).toContain('Edit >');
       expect(dialogText).toContain('Present >');
     });
 
-    it('command palette hides new and import actions', async () => {
+    it('command palette shows new and import actions', async () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
       await page.keyboard.press('Control+k');
       await page.waitForSelector('[role="dialog"]', { timeout: 5000 });
 
-      // Check the action items — "New" and "Import" should not appear
-      const items = await page.locator('[role="dialog"] [cmdk-item]').allTextContents();
-      const hasNew = items.some((text) => text.includes('New') && text.includes('Create'));
-      const hasImport = items.some((text) => text.includes('Import'));
-      expect(hasNew).toBe(false);
-      expect(hasImport).toBe(false);
+      const dialogText = await page.locator('[role="dialog"]').textContent();
+      expect(dialogText).toContain('New');
+      expect(dialogText).toContain('Import');
     });
 
     it('search filters presentations', async () => {

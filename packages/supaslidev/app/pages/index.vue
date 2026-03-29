@@ -11,9 +11,10 @@ const {
   openInEditor,
   waitForServerReady,
 } = useServers();
-const { deployMode } = useDeployMode();
+const { deployMode, showDeployDemoToast } = useDeployMode();
 const toast = useToast();
 const colorMode = useColorMode();
+const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 function handleExportError(message: string) {
   toast.add({
@@ -93,9 +94,18 @@ onMounted(async () => {
   window.addEventListener('keydown', handleKeydown);
 
   try {
-    const url = deployMode.value ? '/presentations.json' : '/api/presentations';
-    const response = await fetch(url);
-    if (response.ok) {
+    let response: Response | undefined;
+
+    if (deployMode.value) {
+      response = await fetch(`${deployBasePath.value}/presentations.json`);
+      if (!response.ok) {
+        response = await fetch(`${deployBasePath.value}/api/presentations`);
+      }
+    } else {
+      response = await fetch('/api/presentations');
+    }
+
+    if (response?.ok) {
       presentations.value = await response.json();
     }
   } catch {
@@ -130,7 +140,7 @@ watch(viewMode, (newMode) => {
 async function handlePresentCommand(presentation: Presentation) {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
-    window.open(`/presentations/${presentation.id}/`, '_blank');
+    window.open(`${deployBasePath.value}/presentations/${presentation.id}/`, '_blank');
     return;
   }
   const result = await startServer(presentation.id);
@@ -144,6 +154,10 @@ async function handlePresentCommand(presentation: Presentation) {
 
 async function handleExportCommand(presentation: Presentation) {
   isCommandPaletteOpen.value = false;
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
   const result = await exportPresentation(presentation.id);
   if (result.success && result.pdfPath) {
     window.open(result.pdfPath, '_blank');
@@ -154,6 +168,10 @@ async function handleExportCommand(presentation: Presentation) {
 
 async function handleEditCommand(presentation: Presentation) {
   isCommandPaletteOpen.value = false;
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
   const result = await openInEditor(presentation.id);
   if (!result.success && result.error) {
     toast.add({
@@ -167,11 +185,19 @@ async function handleEditCommand(presentation: Presentation) {
 
 function handleCreateCommand() {
   isCommandPaletteOpen.value = false;
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
   isDialogOpen.value = true;
 }
 
 function handleImportCommand() {
   isCommandPaletteOpen.value = false;
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
   isImportDialogOpen.value = true;
 }
 
@@ -288,26 +314,19 @@ function handleExecuteCommand(command: string) {
 }
 
 const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
-  const actionItems: CommandPaletteItem[] = [];
-
-  if (!deployMode.value) {
-    actionItems.push(
-      {
-        label: 'New',
-        suffix: 'Create a new presentation',
-        icon: 'i-lucide-plus',
-        onSelect: handleCreateCommand,
-      },
-      {
-        label: 'Import',
-        suffix: 'Import existing Sli.dev presentation(s)',
-        icon: 'i-lucide-import',
-        onSelect: handleImportCommand,
-      },
-    );
-  }
-
-  actionItems.push(
+  const actionItems: CommandPaletteItem[] = [
+    {
+      label: 'New',
+      suffix: 'Create a new presentation',
+      icon: 'i-lucide-plus',
+      onSelect: handleCreateCommand,
+    },
+    {
+      label: 'Import',
+      suffix: 'Import existing Sli.dev presentation(s)',
+      icon: 'i-lucide-import',
+      onSelect: handleImportCommand,
+    },
     {
       label: 'Toggle theme',
       suffix: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
@@ -320,9 +339,9 @@ const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
       icon: viewMode.value === 'grid' ? 'i-lucide-list' : 'i-lucide-layout-grid',
       onSelect: handleToggleViewModeCommand,
     },
-  );
+  ];
 
-  const groups: CommandPaletteGroup[] = [
+  return [
     { id: 'actions', label: 'Actions', items: actionItems },
     {
       id: 'presentations',
@@ -336,38 +355,31 @@ const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
         }),
       ),
     },
+    {
+      id: 'export',
+      label: 'Export',
+      items: presentations.value.map(
+        (p: Presentation): CommandPaletteItem => ({
+          label: `Export > ${p.title}`,
+          suffix: 'Export to PDF',
+          icon: 'i-lucide-download',
+          onSelect: () => handleExportCommand(p),
+        }),
+      ),
+    },
+    {
+      id: 'edit',
+      label: 'Edit',
+      items: presentations.value.map(
+        (p: Presentation): CommandPaletteItem => ({
+          label: `Edit > ${p.title}`,
+          suffix: 'Open in VS Code',
+          icon: 'i-lucide-pencil',
+          onSelect: () => handleEditCommand(p),
+        }),
+      ),
+    },
   ];
-
-  if (!deployMode.value) {
-    groups.push(
-      {
-        id: 'export',
-        label: 'Export',
-        items: presentations.value.map(
-          (p: Presentation): CommandPaletteItem => ({
-            label: `Export > ${p.title}`,
-            suffix: 'Export to PDF',
-            icon: 'i-lucide-download',
-            onSelect: () => handleExportCommand(p),
-          }),
-        ),
-      },
-      {
-        id: 'edit',
-        label: 'Edit',
-        items: presentations.value.map(
-          (p: Presentation): CommandPaletteItem => ({
-            label: `Edit > ${p.title}`,
-            suffix: 'Open in VS Code',
-            icon: 'i-lucide-pencil',
-            onSelect: () => handleEditCommand(p),
-          }),
-        ),
-      },
-    );
-  }
-
-  return groups;
 });
 
 const filteredPresentations = computed(() => {
@@ -379,20 +391,13 @@ const filteredPresentations = computed(() => {
 });
 
 const commandOptions = computed(() => {
-  const options: { label: string; description?: string; onSelect: () => void }[] = [];
-
-  if (!deployMode.value) {
-    options.push(
-      { label: 'New', description: 'Create a new presentation', onSelect: handleCreateCommand },
-      {
-        label: 'Import',
-        description: 'Import existing Sli.dev presentation(s)',
-        onSelect: handleImportCommand,
-      },
-    );
-  }
-
-  options.push(
+  const options: { label: string; description?: string; onSelect: () => void }[] = [
+    { label: 'New', description: 'Create a new presentation', onSelect: handleCreateCommand },
+    {
+      label: 'Import',
+      description: 'Import existing Sli.dev presentation(s)',
+      onSelect: handleImportCommand,
+    },
     {
       label: 'Toggle theme',
       description: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
@@ -403,7 +408,7 @@ const commandOptions = computed(() => {
       description: viewMode.value === 'grid' ? 'Switch to list layout' : 'Switch to grid layout',
       onSelect: handleToggleViewModeCommand,
     },
-  );
+  ];
 
   presentations.value.forEach((p) => {
     options.push({
@@ -411,18 +416,16 @@ const commandOptions = computed(() => {
       description: deployMode.value ? 'Open presentation' : 'Start dev server and open in browser',
       onSelect: () => handlePresentCommand(p),
     });
-    if (!deployMode.value) {
-      options.push({
-        label: `Export > ${p.title}`,
-        description: 'Export to PDF',
-        onSelect: () => handleExportCommand(p),
-      });
-      options.push({
-        label: `Edit > ${p.title}`,
-        description: 'Open in VS Code',
-        onSelect: () => handleEditCommand(p),
-      });
-    }
+    options.push({
+      label: `Export > ${p.title}`,
+      description: 'Export to PDF',
+      onSelect: () => handleExportCommand(p),
+    });
+    options.push({
+      label: `Edit > ${p.title}`,
+      description: 'Open in VS Code',
+      onSelect: () => handleEditCommand(p),
+    });
   });
 
   return options;
@@ -444,14 +447,14 @@ const commandOptions = computed(() => {
           filteredPresentations.length !== 1 ? 's' : ''
         }}
       </p>
-      <div v-if="!deployMode" class="flex items-center gap-3">
-        <UButton variant="outline" class="font-mono" @click="isImportDialogOpen = true">
+      <div class="flex items-center gap-3">
+        <UButton variant="outline" class="font-mono" @click="handleImportCommand">
           <template #leading>
             <span class="opacity-70">$</span>
           </template>
           import
         </UButton>
-        <UButton class="btn-new font-mono" @click="isDialogOpen = true">
+        <UButton class="btn-new font-mono" @click="handleCreateCommand">
           <template #leading>
             <span class="opacity-70">$</span>
           </template>
@@ -473,14 +476,10 @@ const commandOptions = computed(() => {
     <template v-if="presentations.length === 0">
       <EmptyState
         icon="i-lucide-presentation"
-        :title="deployMode ? 'No presentations' : 'No presentations yet'"
-        :description="
-          deployMode
-            ? 'No presentations have been deployed.'
-            : 'Create your first presentation to get started with supaslidev.'
-        "
+        title="No presentations yet"
+        description="Create your first presentation to get started with supaslidev."
       >
-        <UButton v-if="!deployMode" class="font-mono" @click="isDialogOpen = true">
+        <UButton class="font-mono" @click="handleCreateCommand">
           <template #leading>
             <span class="opacity-70">$</span>
           </template>
@@ -534,19 +533,17 @@ const commandOptions = computed(() => {
       </EmptyState>
     </template>
 
-    <template v-if="!deployMode">
-      <CreatePresentationDialog
-        :open="isDialogOpen"
-        @close="isDialogOpen = false"
-        @created="handlePresentationCreated"
-      />
+    <CreatePresentationDialog
+      :open="isDialogOpen"
+      @close="isDialogOpen = false"
+      @created="handlePresentationCreated"
+    />
 
-      <ImportPresentationDialog
-        :open="isImportDialogOpen"
-        @close="isImportDialogOpen = false"
-        @imported="handlePresentationImported"
-      />
-    </template>
+    <ImportPresentationDialog
+      :open="isImportDialogOpen"
+      @close="isImportDialogOpen = false"
+      @imported="handlePresentationImported"
+    />
 
     <UModal v-model:open="isCommandPaletteOpen" @after-leave="initialSearchQuery = ''">
       <template #body>

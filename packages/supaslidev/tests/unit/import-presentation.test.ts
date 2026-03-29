@@ -183,6 +183,34 @@ describe('importPresentation', () => {
       expect(packageJson.scripts.dev).toBe('slidev --open');
     });
 
+    it('preserves original dependency versions but normalizes vue to catalog', async () => {
+      const { findProjectRoot, getPresentations } = await import('../../src/cli/utils.js');
+      const workspaceDir = join(testDir, 'workspace');
+      createMockSupaslidevWorkspace(workspaceDir);
+      vi.mocked(findProjectRoot).mockReturnValue(workspaceDir);
+      vi.mocked(getPresentations).mockReturnValue([]);
+
+      const sourceDir = join(testDir, 'version-test');
+      createMockSlidevProject(sourceDir, {
+        packageJson: {
+          dependencies: {
+            '@slidev/cli': '^0.50.0',
+            '@slidev/theme-seriph': '^0.25.0',
+            vue: '^3.4.0',
+          },
+        },
+      });
+
+      await importPresentation(sourceDir, { name: 'version-deck', install: false });
+
+      const destDir = join(workspaceDir, 'presentations', 'version-deck');
+      const packageJson = JSON.parse(readFileSync(join(destDir, 'package.json'), 'utf-8'));
+
+      expect(packageJson.dependencies['@slidev/cli']).toBe('^0.50.0');
+      expect(packageJson.dependencies['@slidev/theme-seriph']).toBe('^0.25.0');
+      expect(packageJson.dependencies['vue']).toBe('catalog:');
+    });
+
     it('generates name from source directory when not provided', async () => {
       const { findProjectRoot, getPresentations } = await import('../../src/cli/utils.js');
       const workspaceDir = join(testDir, 'workspace');

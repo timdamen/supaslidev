@@ -4,10 +4,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import {
   SLUG_REGEX,
   shouldIgnore,
-  convertToCatalogDependencies,
   hasSharedPackage,
   addSharedDependencyToPackageJson,
   addSharedAddonToSlides,
+  normalizeVueToCatalog,
   regeneratePresentationsJson,
 } from '../../../src/shared/index.js';
 import { getProjectRoot, getPresentationsDir, getPresentationsJsonPath } from '../../utils/config';
@@ -120,12 +120,7 @@ export default defineEventHandler(async (event) => {
     export: 'slidev export',
   };
 
-  if (packageJson.dependencies) {
-    packageJson.dependencies = convertToCatalogDependencies(packageJson.dependencies);
-  }
-  if (packageJson.devDependencies) {
-    packageJson.devDependencies = convertToCatalogDependencies(packageJson.devDependencies);
-  }
+  normalizeVueToCatalog(packageJson);
 
   const sharedExists = hasSharedPackage(projectRoot);
   if (sharedExists) {

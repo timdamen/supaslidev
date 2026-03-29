@@ -307,13 +307,13 @@ describe('Import E2E', () => {
       const slidesPath = join(importedDir, 'slides.md');
       expect(existsSync(slidesPath)).toBe(true);
 
-      // Step 7: Verify package.json uses catalog: syntax
+      // Step 7: Verify package.json preserves original dependency versions
       const packageJsonPath = join(importedDir, 'package.json');
       expect(existsSync(packageJsonPath)).toBe(true);
       const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
       expect(packageJson.name).toBe('@supaslidev/external-deck-one');
-      expect(packageJson.dependencies['@slidev/cli']).toBe('catalog:');
+      expect(packageJson.dependencies['@slidev/cli']).toBe('^0.50.0');
       expect(packageJson.dependencies['vue']).toBe('catalog:');
 
       // Step 8: Verify presentation appears in dashboard
@@ -400,11 +400,12 @@ describe('Import E2E', () => {
       expect(existsSync(deck1Dir)).toBe(true);
       expect(existsSync(deck2Dir)).toBe(true);
 
-      // Verify package.json for second deck
+      // Verify package.json for second deck preserves original versions and normalizes vue
       const packageJsonPath = join(deck2Dir, 'package.json');
       const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
       expect(packageJson.name).toBe('@supaslidev/external-deck-two');
-      expect(packageJson.dependencies['@slidev/cli']).toBe('catalog:');
+      expect(packageJson.dependencies['@slidev/cli']).toBe('^0.50.0');
+      expect(packageJson.dependencies.vue).toBe('catalog:');
 
       // Step 7: Verify both appear in dashboard
       const deckOneCard = page.locator('.card:has-text("external-deck-one")');
