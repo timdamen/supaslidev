@@ -2,14 +2,6 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { PackageJson } from './types.js';
 
-export const CATALOG_DEPENDENCIES = [
-  '@slidev/cli',
-  '@slidev/theme-default',
-  '@slidev/theme-seriph',
-  '@slidev/theme-apple-basic',
-  'vue',
-];
-
 export function hasSharedPackage(projectRoot: string): boolean {
   const sharedPackagePath = join(projectRoot, 'packages', 'shared', 'package.json');
   return existsSync(sharedPackagePath);
@@ -78,17 +70,11 @@ export function addSharedDependencyToPackageJson(packageJson: PackageJson): void
   }
 }
 
-export function convertToCatalogDependencies(
-  dependencies: Record<string, string>,
-): Record<string, string> {
-  if (!dependencies || typeof dependencies !== 'object') {
-    return {};
+export function normalizeVueToCatalog(packageJson: PackageJson): void {
+  if (packageJson.dependencies?.['vue']) {
+    packageJson.dependencies['vue'] = 'catalog:';
   }
-  const converted = { ...dependencies };
-  for (const dep of CATALOG_DEPENDENCIES) {
-    if (dep in converted) {
-      converted[dep] = 'catalog:';
-    }
+  if (packageJson.devDependencies?.['vue']) {
+    packageJson.devDependencies['vue'] = 'catalog:';
   }
-  return converted;
 }

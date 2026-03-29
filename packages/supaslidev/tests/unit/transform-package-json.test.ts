@@ -63,7 +63,7 @@ describe('transformPackageJson', () => {
     });
   });
 
-  it('preserves existing dependencies', () => {
+  it('preserves original dependency versions except vue', () => {
     const projectDir = join(testDir, 'project');
     createMockSlidevProject(projectDir, {
       packageJson: {
@@ -77,11 +77,27 @@ describe('transformPackageJson', () => {
 
     const result = JSON.parse(transformPackageJson(projectDir, 'my-presentation', workspaceRoot));
 
-    expect(result.dependencies).toEqual({
-      '@slidev/cli': '^0.50.0',
-      '@slidev/theme-default': '^0.25.0',
-      vue: '^3.5.0',
+    expect(result.dependencies['@slidev/cli']).toBe('^0.50.0');
+    expect(result.dependencies['@slidev/theme-default']).toBe('^0.25.0');
+    expect(result.dependencies['vue']).toBe('catalog:');
+  });
+
+  it('normalizes vue to catalog: in devDependencies', () => {
+    const projectDir = join(testDir, 'project');
+    createMockSlidevProject(projectDir, {
+      packageJson: {
+        dependencies: {
+          '@slidev/cli': '^0.50.0',
+        },
+        devDependencies: {
+          vue: '^3.4.0',
+        },
+      },
     });
+
+    const result = JSON.parse(transformPackageJson(projectDir, 'my-presentation', workspaceRoot));
+
+    expect(result.devDependencies['vue']).toBe('catalog:');
   });
 
   it('preserves existing devDependencies', () => {

@@ -19,11 +19,10 @@ export {
 } from './presentations.js';
 
 export {
-  CATALOG_DEPENDENCIES,
   hasSharedPackage,
   addSharedAddonToSlides,
   addSharedDependencyToPackageJson,
-  convertToCatalogDependencies,
+  normalizeVueToCatalog,
 } from './catalog.js';
 
 export { copyDirectorySelective } from './copy.js';
