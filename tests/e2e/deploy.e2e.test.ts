@@ -344,7 +344,7 @@ describe('Deploy E2E', () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
-      const devButton = page.locator('.card button:has-text("dev")');
+      const devButton = page.locator('.card button:has-text("present")');
       expect(await devButton.count()).toBeGreaterThan(0);
 
       const exportButton = page.locator('.card button:has-text("export")');
@@ -360,7 +360,7 @@ describe('Deploy E2E', () => {
 
       const [newPage] = await Promise.all([
         page.context().waitForEvent('page'),
-        page.locator('.card button:has-text("dev")').first().click(),
+        page.locator('.card button:has-text("present")').first().click(),
       ]);
 
       expect(newPage.url()).toMatch(/\/presentations\/[a-z-]+/);
