@@ -151,6 +151,7 @@ defineExpose({ focusInput, inputRef });
             variant="ghost"
             size="md"
             class="settings-btn"
+            aria-label="Open settings"
             title="Settings"
             :ui="{ leadingIcon: 'settings-icon' }"
             @click="router.push('/settings')"

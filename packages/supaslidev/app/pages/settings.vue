@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { AccentColor, NeutralColor } from '../composables/useSettings';
-import { ACCENT_COLORS, NEUTRAL_COLORS, useSettings } from '../composables/useSettings';
+import {
+  ACCENT_COLORS,
+  DEFAULT_SETTINGS,
+  NEUTRAL_COLORS,
+  useSettings,
+} from '../composables/useSettings';
 
 const router = useRouter();
 const colorMode = useColorMode();
@@ -88,7 +93,9 @@ const themeOptions = [
               :model-value="settings.accentColor"
               label="Accent color"
               name="accent-color"
-              @update:model-value="settings.accentColor = ($event ?? 'teal') as AccentColor"
+              @update:model-value="
+                settings.accentColor = ($event ?? DEFAULT_SETTINGS.accentColor) as AccentColor
+              "
             />
           </div>
 
@@ -99,7 +106,9 @@ const themeOptions = [
               :model-value="settings.neutralColor"
               label="Background shade"
               name="background-shade"
-              @update:model-value="settings.neutralColor = ($event ?? 'slate') as NeutralColor"
+              @update:model-value="
+                settings.neutralColor = ($event ?? DEFAULT_SETTINGS.neutralColor) as NeutralColor
+              "
             />
           </div>
         </div>

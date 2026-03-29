@@ -40,18 +40,26 @@ function loadSettings(): AppSettings {
 }
 
 const _settings = ref<AppSettings>(loadSettings());
+let watcherInitialized = false;
 
 function useSettings() {
-  watch(
-    _settings,
-    (value) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-      updateAppConfig({
-        ui: { colors: { primary: value.accentColor, neutral: value.neutralColor } },
-      });
-    },
-    { deep: true },
-  );
+  if (!watcherInitialized) {
+    watcherInitialized = true;
+    watch(
+      _settings,
+      (value) => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+        } catch (error) {
+          console.error(`Failed to persist settings to "${STORAGE_KEY}":`, error, value);
+        }
+        updateAppConfig({
+          ui: { colors: { primary: value.accentColor, neutral: value.neutralColor } },
+        });
+      },
+      { deep: true },
+    );
+  }
 
   // Apply on first use
   updateAppConfig({
@@ -66,5 +74,5 @@ function useSettings() {
   return { settings: _settings };
 }
 
-export { ACCENT_COLORS, NEUTRAL_COLORS, useSettings };
+export { ACCENT_COLORS, DEFAULT_SETTINGS, NEUTRAL_COLORS, useSettings };
 export type { AccentColor, NeutralColor, AppSettings };
