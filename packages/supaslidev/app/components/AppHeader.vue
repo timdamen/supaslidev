@@ -16,13 +16,7 @@ const emit = defineEmits<{
   'execute-command': [command: string];
 }>();
 
-const colorMode = useColorMode();
-const isDark = computed({
-  get: () => colorMode.value === 'dark',
-  set: (value: boolean) => {
-    colorMode.preference = value ? 'dark' : 'light';
-  },
-});
+const router = useRouter();
 
 const isMac = computed(() => {
   if (typeof navigator === 'undefined') return true;
@@ -152,13 +146,14 @@ defineExpose({ focusInput, inputRef });
           </div>
 
           <UButton
-            :icon="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
+            icon="i-lucide-settings"
             color="neutral"
             variant="ghost"
             size="md"
-            class="theme-toggle"
-            :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-            @click="isDark = !isDark"
+            class="settings-btn"
+            title="Settings"
+            :ui="{ leadingIcon: 'settings-icon' }"
+            @click="router.push('/settings')"
           />
         </div>
       </div>
@@ -373,14 +368,6 @@ defineExpose({ focusInput, inputRef });
 
 .command-kbd {
   opacity: 0.85;
-}
-
-.theme-toggle {
-  transition: all 0.2s ease;
-}
-
-.theme-toggle:hover {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
 }
 
 .dropdown {

@@ -215,7 +215,7 @@ function handleCardClick() {
           <template v-if="!loading.dev" #leading>
             <span class="terminal-prompt-symbol">$</span>
           </template>
-          {{ running ? 'stop' : 'dev' }}
+          {{ running ? 'stop' : 'present' }}
         </UButton>
 
         <UButton
