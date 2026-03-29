@@ -73,6 +73,18 @@ onMounted(() => {
           Get Started
         </UButton>
         <UButton
+          to="https://demo.supasli.dev/"
+          external
+          variant="outline"
+          size="xl"
+          class="cta-btn"
+        >
+          <template #leading>
+            <UIcon name="i-lucide-globe" />
+          </template>
+          Live Demo
+        </UButton>
+        <UButton
           to="https://github.com/timdamen/supaSliDev"
           external
           variant="outline"
