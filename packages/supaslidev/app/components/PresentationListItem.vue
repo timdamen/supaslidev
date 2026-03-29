@@ -6,6 +6,7 @@ const props = defineProps<{
 }>();
 
 const { deployMode, showDeployDemoToast } = useDeployMode();
+const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 const {
   isRunning,
@@ -110,9 +111,10 @@ async function handleEdit(event: Event) {
   }
 }
 
-function handleRowClick(event: Event) {
-  if (running.value && port.value) {
-    event.preventDefault();
+function handleRowClick() {
+  if (deployMode.value) {
+    window.open(`${deployBasePath.value}/presentations/${props.presentation.id}/`, '_blank');
+  } else if (running.value && port.value) {
     window.open(`http://localhost:${port.value}`, '_blank');
   }
 }
@@ -127,11 +129,7 @@ function handleOpen(event: Event) {
 </script>
 
 <template>
-  <component
-    :is="deployMode ? 'a' : 'div'"
-    :href="deployMode ? `/presentations/${presentation.id}/` : undefined"
-    :target="deployMode ? '_blank' : undefined"
-    :rel="deployMode ? 'noopener noreferrer' : undefined"
+  <div
     :class="[
       'list-item-v font-mono flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
       {
@@ -139,7 +137,7 @@ function handleOpen(event: Event) {
         'cursor-pointer': deployMode || (running && port),
       },
     ]"
-    @click="deployMode ? undefined : handleRowClick($event)"
+    @click="handleRowClick"
   >
     <span
       class="status-dot w-2 h-2 rounded-full shrink-0"
@@ -231,7 +229,7 @@ function handleOpen(event: Event) {
         @click="handleEdit"
       />
     </div>
-  </component>
+  </div>
 </template>
 
 <style scoped>

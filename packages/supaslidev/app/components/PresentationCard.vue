@@ -6,6 +6,7 @@ const props = defineProps<{
 }>();
 
 const { deployMode, showDeployDemoToast } = useDeployMode();
+const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 const {
   isRunning,
@@ -110,9 +111,10 @@ async function handleEdit(event: Event) {
   }
 }
 
-function handleCardClick(event: Event) {
-  if (running.value && port.value) {
-    event.preventDefault();
+function handleCardClick() {
+  if (deployMode.value) {
+    window.open(`${deployBasePath.value}/presentations/${props.presentation.id}/`, '_blank');
+  } else if (running.value && port.value) {
     window.open(`http://localhost:${port.value}`, '_blank');
   }
 }
@@ -120,20 +122,12 @@ function handleCardClick(event: Event) {
 
 <template>
   <UCard
-    :as="deployMode || (running && port) ? 'a' : 'div'"
-    :href="
-      deployMode
-        ? `/presentations/${presentation.id}/`
-        : running && port
-          ? `http://localhost:${port}`
-          : undefined
-    "
-    :target="deployMode || (running && port) ? '_blank' : undefined"
-    :rel="deployMode || (running && port) ? 'noopener noreferrer' : undefined"
+    as="div"
     :title="deployMode || (running && port) ? `Open ${presentation.title}` : undefined"
     class="card terminal-card group transition-all duration-300"
     :class="{
       'terminal-card--running': !deployMode && running,
+      'cursor-pointer': deployMode || (running && port),
       'cursor-default': !deployMode && !running,
     }"
     :ui="{

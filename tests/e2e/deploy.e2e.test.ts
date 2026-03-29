@@ -334,7 +334,7 @@ describe('Deploy E2E', () => {
       await page.waitForSelector('.card', { timeout: 15000 });
 
       await page.locator('.btn-new').click();
-      await page.waitForTimeout(500);
+      await page.waitForSelector('text=Dev Mode Only', { timeout: 15000 });
 
       const toast = page.locator('text=Dev Mode Only');
       expect(await toast.count()).toBeGreaterThan(0);
@@ -359,7 +359,7 @@ describe('Deploy E2E', () => {
       await page.waitForSelector('.card', { timeout: 15000 });
 
       await page.locator('.card button:has-text("dev")').first().click();
-      await page.waitForTimeout(500);
+      await page.waitForSelector('text=Dev Mode Only', { timeout: 15000 });
 
       const toast = page.locator('text=Dev Mode Only');
       expect(await toast.count()).toBeGreaterThan(0);

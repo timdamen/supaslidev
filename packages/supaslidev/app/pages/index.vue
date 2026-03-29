@@ -14,6 +14,7 @@ const {
 const { deployMode, showDeployDemoToast } = useDeployMode();
 const toast = useToast();
 const colorMode = useColorMode();
+const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 function handleExportError(message: string) {
   toast.add({
@@ -96,9 +97,9 @@ onMounted(async () => {
     let response: Response | undefined;
 
     if (deployMode.value) {
-      response = await fetch('/presentations.json');
+      response = await fetch(`${deployBasePath.value}/presentations.json`);
       if (!response.ok) {
-        response = await fetch('/api/presentations');
+        response = await fetch(`${deployBasePath.value}/api/presentations`);
       }
     } else {
       response = await fetch('/api/presentations');
@@ -139,7 +140,7 @@ watch(viewMode, (newMode) => {
 async function handlePresentCommand(presentation: Presentation) {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
-    window.open(`/presentations/${presentation.id}/`, '_blank');
+    window.open(`${deployBasePath.value}/presentations/${presentation.id}/`, '_blank');
     return;
   }
   const result = await startServer(presentation.id);
@@ -186,6 +187,7 @@ function handleCreateCommand() {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
     showDeployDemoToast();
+    return;
   }
   isDialogOpen.value = true;
 }
@@ -194,6 +196,7 @@ function handleImportCommand() {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
     showDeployDemoToast();
+    return;
   }
   isImportDialogOpen.value = true;
 }
