@@ -62,7 +62,7 @@ describe('Presentation Viewing E2E', () => {
 
       const presentButton = dashboardPage.locator('.present-button').first();
       expect(await presentButton.isVisible()).toBe(true);
-      expect(await presentButton.textContent()).toContain('dev');
+      expect(await presentButton.textContent()).toContain('present');
 
       const popupPromise = dashboardPage.context().waitForEvent('page', { timeout: 90000 });
       await presentButton.click();
@@ -180,15 +180,15 @@ describe('Presentation Viewing E2E', () => {
         await dashboardPage.waitForFunction(
           () => {
             const button = document.querySelector('.present-button');
-            return button?.textContent?.includes('dev');
+            return button?.textContent?.includes('present');
           },
           { timeout: 20000 },
         );
 
-        expect(await stopButton.textContent()).toContain('dev');
+        expect(await stopButton.textContent()).toContain('present');
       } else {
         const stopButton = dashboardPage.locator('.present-button').first();
-        expect(await stopButton.textContent()).toContain('dev');
+        expect(await stopButton.textContent()).toContain('present');
       }
     }, 60000);
   });
@@ -201,7 +201,7 @@ describe('Presentation Viewing E2E', () => {
       const presentButton = dashboardPage.locator('.present-button').first();
       const buttonText = await presentButton.textContent();
 
-      if (buttonText?.includes('dev')) {
+      if (buttonText?.includes('present')) {
         const popupPromise = dashboardPage.context().waitForEvent('page', { timeout: 90000 });
         await presentButton.click();
 

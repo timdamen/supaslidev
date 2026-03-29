@@ -134,7 +134,7 @@ describe('Dashboard Display E2E', () => {
         const presentButton = card.locator('.present-button');
 
         expect(await presentButton.isVisible()).toBe(true);
-        expect(await presentButton.textContent()).toContain('dev');
+        expect(await presentButton.textContent()).toContain('present');
         expect(await presentButton.isEnabled()).toBe(true);
       }
     });
@@ -184,7 +184,7 @@ describe('Dashboard Display E2E', () => {
       for (let i = 0; i < buttonCount; i++) {
         const button = presentButtons.nth(i);
         expect(await button.isVisible()).toBe(true);
-        expect(await button.textContent()).toContain('dev');
+        expect(await button.textContent()).toContain('present');
       }
     });
   });
@@ -492,7 +492,7 @@ describe('Dashboard Display E2E', () => {
         // Step 8: Verify dev button is present and enabled
         const devButton = card.locator('.present-button');
         expect(await devButton.isVisible()).toBe(true);
-        expect(await devButton.textContent()).toContain('dev');
+        expect(await devButton.textContent()).toContain('present');
         expect(await devButton.isEnabled()).toBe(true);
       }, 120000);
 

@@ -13,7 +13,6 @@ const {
 } = useServers();
 const { deployMode, showDeployDemoToast } = useDeployMode();
 const toast = useToast();
-const colorMode = useColorMode();
 const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 function handleExportError(message: string) {
@@ -203,9 +202,11 @@ function handleImportCommand() {
   isImportDialogOpen.value = true;
 }
 
-function handleToggleThemeCommand() {
+const router = useRouter();
+
+function handleSettingsCommand() {
   isCommandPaletteOpen.value = false;
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
+  router.push('/settings');
 }
 
 function handleToggleViewModeCommand() {
@@ -330,10 +331,10 @@ const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
       onSelect: handleImportCommand,
     },
     {
-      label: 'Toggle theme',
-      suffix: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
-      icon: colorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon',
-      onSelect: handleToggleThemeCommand,
+      label: 'Settings',
+      suffix: 'Customize appearance',
+      icon: 'i-lucide-settings',
+      onSelect: handleSettingsCommand,
     },
     {
       label: 'Toggle view',
@@ -401,9 +402,9 @@ const commandOptions = computed(() => {
       onSelect: handleImportCommand,
     },
     {
-      label: 'Toggle theme',
-      description: colorMode.value === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
-      onSelect: handleToggleThemeCommand,
+      label: 'Settings',
+      description: 'Customize appearance',
+      onSelect: handleSettingsCommand,
     },
     {
       label: 'Toggle view',

@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useSettings } from '../composables/useSettings';
+
+useSettings();
+</script>
+
 <template>
   <UApp>
     <div class="min-h-screen bg-default flex flex-col">

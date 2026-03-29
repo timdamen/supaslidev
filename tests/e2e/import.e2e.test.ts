@@ -324,7 +324,7 @@ describe('Import E2E', () => {
       // Step 9: Verify dev button is present
       const devButton = card.locator('.present-button');
       expect(await devButton.isVisible()).toBe(true);
-      expect(await devButton.textContent()).toContain('dev');
+      expect(await devButton.textContent()).toContain('present');
     }, 120000);
 
     it('imports multiple presentations with progress indicator', async () => {
