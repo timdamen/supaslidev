@@ -327,7 +327,10 @@ export function patchTrustPolicy(projectPath: string): void {
   }
 }
 
-export function installDependencies(projectPath: string): void {
+export function installDependencies(
+  projectPath: string,
+  options?: { noFrozenLockfile?: boolean },
+): void {
   patchSupaslidevDependency(projectPath);
   patchTrustPolicy(projectPath);
 
@@ -337,7 +340,8 @@ export function installDependencies(projectPath: string): void {
     Object.entries(process.env).filter(([key]) => !key.startsWith('npm_config_')),
   );
 
-  execSync('pnpm install', {
+  const cmd = options?.noFrozenLockfile ? 'pnpm install --no-frozen-lockfile' : 'pnpm install';
+  execSync(cmd, {
     cwd: projectPath,
     stdio: 'inherit',
     env: cleanEnv,

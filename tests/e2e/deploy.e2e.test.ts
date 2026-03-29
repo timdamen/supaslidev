@@ -175,7 +175,7 @@ describe('Deploy E2E', () => {
 
     cpSync(getBaseProjectPath(), projectPath, { recursive: true });
     createSecondPresentation(projectPath);
-    installDependencies(projectPath);
+    installDependencies(projectPath, { noFrozenLockfile: true });
   }, 180000);
 
   afterAll(() => {
