@@ -6,16 +6,16 @@
 }
 
 :root {
-  --ui-primary: var(--color-teal-700);
-  --ui-success: var(--color-green-700);
+  --supaslidev-accent: var(--color-primary-700);
+  --supaslidev-success: var(--color-green-700);
   --supaslidev-border: #d1d5db;
   --supaslidev-header-bg: rgba(0, 0, 0, 0.02);
   --supaslidev-text-muted: #6b7280;
 }
 
 .dark {
-  --ui-primary: var(--color-teal-500);
-  --ui-success: var(--color-green-500);
+  --supaslidev-accent: var(--color-primary-500);
+  --supaslidev-success: var(--color-green-500);
   --supaslidev-border: #4b5563;
   --supaslidev-header-bg: rgba(255, 255, 255, 0.03);
   --supaslidev-text-muted: #9ca3af;
@@ -37,7 +37,7 @@ summary {
 
 .settings-btn:hover .settings-icon {
   transform: rotate(45deg);
-  color: var(--ui-primary);
+  color: var(--supaslidev-accent);
 }
 
 *,

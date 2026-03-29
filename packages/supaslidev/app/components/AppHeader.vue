@@ -305,7 +305,7 @@ defineExpose({ focusInput, inputRef });
 .logo-cursor {
   width: 8px;
   height: 1.25rem;
-  background: var(--ui-primary);
+  background: var(--supaslidev-accent);
   animation: blink 1s step-end infinite;
 }
 
@@ -322,7 +322,7 @@ defineExpose({ focusInput, inputRef });
   outline: none;
   color: var(--ui-text);
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-  caret-color: var(--ui-primary);
+  caret-color: var(--supaslidev-accent);
 }
 
 .terminal-input::placeholder {
@@ -399,7 +399,7 @@ defineExpose({ focusInput, inputRef });
 }
 
 .dropdown-item--selected {
-  color: var(--ui-primary);
+  color: var(--supaslidev-accent);
 }
 
 .dropdown-item-label {

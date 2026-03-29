@@ -43,7 +43,7 @@ useSettings();
 }
 
 .footer-link {
-  color: var(--ui-primary);
+  color: var(--supaslidev-accent);
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
