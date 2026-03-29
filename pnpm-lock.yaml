@@ -65,12 +65,6 @@ catalogs:
       specifier: ^3.24.0
       version: 3.25.1
   default:
-    '@commitlint/cli':
-      specifier: 20.5.0
-      version: 20.5.0
-    '@commitlint/config-conventional':
-      specifier: 20.5.0
-      version: 20.5.0
     '@slidev/cli':
       specifier: ^52.11.3
       version: 52.11.3
@@ -87,6 +81,12 @@ catalogs:
       specifier: ^3.5.31
       version: 3.5.31
   dev:
+    '@commitlint/cli':
+      specifier: ^20.3.1
+      version: 20.5.0
+    '@commitlint/config-conventional':
+      specifier: ^20.3.1
+      version: 20.5.0
     '@types/ejs':
       specifier: ^3.1.5
       version: 3.1.5
