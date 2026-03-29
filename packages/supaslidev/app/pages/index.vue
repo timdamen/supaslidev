@@ -97,9 +97,13 @@ onMounted(async () => {
     let response: Response | undefined;
 
     if (deployMode.value) {
-      response = await fetch(`${deployBasePath.value}/presentations.json`);
-      if (!response.ok) {
-        response = await fetch(`${deployBasePath.value}/api/presentations`);
+      try {
+        response = await fetch(`${deployBasePath.value}/presentations.json`);
+      } catch {
+        // static file not available
+      }
+      if (!response?.ok) {
+        response = await fetch('/api/presentations');
       }
     } else {
       response = await fetch('/api/presentations');
@@ -187,7 +191,6 @@ function handleCreateCommand() {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
     showDeployDemoToast();
-    return;
   }
   isDialogOpen.value = true;
 }
@@ -196,7 +199,6 @@ function handleImportCommand() {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
     showDeployDemoToast();
-    return;
   }
   isImportDialogOpen.value = true;
 }

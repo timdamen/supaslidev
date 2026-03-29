@@ -354,15 +354,17 @@ describe('Deploy E2E', () => {
       expect(await editButton.count()).toBeGreaterThan(0);
     });
 
-    it('dev button shows deploy demo toast when clicked', async () => {
+    it('dev button opens presentation in deploy mode', async () => {
       await page.goto(serveUrl);
       await page.waitForSelector('.card', { timeout: 15000 });
 
-      await page.locator('.card button:has-text("dev")').first().click();
-      await page.waitForSelector('text=Dev Mode Only', { timeout: 15000 });
+      const [newPage] = await Promise.all([
+        page.context().waitForEvent('page'),
+        page.locator('.card button:has-text("dev")').first().click(),
+      ]);
 
-      const toast = page.locator('text=Dev Mode Only');
-      expect(await toast.count()).toBeGreaterThan(0);
+      expect(newPage.url()).toMatch(/\/presentations\/[a-z-]+/);
+      await newPage.close();
     });
 
     it('idle badges are visible in deploy mode', async () => {

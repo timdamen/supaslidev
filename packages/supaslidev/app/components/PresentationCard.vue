@@ -37,7 +37,7 @@ async function handleDev(event: Event) {
   event.stopPropagation();
 
   if (deployMode.value) {
-    showDeployDemoToast();
+    window.open(`${deployBasePath.value}/presentations/${props.presentation.id}/`, '_blank');
     return;
   }
 
