@@ -55,14 +55,14 @@ catalogs:
     '@vitest/coverage-v8': 4.0.17
     '@vitest/ui': ^4.0.18
     husky: ^9.1.7
-    lint-staged: ^16.2.7
-    oxfmt: ^0.26.0
+    lint-staged: ^16.4.0
+    oxfmt: ^0.42.0
     oxlint: ^1.41.0
-    playwright: ^1.49.0
+    playwright: ^1.58.2
     playwright-chromium: ^1.58.2
     tsdown: ^0.21.6
     tsx: ^4.19.0
-    turbo: ^2.7.5
+    turbo: ^2.8.20
     typescript: ^6.0.0
     vitest: ^4.0.0
 
