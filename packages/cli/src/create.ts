@@ -522,7 +522,7 @@ export async function create(options: CreateOptions = {}): Promise<void> {
     if (!runInstall) {
       console.log(`  ${pc.dim('$')} pnpm install`);
     }
-    console.log(`  ${pc.dim('$')} pnpm dev ${presentationName}`);
+    console.log(`  ${pc.dim('$')} pnpm dev`);
     console.log('');
   } catch (error) {
     spinner.stop('Failed');
