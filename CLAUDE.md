@@ -37,21 +37,21 @@ supaSliDev/
 - Interactive dashboard UI for presentation management
 - CLI for creating, running, exporting presentations
 - Entry: `src/cli/index.ts` (CLI), `src/App.vue` (UI)
-- Commands: dev, new, present, export
+- Commands: dev, new, present, export, deploy, import
 
 ## Commands
 
-| Command               | Description                       |
-| --------------------- | --------------------------------- |
-| `pnpm dev`            | Start interactive dashboard       |
-| `pnpm new <name>`     | Create new presentation           |
-| `pnpm present <name>` | Start dev server for presentation |
-| `pnpm export <name>`  | Export to PDF                     |
-| `pnpm dev:all`        | Dev servers for all presentations |
-| `pnpm build:all`      | Build all presentations           |
-| `pnpm lint`           | Run linting                       |
-| `pnpm typecheck`      | TypeScript type checking          |
-| `pnpm test`           | Run tests                         |
+| Command               | Description                              |
+| --------------------- | ---------------------------------------- |
+| `pnpm dev`            | Start interactive dashboard              |
+| `pnpm new <name>`     | Create new presentation                  |
+| `pnpm present <name>` | Start dev server for presentation        |
+| `pnpm export <name>`  | Export to PDF                            |
+| `pnpm deploy`         | Build all presentations for deployment   |
+| `pnpm build`          | Build all workspace packages             |
+| `pnpm lint`           | Run linting                              |
+| `pnpm typecheck`      | TypeScript type checking                 |
+| `pnpm test`           | Run tests                                |
 
 ## Key Architecture Decisions
 
