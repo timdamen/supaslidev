@@ -13,7 +13,7 @@ export default defineConfig({
     globalSetup: './setup/global-setup.ts',
     include: ['**/*.e2e.test.ts'],
     fileParallelism: true,
-    maxWorkers: 3,
+    maxWorkers: 2,
     retry: 1,
   },
 });
