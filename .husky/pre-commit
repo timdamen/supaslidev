@@ -1,2 +1,3 @@
 pnpm lint-staged --concurrent false
+pnpm --filter supaslidev exec nuxi prepare
 pnpm knip
