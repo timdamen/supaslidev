@@ -12,7 +12,7 @@ export default defineConfig({
     hookTimeout: 180000,
     globalSetup: './setup/global-setup.ts',
     include: ['**/*.e2e.test.ts'],
-    fileParallelism: false,
-    retry: 1,
+    fileParallelism: true,
+    maxWorkers: 10,
   },
 });
