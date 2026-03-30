@@ -1,5 +1,4 @@
 import { spawn, execSync, type ChildProcess } from 'node:child_process';
-import crypto from 'node:crypto';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { isValidPresentationId } from '../../src/shared/validation.js';
@@ -47,16 +46,12 @@ export function startPresentationServer(
 
   const port = getNextPort();
 
-  const child = spawn(
-    slidevBin,
-    ['--port', String(port), '--remote', crypto.randomUUID(), '--open', 'false'],
-    {
-      cwd: presentationPath,
-      stdio: ['pipe', 'pipe', 'pipe'],
-      detached: !IS_WINDOWS,
-      shell: IS_WINDOWS,
-    },
-  );
+  const child = spawn(slidevBin, ['--port', String(port), '--remote', '--open', 'false'], {
+    cwd: presentationPath,
+    stdio: ['pipe', 'pipe', 'pipe'],
+    detached: !IS_WINDOWS,
+    shell: IS_WINDOWS,
+  });
 
   child.unref();
 
