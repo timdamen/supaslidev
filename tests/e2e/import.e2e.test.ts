@@ -47,7 +47,7 @@ async function openImportDialog(page: Page, dashboardUrl: string): Promise<void>
   await terminalInput.fill('import');
   await terminalInput.press('Enter');
 
-  const dialog = page.locator('[role="dialog"]');
+  const dialog = page.locator('[role="dialog"][data-state="open"]');
   await dialog.waitFor({ state: 'visible', timeout: 5000 });
 }
 
@@ -63,7 +63,7 @@ async function waitForValidationComplete(
   options: ValidationWaitOptions = {},
 ): Promise<void> {
   const { expectedText, expectSuccess, expectError, timeout = 5000 } = options;
-  const dialog = page.locator('[role="dialog"]');
+  const dialog = page.locator('[role="dialog"][data-state="open"]');
   const validatingIndicator = page.locator('span.text-muted:has-text("Validating...")');
 
   await dialog.waitFor({ state: 'visible', timeout });
@@ -79,7 +79,7 @@ async function waitForValidationComplete(
 
   if (expectedText) {
     await page
-      .locator(`[role="dialog"]:has-text("${expectedText}")`)
+      .locator(`[role="dialog"][data-state="open"]:has-text("${expectedText}")`)
       .waitFor({ state: 'visible', timeout });
   }
 
@@ -163,7 +163,7 @@ describe('Import E2E', () => {
       await terminalInput.fill('import');
       await terminalInput.press('Enter');
 
-      const dialog = page.locator('[role="dialog"]');
+      const dialog = page.locator('[role="dialog"][data-state="open"]');
       await dialog.waitFor({ state: 'visible', timeout: 5000 });
       expect(await dialog.isVisible()).toBe(true);
 
@@ -177,7 +177,7 @@ describe('Import E2E', () => {
       // Open command palette
       await page.keyboard.press('ControlOrMeta+k');
 
-      const modal = page.locator('[role="dialog"]');
+      const modal = page.locator('[role="dialog"][data-state="open"]');
       await modal.waitFor({ state: 'visible', timeout: 5000 });
 
       // Verify Actions section and Import option
@@ -191,7 +191,7 @@ describe('Import E2E', () => {
       await importOption.click();
       await page.waitForTimeout(300);
 
-      const importDialog = page.locator('[role="dialog"]');
+      const importDialog = page.locator('[role="dialog"][data-state="open"]');
       await importDialog.waitFor({ state: 'visible', timeout: 5000 });
 
       const dialogContent = await importDialog.textContent();
@@ -204,7 +204,7 @@ describe('Import E2E', () => {
       await openImportDialog(page, dashboardUrl);
 
       const pathInput = page.locator('input[placeholder="/path/to/presentation"]');
-      const dialog = page.locator('[role="dialog"]');
+      const dialog = page.locator('[role="dialog"][data-state="open"]');
 
       // Test 1: Non-existent path
       await pathInput.fill('/path/that/does/not/exist/anywhere');
@@ -275,7 +275,7 @@ describe('Import E2E', () => {
 
       // Step 1: Open import dialog
       await openImportDialog(page, dashboardUrl);
-      const dialog = page.locator('[role="dialog"]');
+      const dialog = page.locator('[role="dialog"][data-state="open"]');
 
       // Step 2: Enter path and validate
       const pathInput = page.locator('input[placeholder="/path/to/presentation"]');
@@ -347,7 +347,7 @@ describe('Import E2E', () => {
       await pathInput.blur();
 
       // Step 2: Wait for validation to complete - wait for success icons or count to stabilize
-      const dialog = page.locator('[role="dialog"]');
+      const dialog = page.locator('[role="dialog"][data-state="open"]');
       const validatingIndicator = page.locator('span.text-muted:has-text("Validating...")');
 
       // First wait for validating indicator to appear (may be brief due to debounce)
@@ -441,7 +441,7 @@ describe('Import E2E', () => {
       ]);
 
       // Verify mixed results shown
-      const dialog = page.locator('[role="dialog"]');
+      const dialog = page.locator('[role="dialog"][data-state="open"]');
       const dialogContent = await dialog.textContent();
       expect(dialogContent).toContain('1 of 2 valid');
 
