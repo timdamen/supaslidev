@@ -46,6 +46,9 @@ catalogs:
     docus:
       specifier: ^5.8.1
       version: 5.8.1
+    mermaid:
+      specifier: ^11.12.2
+      version: 11.13.0
     nuxt:
       specifier: ^4.4.2
       version: 4.4.2
@@ -74,9 +77,6 @@ catalogs:
     knip:
       specifier: ^6.1.0
       version: 6.1.0
-    mermaid:
-      specifier: 11.13.0
-      version: 11.13.0
     playwright-chromium:
       specifier: ^1.58.2
       version: 1.58.2
@@ -11763,7 +11763,7 @@ snapshots:
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       consola: 3.4.2
       local-pkg: 1.1.2
-      mlly: 1.8.0
+      mlly: 1.8.2
       ohash: 2.0.11
       pathe: 2.0.3
       picomatch: 4.0.3
@@ -11822,7 +11822,7 @@ snapshots:
       jiti: 2.6.1
       klona: 2.0.6
       knitwork: 1.3.0
-      mlly: 1.8.0
+      mlly: 1.8.2
       ohash: 2.0.11
       pathe: 2.0.3
       pkg-types: 2.3.0
@@ -13805,7 +13805,7 @@ snapshots:
       file-saver: 2.0.5
       floating-vue: 5.2.2(@nuxt/kit@3.20.2(magicast@0.5.2))(vue@3.5.31(typescript@5.9.3))
       fuse.js: 7.1.0
-      katex: 0.16.27
+      katex: 0.16.44
       lz-string: 1.5.0
       mermaid: 11.13.0
       monaco-editor: 0.55.1
@@ -13880,7 +13880,7 @@ snapshots:
       '@shikijs/markdown-it': 3.21.0(markdown-it-async@2.2.0)
       '@vitejs/plugin-vue': 6.0.3(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
       '@vitejs/plugin-vue-jsx': 5.1.3(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
-      katex: 0.16.27
+      katex: 0.16.44
       mermaid: 11.13.0
       monaco-editor: 0.55.1
       shiki: 3.21.0
@@ -18339,7 +18339,7 @@ snapshots:
 
   local-pkg@1.1.2:
     dependencies:
-      mlly: 1.8.0
+      mlly: 1.8.2
       pkg-types: 2.3.0
       quansync: 0.2.11
 
@@ -21597,7 +21597,7 @@ snapshots:
       estree-walker: 3.0.3
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       pathe: 2.0.3
       picomatch: 4.0.4
       pkg-types: 2.3.0
@@ -21738,7 +21738,7 @@ snapshots:
       debug: 4.4.3
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       tinyglobby: 0.2.15
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
@@ -21754,7 +21754,7 @@ snapshots:
       chokidar: 5.0.0
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       obug: 2.1.1
       picomatch: 4.0.3
       tinyglobby: 0.2.15
@@ -22006,7 +22006,7 @@ snapshots:
     dependencies:
       debug: 4.4.3
       klona: 2.0.6
-      mlly: 1.8.0
+      mlly: 1.8.2
       ufo: 1.6.3
       vite: 7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.31(typescript@5.9.3)
