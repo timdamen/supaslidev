@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 const copied = ref(false);
-const command = 'pnpm create supaslidev my-workspace';
+const command = 'pnpm create supaslidev';
 
 async function copyCommand() {
   await navigator.clipboard.writeText(command);

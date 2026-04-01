@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-const command = 'pnpm create supaslidev my-workspace';
+const command = 'pnpm create supaslidev';
 const copied = ref(false);
 
 const videoRef = ref<HTMLVideoElement | null>(null);
