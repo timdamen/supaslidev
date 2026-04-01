@@ -398,7 +398,18 @@ export async function createBrowserContext(): Promise<BrowserContext> {
     const page = await origNewPage();
     const origGoto = page.goto.bind(page);
     page.goto = async (url: string, options?: Parameters<typeof origGoto>[1]) => {
-      const response = await origGoto(url, options);
+      let response: Awaited<ReturnType<typeof origGoto>>;
+      try {
+        response = await origGoto(url, options);
+      } catch (error: unknown) {
+        // Firefox on Windows can race with itself when navigating, producing
+        // "Navigation is interrupted by another navigation". Retry once.
+        if (error instanceof Error && error.message.includes('interrupted by another navigation')) {
+          response = await origGoto(url, options);
+        } else {
+          throw error;
+        }
+      }
       await page.waitForSelector('#__nuxt > *', { timeout: 10000 }).catch(() => {
         // If #__nuxt doesn't exist (non-Nuxt page), ignore
       });
