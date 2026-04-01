@@ -1,6 +1,5 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices"],
+  "extends": ["github>nuxt/renovate-config-nuxt"],
   "packageRules": [
     {
       "matchDepTypes": ["pnpm.overrides"],
