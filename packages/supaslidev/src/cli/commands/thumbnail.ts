@@ -40,7 +40,7 @@ export async function thumbnail(name: string, options: ThumbnailOptions = {}): P
 
   const slidevBin = join(presentationDir, 'node_modules', '.bin', 'slidev');
 
-  await new Promise<void>((resolve, reject) => {
+  await new Promise<void>((resolve) => {
     const slidev = spawn(
       slidevBin,
       ['export', '--format', 'png', '--range', '1', '--output', outputPath],
