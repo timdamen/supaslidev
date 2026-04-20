@@ -72,6 +72,12 @@ describe('CLI Help & Version', () => {
     expect(stdout).toContain('export');
     expect(stdout).toContain('PDF');
   });
+
+  it('shows help for thumbnail command', () => {
+    const { stdout } = runCLI('thumbnail --help', process.cwd());
+    expect(stdout).toContain('thumbnail');
+    expect(stdout).toContain('PNG');
+  });
 });
 
 describe('CLI Project Detection', () => {
@@ -107,6 +113,12 @@ describe('CLI Project Detection', () => {
     expect(exitCode).not.toBe(0);
     expect(stderr).toContain('Could not find a Supaslidev project');
   });
+
+  it('fails thumbnail command when no project is found', () => {
+    const { stderr, exitCode } = runCLI('thumbnail test-deck', TEST_DIR);
+    expect(exitCode).not.toBe(0);
+    expect(stderr).toContain('Could not find a Supaslidev project');
+  });
 });
 
 describe('CLI Presentation Validation', () => {
@@ -134,6 +146,20 @@ describe('CLI Presentation Validation', () => {
     const { stderr } = runCLI('export any-deck', TEST_DIR);
     expect(stderr).toContain('No presentations found');
   });
+
+  it('thumbnail command fails for non-existent presentation', () => {
+    const { stderr, exitCode } = runCLI('thumbnail non-existent', TEST_DIR);
+    expect(exitCode).not.toBe(0);
+    expect(stderr).toContain('not found');
+    expect(stderr).toContain('Available presentations');
+    expect(stderr).toContain('existing-deck');
+  });
+
+  it('thumbnail command shows empty list when no presentations exist', () => {
+    rmSync(join(TEST_DIR, 'presentations', 'existing-deck'), { recursive: true });
+    const { stderr } = runCLI('thumbnail any-deck', TEST_DIR);
+    expect(stderr).toContain('No presentations found');
+  });
 });
 
 describe('CLI Export Options', () => {
@@ -150,6 +176,25 @@ describe('CLI Export Options', () => {
 
   it('export command accepts -o flag', () => {
     const { stdout } = runCLI('export --help', TEST_DIR);
+    expect(stdout).toContain('-o');
+    expect(stdout).toContain('--output');
+  });
+});
+
+describe('CLI Thumbnail Options', () => {
+  beforeEach(() => {
+    cleanTestDir();
+    mkdirSync(join(TEST_DIR, 'presentations', 'my-deck'), { recursive: true });
+    writeFileSync(join(TEST_DIR, 'package.json'), '{}');
+    writeFileSync(join(TEST_DIR, 'presentations', 'my-deck', 'slides.md'), '# Test');
+  });
+
+  afterEach(() => {
+    cleanTestDir();
+  });
+
+  it('thumbnail command accepts -o flag', () => {
+    const { stdout } = runCLI('thumbnail --help', TEST_DIR);
     expect(stdout).toContain('-o');
     expect(stdout).toContain('--output');
   });

@@ -6,6 +6,7 @@ const props = defineProps<{
 }>();
 
 const { deployMode, showDeployDemoToast } = useDeployMode();
+const toast = useToast();
 const deployBasePath = computed(() => (import.meta.env.BASE_URL || '/').replace(/\/$/, ''));
 
 const {
@@ -14,6 +15,7 @@ const {
   startServer,
   stopServer,
   exportPresentation,
+  generateThumbnail,
   openInEditor,
   waitForServerReady,
 } = useServers();
@@ -26,6 +28,7 @@ const emit = defineEmits<{
 const loading = ref({
   dev: false,
   export: false,
+  thumbnail: false,
   edit: false,
 });
 
@@ -84,6 +87,43 @@ async function handleExport(event: Event) {
     emit('exportError', 'Failed to export presentation');
   } finally {
     loading.value.export = false;
+  }
+}
+
+async function handleThumbnail(event: Event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+
+  if (loading.value.thumbnail) return;
+
+  loading.value.thumbnail = true;
+  try {
+    const result = await generateThumbnail(props.presentation.id);
+    if (result.success && result.thumbnailPath) {
+      toast.add({
+        title: 'Thumbnail ready',
+        description: `${props.presentation.title} thumbnail generated`,
+        color: 'success',
+        icon: 'i-lucide-image',
+        actions: [
+          {
+            label: 'Open',
+            onClick: () => window.open(result.thumbnailPath, '_blank'),
+          },
+        ],
+      });
+    } else {
+      emit('exportError', result.error || 'Thumbnail generation failed');
+    }
+  } catch {
+    emit('exportError', 'Failed to generate thumbnail');
+  } finally {
+    loading.value.thumbnail = false;
   }
 }
 
@@ -215,6 +255,19 @@ function handleOpen(event: Event) {
         class="action-btn"
         title="Export to PDF"
         @click="handleExport"
+      />
+
+      <UButton
+        color="info"
+        variant="ghost"
+        size="xs"
+        :icon="loading.thumbnail ? '' : 'i-lucide-image'"
+        :loading="loading.thumbnail"
+        :disabled="loading.thumbnail"
+        loading-icon="i-lucide-loader-circle"
+        class="action-btn"
+        title="Generate thumbnail"
+        @click="handleThumbnail"
       />
 
       <UButton

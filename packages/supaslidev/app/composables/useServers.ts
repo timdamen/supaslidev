@@ -78,6 +78,18 @@ async function exportPresentation(
   }
 }
 
+async function generateThumbnail(
+  presentationId: string,
+): Promise<{ success: boolean; thumbnailPath?: string; error?: string }> {
+  try {
+    const response = await fetch(`/api/thumbnail/${presentationId}`, { method: 'POST' });
+    const result = await response.json();
+    return result;
+  } catch {
+    return { success: false, error: 'Failed to connect to thumbnail service' };
+  }
+}
+
 async function openInEditor(presentationId: string): Promise<{ success: boolean; error?: string }> {
   try {
     const response = await fetch(`/api/open-editor/${presentationId}`, { method: 'POST' });
@@ -140,6 +152,7 @@ export function useServers() {
     startPolling,
     stopPolling,
     exportPresentation,
+    generateThumbnail,
     openInEditor,
     waitForServerReady,
   };

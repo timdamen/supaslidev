@@ -8,6 +8,7 @@ const {
   stopAllServers,
   startServer,
   exportPresentation,
+  generateThumbnail,
   openInEditor,
   waitForServerReady,
 } = useServers();
@@ -169,6 +170,42 @@ async function handleExportCommand(presentation: Presentation) {
   }
 }
 
+async function handleThumbnailCommand(presentation: Presentation) {
+  isCommandPaletteOpen.value = false;
+  if (deployMode.value) {
+    showDeployDemoToast();
+    return;
+  }
+  toast.add({
+    title: 'Generating thumbnail...',
+    description: `Creating thumbnail for ${presentation.title}`,
+    color: 'info',
+    icon: 'i-lucide-image',
+  });
+  const result = await generateThumbnail(presentation.id);
+  if (result.success && result.thumbnailPath) {
+    toast.add({
+      title: 'Thumbnail ready',
+      description: `${presentation.title} thumbnail generated`,
+      color: 'success',
+      icon: 'i-lucide-image',
+      actions: [
+        {
+          label: 'Open',
+          onClick: () => window.open(result.thumbnailPath, '_blank'),
+        },
+      ],
+    });
+  } else if (result.error) {
+    toast.add({
+      title: 'Thumbnail Failed',
+      description: result.error,
+      color: 'error',
+      icon: 'i-lucide-alert-circle',
+    });
+  }
+}
+
 async function handleEditCommand(presentation: Presentation) {
   isCommandPaletteOpen.value = false;
   if (deployMode.value) {
@@ -284,6 +321,30 @@ function handleExecuteCommand(command: string) {
     return;
   }
 
+  if (action === 'thumbnail') {
+    if (!arg) {
+      toast.add({
+        title: 'Missing argument',
+        description: 'Usage: thumbnail <presentation-name>',
+        color: 'warning',
+        icon: 'i-lucide-alert-triangle',
+      });
+      return;
+    }
+    const presentation = findPresentationByName(arg);
+    if (!presentation) {
+      toast.add({
+        title: 'Presentation not found',
+        description: `No presentation found with name "${arg}"`,
+        color: 'warning',
+        icon: 'i-lucide-alert-triangle',
+      });
+      return;
+    }
+    handleThumbnailCommand(presentation);
+    return;
+  }
+
   if (action === 'edit') {
     if (!arg) {
       toast.add({
@@ -310,7 +371,7 @@ function handleExecuteCommand(command: string) {
 
   toast.add({
     title: 'Unknown command',
-    description: `"${action}" is not a recognized command. Try: new, import, present, export, edit`,
+    description: `"${action}" is not a recognized command. Try: new, import, present, export, thumbnail, edit`,
     color: 'warning',
     icon: 'i-lucide-alert-triangle',
   });
@@ -371,6 +432,18 @@ const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
       ),
     },
     {
+      id: 'thumbnail',
+      label: 'Thumbnail',
+      items: presentations.value.map(
+        (p: Presentation): CommandPaletteItem => ({
+          label: `Thumbnail > ${p.title}`,
+          suffix: 'Generate PNG of first slide',
+          icon: 'i-lucide-image',
+          onSelect: () => handleThumbnailCommand(p),
+        }),
+      ),
+    },
+    {
       id: 'edit',
       label: 'Edit',
       items: presentations.value.map(
@@ -423,6 +496,11 @@ const commandOptions = computed(() => {
       label: `Export > ${p.title}`,
       description: 'Export to PDF',
       onSelect: () => handleExportCommand(p),
+    });
+    options.push({
+      label: `Thumbnail > ${p.title}`,
+      description: 'Generate PNG of first slide',
+      onSelect: () => handleThumbnailCommand(p),
     });
     options.push({
       label: `Edit > ${p.title}`,

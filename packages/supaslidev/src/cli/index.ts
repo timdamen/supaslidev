@@ -7,6 +7,7 @@ import { present } from './commands/present.js';
 import { exportPdf } from './commands/export.js';
 import { importPresentation } from './commands/import.js';
 import { deploy } from './commands/deploy.js';
+import { thumbnail } from './commands/thumbnail.js';
 
 const program = new Command();
 
@@ -55,6 +56,15 @@ program
   .option('--no-install', 'Skip pnpm install after import')
   .action(async (source: string, options: { name?: string; install?: boolean }) => {
     await importPresentation(source, { name: options.name, install: options.install ?? true });
+  });
+
+program
+  .command('thumbnail')
+  .description('Generate a PNG thumbnail of the first slide')
+  .argument('<name>', 'Name of the presentation')
+  .option('-o, --output <path>', 'Output path for the thumbnail (without extension)')
+  .action(async (name: string, options: { output?: string }) => {
+    await thumbnail(name, options);
   });
 
 program
