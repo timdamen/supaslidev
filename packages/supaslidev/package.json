@@ -59,6 +59,7 @@
     "commander": "catalog:cli",
     "js-yaml": "catalog:cli",
     "nuxt": "catalog:core",
+    "sharp": "catalog:core",
     "tailwindcss": "catalog:core",
     "vue": "catalog:"
   },

@@ -9,16 +9,18 @@ export default defineEventHandler((event) => {
   const filePath = join(thumbnailsDir, path);
 
   const rel = relative(thumbnailsDir, filePath);
+  const isAllowedExt = filePath.endsWith('.png') || filePath.endsWith('.webp');
   if (
     rel.startsWith('..') ||
     !filePath.startsWith(thumbnailsDir) ||
     !existsSync(filePath) ||
-    !filePath.endsWith('.png')
+    !isAllowedExt
   ) {
     throw createError({ statusCode: 404, message: 'Not found' });
   }
 
-  setHeader(event, 'Content-Type', 'image/png');
+  const contentType = filePath.endsWith('.webp') ? 'image/webp' : 'image/png';
+  setHeader(event, 'Content-Type', contentType);
   setHeader(event, 'Content-Disposition', `inline; filename="${basename(filePath)}"`);
 
   return sendStream(event, createReadStream(filePath));

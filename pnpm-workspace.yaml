@@ -27,6 +27,7 @@ catalogs:
     yaml: ^2.8.3
   core:
     '@nuxt/devtools-kit': ^4.0.0-alpha.3
+    sharp: ^0.34.5
     '@nuxt/kit': ^4.4.2
     '@nuxt/schema': ^4.4.2
     '@nuxt/ui': ^4.6.0

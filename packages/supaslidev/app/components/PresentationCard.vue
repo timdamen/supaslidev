@@ -206,6 +206,17 @@ function handleCardClick() {
       </div>
     </template>
 
+    <div
+      v-if="presentation.thumbnail"
+      class="thumbnail-preview border-b border-[var(--supaslidev-border)]"
+    >
+      <img
+        :src="presentation.thumbnail"
+        :alt="`${presentation.title} first slide`"
+        class="w-full h-auto block"
+      />
+    </div>
+
     <div class="terminal-body p-5 space-y-5">
       <div class="terminal-prompt">
         <div class="flex items-start gap-2">

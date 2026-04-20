@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { join } from 'node:path';
 import { existsSync, mkdirSync, readdirSync, renameSync } from 'node:fs';
 import { isValidPresentationId } from '../../../src/shared/validation.js';
+import { optimizeThumbnail } from '../../../src/shared/optimize-thumbnail.js';
 import { getProjectRoot } from '../../utils/config';
 
 export default defineEventHandler(async (event) => {
@@ -30,7 +31,8 @@ export default defineEventHandler(async (event) => {
     mkdirSync(thumbnailsDir, { recursive: true });
   }
 
-  return new Promise((resolve) => {
+  // Step 1: Export PNG with Slidev
+  const exportResult = await new Promise<{ success: boolean; error?: string }>((resolve) => {
     const slidevBin = join(presentationPath, 'node_modules', '.bin', 'slidev');
     const child = spawn(
       slidevBin,
@@ -51,7 +53,6 @@ export default defineEventHandler(async (event) => {
     child.stderr?.on('data', (data: Buffer) => {
       const line = data.toString().trim();
       stderr += data.toString();
-      // Filter non-fatal Vite fs.allow warnings (pnpm monorepo font resolution)
       if (
         line &&
         !line.includes('outside of Vite serving allow list') &&
@@ -67,15 +68,11 @@ export default defineEventHandler(async (event) => {
 
     child.on('close', (code: number | null) => {
       if (code === 0) {
-        // Slidev exports PNGs into a directory named <output>/<n>.png
         const pngDirect = `${outputBase}.png`;
         const pngDir = outputBase;
         const targetFile = join(thumbnailsDir, `${presentationId}.png`);
 
-        if (existsSync(pngDirect)) {
-          // Already at the right location
-        } else if (existsSync(pngDir)) {
-          // Find the first PNG in the output directory
+        if (!existsSync(pngDirect) && existsSync(pngDir)) {
           const pngs = readdirSync(pngDir)
             .filter((f) => f.endsWith('.png'))
             .sort();
@@ -84,18 +81,7 @@ export default defineEventHandler(async (event) => {
           }
         }
 
-        if (existsSync(targetFile)) {
-          resolve({
-            success: true,
-            thumbnailPath: `/thumbnails/${presentationId}.png`,
-            filename: `${presentationId}.png`,
-          });
-        } else {
-          resolve({
-            success: false,
-            error: 'Thumbnail was generated but the output file could not be found',
-          });
-        }
+        resolve({ success: existsSync(targetFile) });
       } else {
         resolve({
           success: false,
@@ -104,4 +90,26 @@ export default defineEventHandler(async (event) => {
       }
     });
   });
+
+  if (!exportResult.success) {
+    return exportResult;
+  }
+
+  // Step 2: Optimize PNG to WebP
+  const pngFile = join(thumbnailsDir, `${presentationId}.png`);
+  try {
+    await optimizeThumbnail(pngFile);
+    return {
+      success: true,
+      thumbnailPath: `/thumbnails/${presentationId}.webp`,
+      filename: `${presentationId}.webp`,
+    };
+  } catch {
+    // Fall back to PNG if optimization fails
+    return {
+      success: true,
+      thumbnailPath: `/thumbnails/${presentationId}.png`,
+      filename: `${presentationId}.png`,
+    };
+  }
 });

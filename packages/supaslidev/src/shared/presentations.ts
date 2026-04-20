@@ -64,9 +64,15 @@ export function extractDescription(info: string | undefined): string {
     .join(' ');
 }
 
+export interface RegenerateOptions {
+  thumbnailsDir?: string;
+  basePath?: string;
+}
+
 export function regeneratePresentationsJson(
   presentationsDir: string,
   presentationsJsonPath: string,
+  options: RegenerateOptions = {},
 ): void {
   if (!existsSync(presentationsDir)) {
     return;
@@ -87,7 +93,7 @@ export function regeneratePresentationsJson(
       const content = readFileSync(slidesPath, 'utf-8');
       const frontmatter = parseFrontmatter(content);
 
-      return {
+      const presentation: Presentation = {
         id: name,
         title: frontmatter.title || name,
         description: extractDescription(frontmatter.info) || '',
@@ -95,6 +101,19 @@ export function regeneratePresentationsJson(
         background: frontmatter.background || '',
         duration: frontmatter.duration || '',
       };
+
+      if (options.thumbnailsDir) {
+        const base = (options.basePath ?? '/').replace(/\/*$/, '/');
+        const webpFile = join(options.thumbnailsDir, `${name}.webp`);
+        const pngFile = join(options.thumbnailsDir, `${name}.png`);
+        if (existsSync(webpFile)) {
+          presentation.thumbnail = `${base}thumbnails/${name}.webp`;
+        } else if (existsSync(pngFile)) {
+          presentation.thumbnail = `${base}thumbnails/${name}.png`;
+        }
+      }
+
+      return presentation;
     })
     .sort((a, b) => a.title.localeCompare(b.title));
 

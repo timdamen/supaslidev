@@ -1,7 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdirSync, writeFileSync, existsSync, readdirSync, renameSync } from 'node:fs';
+import {
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  existsSync,
+  readdirSync,
+  renameSync,
+} from 'node:fs';
 import { join, relative, basename } from 'node:path';
 import { isValidPresentationId } from '../../src/shared/validation.js';
+import { regeneratePresentationsJson } from '../../src/shared/presentations.js';
 import {
   createTestProjectDir,
   createMockSlidevProject,
@@ -147,9 +155,10 @@ describe('Thumbnail serve route validation', () => {
     expect(rel.startsWith('..')).toBe(true);
   });
 
-  it('blocks non-PNG file extensions', () => {
+  it('blocks non-image file extensions', () => {
     const filePath = join(thumbnailsDir, 'malicious.exe');
-    expect(filePath.endsWith('.png')).toBe(false);
+    const isAllowed = filePath.endsWith('.png') || filePath.endsWith('.webp');
+    expect(isAllowed).toBe(false);
   });
 
   it('allows valid PNG path within thumbnails directory', () => {
@@ -165,14 +174,39 @@ describe('Thumbnail serve route validation', () => {
     expect(filePath.endsWith('.png')).toBe(true);
   });
 
+  it('allows valid WebP path within thumbnails directory', () => {
+    const filename = 'my-deck.webp';
+    const filePath = join(thumbnailsDir, filename);
+    writeFileSync(filePath, 'fake-webp');
+
+    const rel = relative(thumbnailsDir, filePath);
+
+    expect(rel.startsWith('..')).toBe(false);
+    expect(filePath.startsWith(thumbnailsDir)).toBe(true);
+    expect(existsSync(filePath)).toBe(true);
+    expect(filePath.endsWith('.webp')).toBe(true);
+  });
+
+  it('returns correct content type for webp', () => {
+    const filePath = join(thumbnailsDir, 'my-deck.webp');
+    const contentType = filePath.endsWith('.webp') ? 'image/webp' : 'image/png';
+    expect(contentType).toBe('image/webp');
+  });
+
+  it('returns correct content type for png', () => {
+    const filePath = join(thumbnailsDir, 'my-deck.png');
+    const contentType = filePath.endsWith('.webp') ? 'image/webp' : 'image/png';
+    expect(contentType).toBe('image/png');
+  });
+
   it('rejects files that do not exist', () => {
-    const filePath = join(thumbnailsDir, 'nonexistent.png');
+    const filePath = join(thumbnailsDir, 'nonexistent.webp');
     expect(existsSync(filePath)).toBe(false);
   });
 
   it('returns correct Content-Disposition filename', () => {
-    const filePath = join(thumbnailsDir, 'my-deck.png');
-    expect(basename(filePath)).toBe('my-deck.png');
+    const filePath = join(thumbnailsDir, 'my-deck.webp');
+    expect(basename(filePath)).toBe('my-deck.webp');
   });
 
   it('blocks symlink-style path that resolves outside directory', () => {
@@ -182,5 +216,108 @@ describe('Thumbnail serve route validation', () => {
 
     // This path resolves to parent of thumbnailsDir
     expect(rel.startsWith('..')).toBe(true);
+  });
+});
+
+describe('regeneratePresentationsJson with thumbnails', () => {
+  let testDir: string;
+  let presentationsDir: string;
+  let thumbnailsDir: string;
+  let jsonPath: string;
+
+  beforeEach(() => {
+    testDir = createTestProjectDir('presentations-json-thumbnails');
+    presentationsDir = join(testDir, 'presentations');
+    thumbnailsDir = join(testDir, 'thumbnails');
+    jsonPath = join(testDir, '.supaslidev', 'presentations.json');
+    mkdirSync(presentationsDir, { recursive: true });
+    mkdirSync(thumbnailsDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    cleanupTestDir(testDir);
+  });
+
+  it('includes thumbnail field for webp when webp file exists', () => {
+    const deckDir = join(presentationsDir, 'my-deck');
+    createMockSlidevProject(deckDir);
+    writeFileSync(join(thumbnailsDir, 'my-deck.webp'), 'fake-webp');
+
+    regeneratePresentationsJson(presentationsDir, jsonPath, { thumbnailsDir });
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    expect(presentations[0].thumbnail).toBe('/thumbnails/my-deck.webp');
+  });
+
+  it('includes thumbnail field for png when only png exists', () => {
+    const deckDir = join(presentationsDir, 'my-deck');
+    createMockSlidevProject(deckDir);
+    writeFileSync(join(thumbnailsDir, 'my-deck.png'), 'fake-png');
+
+    regeneratePresentationsJson(presentationsDir, jsonPath, { thumbnailsDir });
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    expect(presentations[0].thumbnail).toBe('/thumbnails/my-deck.png');
+  });
+
+  it('prefers webp over png when both exist', () => {
+    const deckDir = join(presentationsDir, 'my-deck');
+    createMockSlidevProject(deckDir);
+    writeFileSync(join(thumbnailsDir, 'my-deck.webp'), 'fake-webp');
+    writeFileSync(join(thumbnailsDir, 'my-deck.png'), 'fake-png');
+
+    regeneratePresentationsJson(presentationsDir, jsonPath, { thumbnailsDir });
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    expect(presentations[0].thumbnail).toBe('/thumbnails/my-deck.webp');
+  });
+
+  it('omits thumbnail field when thumbnail file does not exist', () => {
+    const deckDir = join(presentationsDir, 'my-deck');
+    createMockSlidevProject(deckDir);
+
+    regeneratePresentationsJson(presentationsDir, jsonPath, { thumbnailsDir });
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    expect(presentations[0].thumbnail).toBeUndefined();
+  });
+
+  it('applies base path to thumbnail URL', () => {
+    const deckDir = join(presentationsDir, 'my-deck');
+    createMockSlidevProject(deckDir);
+    writeFileSync(join(thumbnailsDir, 'my-deck.webp'), 'fake-webp');
+
+    regeneratePresentationsJson(presentationsDir, jsonPath, {
+      thumbnailsDir,
+      basePath: '/slides/',
+    });
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    expect(presentations[0].thumbnail).toBe('/slides/thumbnails/my-deck.webp');
+  });
+
+  it('works without options (backwards compatible)', () => {
+    const deckDir = join(presentationsDir, 'my-deck');
+    createMockSlidevProject(deckDir);
+
+    regeneratePresentationsJson(presentationsDir, jsonPath);
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    expect(presentations[0].thumbnail).toBeUndefined();
+    expect(presentations[0].id).toBe('my-deck');
+  });
+
+  it('handles mixed presentations with and without thumbnails', () => {
+    createMockSlidevProject(join(presentationsDir, 'deck-a'));
+    createMockSlidevProject(join(presentationsDir, 'deck-b'));
+    writeFileSync(join(thumbnailsDir, 'deck-a.png'), 'fake-png');
+
+    regeneratePresentationsJson(presentationsDir, jsonPath, { thumbnailsDir });
+
+    const presentations = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    const deckA = presentations.find((p: { id: string }) => p.id === 'deck-a');
+    const deckB = presentations.find((p: { id: string }) => p.id === 'deck-b');
+    expect(deckA.thumbnail).toBe('/thumbnails/deck-a.png');
+    expect(deckB.thumbnail).toBeUndefined();
   });
 });

@@ -5,6 +5,7 @@ export interface Presentation {
   theme: string;
   background: string;
   duration: string;
+  thumbnail?: string;
 }
 
 export interface PackageJson {

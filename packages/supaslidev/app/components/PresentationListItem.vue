@@ -184,6 +184,13 @@ function handleOpen(event: Event) {
       :class="running ? 'bg-[var(--ui-success)] animate-pulse' : 'bg-[var(--ui-text-muted)]'"
     />
 
+    <img
+      v-if="presentation.thumbnail"
+      :src="presentation.thumbnail"
+      :alt="`${presentation.title} first slide`"
+      class="w-10 h-6 object-cover rounded shrink-0 border border-[var(--supaslidev-border)]"
+    />
+
     <span class="text-xs text-[var(--ui-text-muted)] shrink-0">~/{{ presentation.id }}</span>
 
     <span class="text-sm text-[var(--ui-text)] truncate min-w-0 flex-1">

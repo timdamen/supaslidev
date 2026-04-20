@@ -1,9 +1,19 @@
 import { spawn } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
-import { existsSync, mkdirSync, cpSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  cpSync,
+  rmSync,
+  writeFileSync,
+  readFileSync,
+  readdirSync,
+  renameSync,
+} from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { findProjectRoot, getPresentations } from '../utils.js';
 import { regeneratePresentationsJson } from '../../shared/presentations.js';
+import { optimizeThumbnail } from '../../shared/optimize-thumbnail.js';
 
 export interface DeployOptions {
   output?: string;
@@ -160,8 +170,11 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
   console.log(`  Presentations: ${presentations.join(', ')}`);
   console.log('');
 
+  const totalSteps = 5;
+  const thumbnailsDir = join(projectRoot, 'thumbnails');
+
   // Step 1: Build each presentation with slidev build --base
-  console.log(`Step 1/${4}: Building ${presentations.length} presentation(s)...\n`);
+  console.log(`Step 1/${totalSteps}: Building ${presentations.length} presentation(s)...\n`);
 
   for (const id of presentations) {
     const presentationDir = join(presentationsDir, id);
@@ -176,13 +189,55 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
     console.log(`  Done: ${id}\n`);
   }
 
-  // Step 2: Generate presentations.json
-  console.log('Step 2/4: Generating presentations.json...\n');
+  // Step 2: Generate thumbnails for each presentation
+  console.log(`Step 2/${totalSteps}: Generating thumbnails...\n`);
 
-  regeneratePresentationsJson(presentationsDir, presentationsJsonPath);
+  if (!existsSync(thumbnailsDir)) {
+    mkdirSync(thumbnailsDir, { recursive: true });
+  }
+
+  for (const id of presentations) {
+    const presentationDir = join(presentationsDir, id);
+    const slidevBin = join(presentationDir, 'node_modules', '.bin', 'slidev');
+    const outputBase = join(thumbnailsDir, id);
+    const targetFile = join(thumbnailsDir, `${id}.png`);
+
+    console.log(`  Thumbnail: ${id}`);
+
+    try {
+      await runCommand(
+        slidevBin,
+        ['export', '--format', 'png', '--range', '1', '--output', outputBase],
+        {
+          cwd: presentationDir,
+        },
+      );
+
+      // Slidev exports into a directory <output>/<n>.png — move to <output>.png
+      if (!existsSync(targetFile) && existsSync(outputBase)) {
+        const pngs = readdirSync(outputBase)
+          .filter((f) => f.endsWith('.png'))
+          .sort();
+        if (pngs.length > 0) {
+          renameSync(join(outputBase, pngs[0]), targetFile);
+        }
+      }
+
+      if (existsSync(targetFile)) {
+        await optimizeThumbnail(targetFile);
+        console.log(`  Done: ${id}\n`);
+      } else {
+        console.warn(`  Warning: Thumbnail for "${id}" could not be found after export.\n`);
+      }
+    } catch {
+      console.warn(`  Warning: Thumbnail generation failed for "${id}", skipping.\n`);
+    }
+  }
 
   // Step 3: Build the Nuxt dashboard in static mode
-  console.log('Step 3/4: Building dashboard...\n');
+  // (runs before presentations.json because the Nitro generate plugin
+  // overwrites presentations.json without thumbnail data)
+  console.log(`Step 3/${totalSteps}: Building dashboard...\n`);
 
   const nuxt = findNuxtBin(projectRoot, supaslidevRoot);
 
@@ -206,8 +261,16 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
     env: nuxtEnv,
   });
 
-  // Step 4: Assemble output directory
-  console.log('\nStep 4/4: Assembling deploy output...\n');
+  // Step 4: Generate presentations.json (after Nuxt build so it's not overwritten by Nitro plugin)
+  console.log(`\nStep 4/${totalSteps}: Generating presentations.json...\n`);
+
+  regeneratePresentationsJson(presentationsDir, presentationsJsonPath, {
+    thumbnailsDir,
+    basePath,
+  });
+
+  // Step 5: Assemble output directory
+  console.log(`\nStep 5/${totalSteps}: Assembling deploy output...\n`);
 
   // Clean and create output directory
   if (existsSync(outputDir)) {
@@ -235,6 +298,22 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
       cpSync(distDir, destDir, { recursive: true });
     } else {
       console.warn(`  Warning: No dist/ found for presentation "${id}", skipping.`);
+    }
+  }
+
+  // Copy thumbnails into output/thumbnails/
+  if (existsSync(thumbnailsDir)) {
+    const thumbnailsOutputDir = join(outputDir, 'thumbnails');
+    mkdirSync(thumbnailsOutputDir, { recursive: true });
+
+    for (const id of presentations) {
+      const webpFile = join(thumbnailsDir, `${id}.webp`);
+      const pngFile = join(thumbnailsDir, `${id}.png`);
+      if (existsSync(webpFile)) {
+        cpSync(webpFile, join(thumbnailsOutputDir, `${id}.webp`));
+      } else if (existsSync(pngFile)) {
+        cpSync(pngFile, join(thumbnailsOutputDir, `${id}.png`));
+      }
     }
   }
 

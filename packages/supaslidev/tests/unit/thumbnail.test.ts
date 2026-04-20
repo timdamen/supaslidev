@@ -25,6 +25,10 @@ vi.mock('node:child_process', () => ({
   spawn: vi.fn(() => createMockChildProcess()),
 }));
 
+vi.mock('../../src/shared/optimize-thumbnail.js', () => ({
+  optimizeThumbnail: vi.fn(async (pngPath: string) => pngPath.replace(/\.png$/, '.webp')),
+}));
+
 vi.spyOn(console, 'log').mockImplementation(() => {});
 vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -209,7 +213,7 @@ describe('thumbnail CLI command', () => {
     const child = createMockChildProcess();
     vi.mocked(spawn).mockReturnValue(child as ReturnType<typeof spawn>);
 
-    thumbnail('my-deck');
+    const promise = thumbnail('my-deck');
 
     // Simulate Slidev creating a directory with 1.png inside
     const thumbnailsDir = join(workspaceDir, 'thumbnails');
@@ -218,8 +222,9 @@ describe('thumbnail CLI command', () => {
     writeFileSync(join(outputDir, '1.png'), 'fake-png-data');
 
     child.emit('close', 0);
+    await promise;
 
-    // Should have been renamed to my-deck.png
+    // Should have been renamed to my-deck.png (then optimized to webp by mock)
     expect(existsSync(join(thumbnailsDir, 'my-deck.png'))).toBe(true);
   });
 
@@ -236,7 +241,7 @@ describe('thumbnail CLI command', () => {
     const child = createMockChildProcess();
     vi.mocked(spawn).mockReturnValue(child as ReturnType<typeof spawn>);
 
-    thumbnail('my-deck');
+    const promise = thumbnail('my-deck');
 
     // Create the expected output so the rename logic runs
     const thumbnailsDir = join(workspaceDir, 'thumbnails');
@@ -244,6 +249,7 @@ describe('thumbnail CLI command', () => {
     writeFileSync(join(thumbnailsDir, 'my-deck', '1.png'), 'fake');
 
     child.emit('close', 0);
+    await promise;
 
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Thumbnail generated!'));
   });
