@@ -6,13 +6,13 @@ packages:
   - docs
 
 catalog:
-  '@slidev/cli': ^52.14.1
+  '@slidev/cli': ^52.14.2
   '@slidev/theme-apple-basic': latest
   '@slidev/theme-default': latest
   '@slidev/theme-seriph': latest
-  knip: ^6.2.0
+  knip: ^6.6.1
   playwright-chromium: ^1.59.1
-  vue: ^3.5.31
+  vue: ^3.5.33
 
 catalogMode: prefer
 
@@ -20,27 +20,27 @@ catalogs:
   cli:
     '@clack/prompts': ^1.2.0
     commander: ^14.0.3
-    ejs: ^5.0.0
+    ejs: ^5.0.2
     js-yaml: ^4.1.1
     picocolors: ^1.1.1
     ts-morph: ^27.0.2
     yaml: ^2.8.3
   core:
-    '@nuxt/devtools-kit': ^4.0.0-alpha.3
+    '@nuxt/devtools-kit': ^4.0.0-alpha.4
     sharp: ^0.34.5
     '@nuxt/kit': ^4.4.2
     '@nuxt/schema': ^4.4.2
-    '@nuxt/ui': ^4.6.0
-    '@vitejs/plugin-vue': ^6.0.5
-    '@vue/compiler-sfc': ^3.5.31
-    better-sqlite3: ^12.8.0
-    docus: ^5.8.1
+    '@nuxt/ui': ^4.6.1
+    '@vitejs/plugin-vue': ^6.0.6
+    '@vue/compiler-sfc': ^3.5.33
+    better-sqlite3: ^12.9.0
+    docus: ^5.10.0
     mermaid: ^11.14.0
     nuxt: ^4.4.2
-    tailwindcss: ^4.2.2
-    vite: ^8.0.3
-    vue-router: ^5.0.4
-    vue-tsc: ^3.2.6
+    tailwindcss: ^4.2.4
+    vite: ^8.0.9
+    vue-router: ^5.0.6
+    vue-tsc: ^3.2.7
     zod: ^4.3.6
     zod-to-json-schema: ^3.25.2
   dev:
@@ -48,25 +48,25 @@ catalogs:
     '@commitlint/config-conventional': ^20.5.0
     '@types/ejs': ^3.1.5
     '@types/js-yaml': ^4.0.9
-    '@types/node': ^24.12.0
-    '@vitest/browser': 4.1.2
-    '@vitest/browser-playwright': 4.1.2
-    '@vitest/coverage-v8': 4.1.2
-    '@vitest/ui': ^4.1.2
+    '@types/node': ^24.12.2
+    '@vitest/browser': 4.1.5
+    '@vitest/browser-playwright': 4.1.5
+    '@vitest/coverage-v8': 4.1.5
+    '@vitest/ui': ^4.1.5
     bumpp: ^11.0.1
     changelogen: ^0.6.2
     changelogithub: ^14.0.0
     husky: ^9.1.7
     lint-staged: ^16.4.0
-    oxfmt: ^0.43.0
-    oxlint: ^1.58.0
+    oxfmt: ^0.46.0
+    oxlint: ^1.61.0
     playwright: ^1.59.1
     playwright-chromium: ^1.59.1
-    tsdown: ^0.21.7
+    tsdown: ^0.21.9
     tsx: ^4.21.0
-    turbo: ^2.9.3
-    typescript: ^6.0.0
-    vitest: ^4.1.2
+    turbo: ^2.9.6
+    typescript: ^6.0.3
+    vitest: ^4.1.5
 
 ignoredOptionalDependencies:
   - '@resvg/resvg-js-android-arm-eabi'
