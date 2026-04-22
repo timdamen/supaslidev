@@ -24,6 +24,12 @@ export default defineNuxtConfig({
     },
   },
 
+  content: {
+    experimental: {
+      sqliteConnector: 'better-sqlite3',
+    },
+  },
+
   llms: {
     domain: 'https://supaslidev-docs.vercel.app',
     title: 'Supaslidev',
