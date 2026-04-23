@@ -12,7 +12,7 @@ import {
 } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { findProjectRoot, getPresentations } from '../utils.js';
-import { regeneratePresentationsJson } from '../../shared/presentations.js';
+import { parseFrontmatter, regeneratePresentationsJson } from '../../shared/presentations.js';
 import { optimizeThumbnail } from '../../shared/optimize-thumbnail.js';
 
 export interface DeployOptions {
@@ -84,13 +84,15 @@ function findNuxtBin(
 }
 
 export function createVercelConfig(basePath: string, presentations: string[]): string {
+  // Use negative lookahead to exclude paths with a dot (file extensions like .js, .css, .png)
+  // so that asset requests are served as static files instead of being rewritten to index.html
   const rewrites = presentations.map((id) => ({
-    source: `${basePath}presentations/${id}/(.*)`,
+    source: `${basePath}presentations/${id}/:path((?!.*\\.).*)`,
     destination: `${basePath}presentations/${id}/index.html`,
   }));
 
   rewrites.push({
-    source: `${basePath}(.*)`,
+    source: `${basePath}:path((?!.*\\.).*)`,
     destination: `${basePath}index.html`,
   });
 
@@ -147,7 +149,7 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
     throw new Error('No presentations found in the presentations directory.');
   }
 
-  const outputDir = resolve(options.output ?? join(projectRoot, 'deploy'));
+  const outputDir = resolve(projectRoot, options.output ?? 'deploy');
   const resolvedProjectRoot = resolve(projectRoot);
 
   // Safety check: prevent deleting directories outside the project root
@@ -202,16 +204,24 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
     const outputBase = join(thumbnailsDir, id);
     const targetFile = join(thumbnailsDir, `${id}.png`);
 
-    console.log(`  Thumbnail: ${id}`);
+    // Detect dark mode from frontmatter
+    const slidesPath = join(presentationDir, 'slides.md');
+    const frontmatter = existsSync(slidesPath)
+      ? parseFrontmatter(readFileSync(slidesPath, 'utf-8'))
+      : {};
+    const useDark = frontmatter.colorSchema === 'dark';
+
+    console.log(`  Thumbnail: ${id}${useDark ? ' (dark mode)' : ''}`);
+
+    const exportArgs = ['export', '--format', 'png', '--range', '1', '--output', outputBase];
+    if (useDark) {
+      exportArgs.push('--dark');
+    }
 
     try {
-      await runCommand(
-        slidevBin,
-        ['export', '--format', 'png', '--range', '1', '--output', outputBase],
-        {
-          cwd: presentationDir,
-        },
-      );
+      await runCommand(slidevBin, exportArgs, {
+        cwd: presentationDir,
+      });
 
       // Slidev exports into a directory <output>/<n>.png — move to <output>.png
       if (!existsSync(targetFile) && existsSync(outputBase)) {
@@ -244,6 +254,7 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
   const nuxtEnv: Record<string, string | undefined> = {
     ...process.env,
     NODE_ENV: 'production',
+    NITRO_PRESET: process.env.NITRO_PRESET ?? 'static',
     SUPASLIDEV_PROJECT_ROOT: projectRoot,
     SUPASLIDEV_PRESENTATIONS_DIR: presentationsDir,
     NUXT_PUBLIC_DEPLOY_MODE: 'true',
@@ -326,6 +337,24 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
   writeFileSync(join(outputDir, 'vercel.json'), createVercelConfig(basePath, presentations));
   writeFileSync(join(outputDir, 'netlify.toml'), createNetlifyConfig(basePath, presentations));
   writeFileSync(join(outputDir, 'package.json'), createDeployPackageJson());
+
+  // Generate root vercel.json for build-from-repo workflow if it doesn't exist
+  const rootVercelJson = join(projectRoot, 'vercel.json');
+  if (!existsSync(rootVercelJson)) {
+    const pm = existsSync(join(projectRoot, 'pnpm-lock.yaml'))
+      ? 'pnpm'
+      : existsSync(join(projectRoot, 'yarn.lock'))
+        ? 'yarn'
+        : 'npm';
+    const vercelConfig = {
+      framework: null,
+      installCommand: `${pm} install`,
+      buildCommand: 'npx supaslidev deploy --output dist',
+      outputDirectory: 'dist',
+    };
+    writeFileSync(rootVercelJson, JSON.stringify(vercelConfig, null, 2) + '\n');
+    console.log('  Generated vercel.json in project root for Vercel deployment.\n');
+  }
 
   console.log('='.repeat(50));
   console.log('  Deploy package ready!');

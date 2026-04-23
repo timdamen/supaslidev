@@ -43,15 +43,15 @@ describe('createVercelConfig', () => {
 
     expect(config.rewrites).toHaveLength(3);
     expect(config.rewrites[0]).toEqual({
-      source: '/presentations/deck-a/(.*)',
+      source: '/presentations/deck-a/:path((?!.*\\.).*)',
       destination: '/presentations/deck-a/index.html',
     });
     expect(config.rewrites[1]).toEqual({
-      source: '/presentations/deck-b/(.*)',
+      source: '/presentations/deck-b/:path((?!.*\\.).*)',
       destination: '/presentations/deck-b/index.html',
     });
     expect(config.rewrites[2]).toEqual({
-      source: '/(.*)',
+      source: '/:path((?!.*\\.).*)',
       destination: '/index.html',
     });
   });
@@ -59,15 +59,15 @@ describe('createVercelConfig', () => {
   it('applies custom base path', () => {
     const config = JSON.parse(createVercelConfig('/my-site/', ['demo']));
 
-    expect(config.rewrites[0].source).toBe('/my-site/presentations/demo/(.*)');
-    expect(config.rewrites[1].source).toBe('/my-site/(.*)');
+    expect(config.rewrites[0].source).toBe('/my-site/presentations/demo/:path((?!.*\\.).*)');
+    expect(config.rewrites[1].source).toBe('/my-site/:path((?!.*\\.).*)');
   });
 
   it('handles empty presentations array', () => {
     const config = JSON.parse(createVercelConfig('/', []));
 
     expect(config.rewrites).toHaveLength(1);
-    expect(config.rewrites[0].source).toBe('/(.*)');
+    expect(config.rewrites[0].source).toBe('/:path((?!.*\\.).*)');
   });
 });
 

@@ -63,7 +63,8 @@ program
   .description('Generate a PNG thumbnail of the first slide')
   .argument('<name>', 'Name of the presentation')
   .option('-o, --output <path>', 'Output path for the thumbnail (without extension)')
-  .action(async (name: string, options: { output?: string }) => {
+  .option('--dark', 'Export as dark theme (auto-detected from colorSchema if not set)')
+  .action(async (name: string, options: { output?: string; dark?: boolean }) => {
     await thumbnail(name, options);
   });
 

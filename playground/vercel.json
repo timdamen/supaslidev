@@ -1,6 +1,6 @@
 {
   "framework": null,
   "installCommand": "cd .. && pnpm install",
-  "buildCommand": "bash scripts/vercel-build.sh",
+  "buildCommand": "npx supaslidev deploy --output dist",
   "outputDirectory": "dist"
 }

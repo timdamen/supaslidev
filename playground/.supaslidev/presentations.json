@@ -5,6 +5,7 @@
     "description": "Presentation slides for developers. Learn more at [Sli.dev](https://sli.dev)",
     "theme": "seriph",
     "background": "https://cover.sli.dev",
-    "duration": "35min"
+    "duration": "35min",
+    "thumbnail": "/thumbnails/my-first-deck.webp"
   }
 ]

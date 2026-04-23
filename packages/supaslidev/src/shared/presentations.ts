@@ -93,11 +93,14 @@ export function regeneratePresentationsJson(
       const content = readFileSync(slidesPath, 'utf-8');
       const frontmatter = parseFrontmatter(content);
 
+      const colorSchema = frontmatter.colorSchema as Presentation['colorSchema'];
+
       const presentation: Presentation = {
         id: name,
         title: frontmatter.title || name,
         description: extractDescription(frontmatter.info) || '',
         theme: frontmatter.theme || 'default',
+        colorSchema: colorSchema || '',
         background: frontmatter.background || '',
         duration: frontmatter.duration || '',
       };

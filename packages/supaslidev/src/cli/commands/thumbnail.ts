@@ -1,11 +1,13 @@
 import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
-import { existsSync, mkdirSync, readdirSync, renameSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync } from 'node:fs';
 import { findProjectRoot, getPresentations, printAvailablePresentations } from '../utils.js';
 import { optimizeThumbnail } from '../../shared/optimize-thumbnail.js';
+import { parseFrontmatter } from '../../shared/presentations.js';
 
 export interface ThumbnailOptions {
   output?: string;
+  dark?: boolean;
 }
 
 export async function thumbnail(name: string, options: ThumbnailOptions = {}): Promise<void> {
@@ -40,15 +42,26 @@ export async function thumbnail(name: string, options: ThumbnailOptions = {}): P
 
   const slidevBin = join(presentationDir, 'node_modules', '.bin', 'slidev');
 
+  // Auto-detect dark mode from frontmatter unless explicitly set
+  let useDark = options.dark ?? false;
+  if (options.dark === undefined) {
+    const slidesPath = join(presentationDir, 'slides.md');
+    if (existsSync(slidesPath)) {
+      const frontmatter = parseFrontmatter(readFileSync(slidesPath, 'utf-8'));
+      useDark = frontmatter.colorSchema === 'dark';
+    }
+  }
+
+  const exportArgs = ['export', '--format', 'png', '--range', '1', '--output', outputPath];
+  if (useDark) {
+    exportArgs.push('--dark');
+  }
+
   await new Promise<void>((resolve) => {
-    const slidev = spawn(
-      slidevBin,
-      ['export', '--format', 'png', '--range', '1', '--output', outputPath],
-      {
-        cwd: presentationDir,
-        stdio: 'inherit',
-      },
-    );
+    const slidev = spawn(slidevBin, exportArgs, {
+      cwd: presentationDir,
+      stdio: 'inherit',
+    });
 
     slidev.on('error', (err) => {
       console.error(`Failed to generate thumbnail: ${err.message}`);

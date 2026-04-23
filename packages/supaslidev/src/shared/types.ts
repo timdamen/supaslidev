@@ -3,6 +3,7 @@ export interface Presentation {
   title: string;
   description: string;
   theme: string;
+  colorSchema: 'dark' | 'light' | 'both' | '';
   background: string;
   duration: string;
   thumbnail?: string;
