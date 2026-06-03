@@ -28,15 +28,15 @@ catalogs:
   core:
     '@nuxt/devtools-kit': ^4.0.0-alpha.4
     sharp: ^0.34.5
-    '@nuxt/kit': ^4.4.2
-    '@nuxt/schema': ^4.4.2
+    '@nuxt/kit': ^4.4.7
+    '@nuxt/schema': ^4.4.7
     '@nuxt/ui': ^4.6.1
     '@vitejs/plugin-vue': ^6.0.6
     '@vue/compiler-sfc': ^3.5.33
     better-sqlite3: ^12.9.0
     docus: ^5.10.0
     mermaid: ^11.14.0
-    nuxt: ^4.4.2
+    nuxt: ^4.4.7
     tailwindcss: ^4.2.4
     vite: ^8.0.9
     vue-router: ^5.0.6
