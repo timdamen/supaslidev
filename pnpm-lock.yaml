@@ -61,6 +61,9 @@ catalogs:
     vue-tsc:
       specifier: ^3.3.3
       version: 3.3.3
+    zod:
+      specifier: ^4.3.6
+      version: 4.3.6
     zod-to-json-schema:
       specifier: ^3.25.2
       version: 3.25.2
@@ -153,7 +156,6 @@ catalogs:
 
 overrides:
   '@nuxt/content': 3.12.0
-  zod: 4.3.6
 
 importers:
 
@@ -235,7 +237,7 @@ importers:
         specifier: catalog:core
         version: 4.4.7(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@24.13.1)(@vue/compiler-sfc@3.5.35)(better-sqlite3@12.10.0)(cac@6.7.14)(commander@13.1.0)(db0@0.3.4(better-sqlite3@12.10.0))(eslint@9.39.2(jiti@2.7.0))(ioredis@5.11.1)(lightningcss@1.32.0)(magicast@0.5.2)(meow@13.2.0)(optionator@0.9.4)(oxlint@1.68.0)(rolldown@1.1.0)(rollup-plugin-visualizer@7.0.1(rolldown@1.1.0)(rollup@4.61.1))(rollup@4.61.1)(terser@5.46.0)(tsx@4.22.4)(typescript@6.0.3)(vite@8.0.16(@types/node@24.13.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.46.0)(tsx@4.22.4)(yaml@2.9.0))(vue-tsc@3.3.3(typescript@6.0.3))(yaml@2.9.0)
       zod:
-        specifier: 4.3.6
+        specifier: catalog:core
         version: 4.3.6
       zod-to-json-schema:
         specifier: catalog:core
@@ -388,31 +390,31 @@ packages:
     resolution: {integrity: sha512-tocl7cUDoTpmhZqeW8XVKMMznZQwwQAEunF0VyNKmf64qt8NbMIAEiet/vRMzh7Jr9WcFeb6EZjmhLTP4Qx2Og==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/gateway@3.0.83':
     resolution: {integrity: sha512-LvlWujbSdEkTBXBLFtF7GS6riXdHhH0O+DpDrCaNQvXeHmSF2jKsOg7JWXiCgygAHM5cWFAO3JYmZp83DjiuBQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/mcp@1.0.46':
     resolution: {integrity: sha512-owU0wAP87KzsTzr+2JE9sT9lpsCWKg8ZwHhce/KQmD9D/kbhe69sUZ+lsFF5MoGvV/ZzMujrhAvC1MgmufwMeQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/provider-utils@4.0.21':
     resolution: {integrity: sha512-MtFUYI1/8mgDvRmaBDjbLJPFFrMG777AvSgyIFQtZHIMzm88R/12vYBBpnk7pfiWLFE1DSZzY4WDYzGbKAcmiw==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/provider-utils@4.0.27':
     resolution: {integrity: sha512-ubkAJ+xODouwtmN1tYlvTPphH1hPOBfZaEQe8U7skGvFAnIRs9PPpsq57bC2+Ky/MB4yzhd6YOsxTAx9sGpazw==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/provider@3.0.10':
     resolution: {integrity: sha512-Q3BZ27qfpYqnCYGvE3vt+Qi6LGOF9R5Nmzn+9JoM1lCRsD9mYaIhfJLkSunN48nfGXJ6n+XNV0J/XVpqGQl7Dw==}
@@ -1690,7 +1692,7 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
-      zod: 4.3.6
+      zod: ^3.25 || ^4.0
     peerDependenciesMeta:
       '@cfworker/json-schema':
         optional: true
@@ -1841,7 +1843,7 @@ packages:
       valibot: ^1.0.0
       vue-router: ^4.5.0 || ^5.0.0
       yup: ^1.7.0
-      zod: 4.3.6
+      zod: ^3.24.0 || ^4.0.0
     peerDependenciesMeta:
       '@inertiajs/vue3':
         optional: true
@@ -1876,7 +1878,7 @@ packages:
       valibot: ^1.0.0
       vue-router: ^4.5.0 || ^5.0.0
       yup: ^1.7.0
-      zod: 4.3.6
+      zod: ^3.24.0 || ^4.0.0
     peerDependenciesMeta:
       '@inertiajs/vue3':
         optional: true
@@ -1932,7 +1934,7 @@ packages:
       agents: '>=0.9.0'
       h3: '>=1.15.11'
       secure-exec: '>=0.2.1'
-      zod: 4.3.6
+      zod: ^4.1.13
     peerDependenciesMeta:
       agents:
         optional: true
@@ -1948,7 +1950,7 @@ packages:
   '@nuxtjs/robots@6.0.9':
     resolution: {integrity: sha512-dYvv33zl0WEgua/kIrRPh55B6A2iSS6mzNOSZ4E6EX0USXCQic774jE7aEovCssiWFYa2HD/XTHZIvtrxKyNvQ==}
     peerDependencies:
-      zod: 4.3.6
+      zod: '>=3'
     peerDependenciesMeta:
       zod:
         optional: true
@@ -5926,7 +5928,7 @@ packages:
     resolution: {integrity: sha512-+GomGQWaId3xN0wcugUW/H7xMMaFkID2PiS7K/Wugj45G3efv0BXhQ3psRZoQVoRbOpdNoUqcK/KTB+FR4h6qg==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.76 || ^4.1.8
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
@@ -8820,7 +8822,7 @@ packages:
       tailwindcss: ^4.0.0
       unifont: ^0.7.0
       unstorage: ^1.15.0
-      zod: 4.3.6
+      zod: '>=3'
     peerDependenciesMeta:
       '@resvg/resvg-js':
         optional: true
@@ -8873,7 +8875,7 @@ packages:
       nuxt: ^3.16.0 || ^4.0.0
       nuxt-site-config: ^3.2.0 || ^4.0.0
       vue: ^3.5.0
-      zod: 4.3.6
+      zod: ^3.23.0 || ^4.0.0
     peerDependenciesMeta:
       nuxt-site-config:
         optional: true
@@ -11228,7 +11230,10 @@ packages:
   zod-to-json-schema@3.25.2:
     resolution: {integrity: sha512-O/PgfnpT1xKSDeQYSCfRI5Gy3hPf91mKVDuYLUHZJMiDFptvP41MSnWofm8dnCm0256ZNfZIM7DSzuSMAFnjHA==}
     peerDependencies:
-      zod: 4.3.6
+      zod: ^3.25.28 || ^4
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
@@ -12640,8 +12645,8 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       unist-util-visit: 5.1.0
       unplugin: 2.3.11
-      zod: 4.3.6
-      zod-to-json-schema: 3.25.2(zod@4.3.6)
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.2(zod@3.25.76)
     optionalDependencies:
       '@valibot/to-json-schema': 1.7.0(valibot@1.4.1(typescript@6.0.3))
       better-sqlite3: 12.10.0
@@ -12701,8 +12706,8 @@ snapshots:
       unist-util-stringify-position: 4.0.0
       unist-util-visit: 5.1.0
       unplugin: 2.3.11
-      zod: 4.3.6
-      zod-to-json-schema: 3.25.2(zod@4.3.6)
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.2(zod@3.25.76)
     optionalDependencies:
       '@valibot/to-json-schema': 1.7.0(valibot@1.4.1(typescript@6.0.3))
       better-sqlite3: 12.10.0
@@ -24326,9 +24331,15 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
+  zod-to-json-schema@3.25.2(zod@3.25.76):
+    dependencies:
+      zod: 3.25.76
+
   zod-to-json-schema@3.25.2(zod@4.3.6):
     dependencies:
       zod: 4.3.6
+
+  zod@3.25.76: {}
 
   zod@4.3.6: {}
 
