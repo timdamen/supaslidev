@@ -34,7 +34,7 @@ catalogs:
     '@vitejs/plugin-vue': ^6.0.7
     '@vue/compiler-sfc': ^3.5.35
     better-sqlite3: ^12.10.0
-    docus: '~5.10.0'
+    docus: 5.10.0
     mermaid: ^11.15.0
     nuxt: ^4.4.7
     tailwindcss: ^4.3.0
