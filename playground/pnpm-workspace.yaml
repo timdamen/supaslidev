@@ -12,7 +12,7 @@ catalog:
 
 catalogs:
   core:
-    nuxt: ^4.4.2
+    nuxt: ^4.4.7
     '@vue/compiler-sfc': ^3.5.33
     typescript: ^6.0.3
     vue-tsc: ^3.2.7
