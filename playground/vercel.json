@@ -1,6 +1,6 @@
 {
   "framework": null,
   "installCommand": "cd .. && pnpm install",
-  "buildCommand": "pnpm -C .. --filter supaslidev... build && npx supaslidev deploy --output dist",
+  "buildCommand": "pnpm -C .. --filter supaslidev... build && node ../packages/supaslidev/dist/cli/index.js deploy --output dist",
   "outputDirectory": "dist"
 }
