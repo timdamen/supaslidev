@@ -215,6 +215,9 @@ images, and the theme stays silent about them.
 
 ## Inline images: `<AccessibleImage>`
 
+<div class="grid grid-cols-[1.5fr_1fr] gap-8 items-start">
+<div>
+
 ```html
 <AccessibleImage
   src="/demo-chart.svg"
@@ -226,9 +229,13 @@ images, and the theme stays silent about them.
 <AccessibleImage src="/divider.svg" decorative />
 ```
 
+</div>
+
 <AccessibleImage src="/demo-chart.svg"
   alt="Bar chart of assistive tech use, 2022 to 2025"
   caption="Rendered as figure + figcaption" width="220" height="253" fit="contain" />
+
+</div>
 
 <!--
 The component enforces a simple contract: either you describe the image, or
@@ -411,7 +418,7 @@ layout: end
 
 **slidev-theme-supa11y**
 
-[github.com/timdamen/supaslidev](https://github.com/timdamen/supaslidev)
+[github.com/timdamen/supaslidev](https://github.com/timdamen/supaslidev/themes/slidev-theme-supa11y)
 
 <!--
 Use it with: theme: supa11y in your deck's headmatter.

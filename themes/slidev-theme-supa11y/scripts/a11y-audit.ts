@@ -13,7 +13,7 @@
  */
 import type { ChildProcess } from 'node:child_process';
 import { spawn } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -227,6 +227,7 @@ async function main() {
   }
 
   if (failed.length === 0) {
+    rmSync(reportPath, { force: true }); // drop any stale report from a previous failing run
     console.log(
       c.green(c.bold(`\nAll ${results.length} slides pass the axe-core audit (deck content).\n`)),
     );
