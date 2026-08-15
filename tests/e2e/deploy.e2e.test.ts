@@ -231,9 +231,9 @@ describe('Deploy E2E', () => {
       expect(config.rewrites.length).toBeGreaterThanOrEqual(3); // 2 presentations + 1 catch-all
 
       const sources = config.rewrites.map((r: { source: string }) => r.source);
-      expect(sources).toContain('/presentations/test-deck/(.*)');
-      expect(sources).toContain('/presentations/second-deck/(.*)');
-      expect(sources).toContain('/(.*)');
+      expect(sources).toContain('/presentations/test-deck/:path((?!.*\\.).*)');
+      expect(sources).toContain('/presentations/second-deck/:path((?!.*\\.).*)');
+      expect(sources).toContain('/:path((?!.*\\.).*)');
     });
 
     it('generates netlify.toml with redirects', () => {
@@ -265,8 +265,8 @@ describe('Deploy E2E', () => {
     it('uses base path in vercel.json rewrites', () => {
       const config = JSON.parse(readFileSync(join(baseOutputDir, 'vercel.json'), 'utf-8'));
       const sources = config.rewrites.map((r: { source: string }) => r.source);
-      expect(sources).toContain('/my-site/presentations/test-deck/(.*)');
-      expect(sources).toContain('/my-site/(.*)');
+      expect(sources).toContain('/my-site/presentations/test-deck/:path((?!.*\\.).*)');
+      expect(sources).toContain('/my-site/:path((?!.*\\.).*)');
     });
 
     it('uses base path in netlify.toml redirects', () => {
