@@ -1,6 +1,6 @@
 {
   "name": "slidev-theme-supa11y",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Accessibility-first Slidev theme aiming at WCAG 2.2: AAA contrast tokens, hyperlegible self-hosted fonts, screen-reader fixes, real <img> layouts with alt text, high-contrast code highlighting",
   "keywords": [
     "a11y",
@@ -40,7 +40,7 @@
     "export": "slidev export example.md",
     "screenshot": "slidev export example.md --format png",
     "test:a11y": "tsx scripts/a11y-audit.ts",
-    "release": "bumpp --tag \"theme-v%s\" --commit \"release(theme): v%s\" --push"
+    "release": "bumpp --tag \"theme-v%s\" --commit \"chore(theme): release v%s\" --push"
   },
   "dependencies": {
     "@fontsource/atkinson-hyperlegible-mono": "^5.3.0",

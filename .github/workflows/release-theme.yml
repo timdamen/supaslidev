@@ -33,9 +33,13 @@ jobs:
 
       # Themes ship .vue/.ts sources directly — no build step needed
 
+      # Same provenance workaround as release.yml: pnpm 11's token-auth publish
+      # drops provenance, so pack with pnpm (resolves catalog:/workspace: deps)
+      # and publish the tarball with npm.
       - name: Publish theme package
         working-directory: themes/slidev-theme-supa11y
         env:
-          NPM_CONFIG_PROVENANCE: true
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --access public --no-git-checks
+        run: |
+          pnpm pack
+          npm publish ./*.tgz --provenance --access public
