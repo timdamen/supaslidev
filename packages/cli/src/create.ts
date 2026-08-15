@@ -170,6 +170,7 @@ async function createPresentation(targetDir: string, presentationName: string): 
       '@slidev/theme-seriph': 'catalog:',
       '@slidev/theme-apple-basic': 'catalog:',
       '@supaslidev/shared': 'workspace:*',
+      'slidev-theme-supa11y': 'catalog:',
       vue: 'catalog:',
     },
     devDependencies: {},
@@ -182,14 +183,12 @@ async function createPresentation(targetDir: string, presentationName: string): 
   );
 
   const slidesContent = `---
-theme: default
+theme: supa11y
 title: ${presentationName}
 addons:
   - '@supaslidev/shared'
 info: |
   A new Slidev presentation
-class: text-center
-transition: slide-left
 mdc: true
 ---
 
@@ -199,13 +198,13 @@ Welcome to your new presentation
 
 ---
 
-# Slide 2
+## Slide 2
 
 Add your content here
 
 ---
 
-# Learn More
+## Learn More
 
 [Slidev Documentation](https://sli.dev/)
 `;

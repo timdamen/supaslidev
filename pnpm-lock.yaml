@@ -380,6 +380,9 @@ importers:
       '@supaslidev/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      slidev-theme-supa11y:
+        specifier: workspace:*
+        version: link:../../../themes/slidev-theme-supa11y
       vue:
         specifier: 'catalog:'
         version: 3.5.41(typescript@6.0.3)

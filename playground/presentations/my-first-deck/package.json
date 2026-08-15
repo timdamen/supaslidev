@@ -12,6 +12,7 @@
     "@slidev/theme-default": "catalog:",
     "@slidev/theme-seriph": "catalog:",
     "@supaslidev/shared": "workspace:*",
+    "slidev-theme-supa11y": "workspace:*",
     "vue": "catalog:"
   },
   "devDependencies": {}

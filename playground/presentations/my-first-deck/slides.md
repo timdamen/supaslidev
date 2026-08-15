@@ -1,9 +1,6 @@
 ---
-# try also 'default' to start simple
-theme: seriph
-# random image from a curated Unsplash collection by Anthony
-# like them? see https://unsplash.com/collections/94734566/slidev
-background: https://cover.sli.dev
+# accessibility-first theme from this monorepo — try also 'default' or 'seriph'
+theme: supa11y
 # some information about your slides (markdown enabled)
 title: Welcome to Slidev
 info: |
@@ -11,13 +8,11 @@ info: |
   Presentation slides for developers.
 
   Learn more at [Sli.dev](https://sli.dev)
-# apply UnoCSS classes to the current slide
-class: text-center
 # https://sli.dev/features/drawing
 drawings:
   persist: false
-# slide transition: https://sli.dev/guide/animations.html#slide-transitions
-transition: slide-left
+# transitions default to the theme's accessible fade; override per slide if needed
+# https://sli.dev/guide/animations.html#slide-transitions
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
 # duration of the presentation
@@ -52,7 +47,7 @@ The last comment block of each slide will be treated as slide notes. It will be 
 transition: fade-out
 ---
 
-# What is Slidev?
+## What is Slidev?
 
 Slidev is a slides maker and presenter designed for developers, consist of the following features
 
@@ -94,11 +89,11 @@ transition: slide-up
 level: 2
 ---
 
-# Navigation
+## Navigation
 
 Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/ui#navigation-bar)
 
-## Keyboard Shortcuts
+### Keyboard Shortcuts
 
 |                                                     |                             |
 | --------------------------------------------------- | --------------------------- |
@@ -121,7 +116,7 @@ layout: two-cols
 layoutClass: gap-16
 ---
 
-# Table of contents
+## Table of contents
 
 You can use the `Toc` component to generate a table of contents for your slides:
 
@@ -138,9 +133,11 @@ The title will be inferred from your slide content, or you can override it with 
 ---
 layout: image-right
 image: https://cover.sli.dev
+# decorative image: empty alt tells screen readers to skip it
+alt: ''
 ---
 
-# Code
+## Code
 
 Use code snippets and get the highlighting directly, and even types hover!
 
@@ -192,7 +189,7 @@ Notes can also sync with clicks
 level: 2
 ---
 
-# Shiki Magic Move
+## Shiki Magic Move
 
 Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
 
@@ -264,7 +261,7 @@ const author = {
 
 ---
 
-# Components
+## Components
 
 <div grid="~ cols-2 gap-4">
 <div>
@@ -310,7 +307,7 @@ Also, HTML elements are valid:
 class: px-20
 ---
 
-# Themes
+## Themes
 
 Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
 
@@ -339,7 +336,7 @@ check out the [Awesome Themes Gallery](https://sli.dev/resources/theme-gallery).
 
 ---
 
-# Clicks Animations
+## Clicks Animations
 
 You can add `v-click` to elements to add a click animation.
 
@@ -376,7 +373,7 @@ also allows you to add
 
 ---
 
-# Motions
+## Motions
 
 Motion animations are powered by [@vueuse/motion](https://motion.vueuse.org/), triggered by `v-motion` directive.
 
@@ -456,7 +453,7 @@ const final = {
 
 ---
 
-# $\LaTeX$
+## $\LaTeX$
 
 $\LaTeX$ is supported out-of-box. Powered by [$\KaTeX$](https://katex.org/).
 
@@ -478,7 +475,7 @@ $$
 
 ---
 
-# Diagrams
+## Diagrams
 
 You can create diagrams / graphs from textual descriptions, directly in your Markdown.
 
@@ -560,13 +557,13 @@ dragPos:
   square: 691,32,167,_,-16
 ---
 
-# Draggable Elements
+## Draggable Elements
 
 Double-click on the draggable elements to edit their positions.
 
 <br>
 
-###### Directive Usage
+### Directive Usage
 
 ```md
 <img v-drag="'square'" src="https://sli.dev/logo.png">
@@ -574,7 +571,7 @@ Double-click on the draggable elements to edit their positions.
 
 <br>
 
-###### Component Usage
+### Component Usage
 
 ```md
 <v-drag text-3xl>
@@ -591,7 +588,7 @@ Double-click on the draggable elements to edit their positions.
 
 <img v-drag="'square'" src="https://sli.dev/logo.png">
 
-###### Draggable Arrow
+### Draggable Arrow
 
 ```md
 <v-drag-arrow two-way />
@@ -606,7 +603,7 @@ hide: false
 
 ---
 
-# Monaco Editor
+## Monaco Editor
 
 Slidev provides built-in Monaco Editor support.
 
@@ -635,7 +632,7 @@ layout: center
 class: text-center
 ---
 
-# Learn More
+## Learn More
 
 [Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/resources/showcases)
 

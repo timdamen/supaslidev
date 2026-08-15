@@ -7,6 +7,7 @@ catalog:
   '@slidev/theme-default': latest
   '@slidev/theme-seriph': latest
   '@slidev/theme-apple-basic': latest
+  slidev-theme-supa11y: latest
   vue: ^3.5.41
   playwright-chromium: ^1.62.1
 

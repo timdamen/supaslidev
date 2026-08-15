@@ -215,7 +215,7 @@ describe('Import Addon Configuration E2E', () => {
   afterAll(() => {
     process.chdir(originalCwd);
     cleanTestDir();
-  });
+  }, 60000);
 
   describe('importing presentation without existing addons', () => {
     it('adds @supaslidev/shared to package.json dependencies', () => {
@@ -377,7 +377,7 @@ describe('Import Addon Configuration E2E (with install)', { timeout: 180000 }, (
   afterAll(() => {
     process.chdir(originalCwd);
     cleanTestDir();
-  });
+  }, 60000);
 
   it('pnpm install completes successfully', () => {
     expect(existsSync(join(projectDir, 'node_modules'))).toBe(true);

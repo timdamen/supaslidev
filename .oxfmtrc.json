@@ -14,6 +14,7 @@
     "**/.output",
     "pnpm-lock.yaml",
     "presentations",
-    "docs/content/**/*.md"
+    "docs/content/**/*.md",
+    "themes/*/example.md"
   ]
 }

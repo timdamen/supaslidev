@@ -104,6 +104,7 @@ describe('Scaffolding E2E', () => {
     expect(presPackageJson.dependencies['@slidev/theme-default']).toBe('catalog:');
     expect(presPackageJson.dependencies['@slidev/theme-seriph']).toBe('catalog:');
     expect(presPackageJson.dependencies['@slidev/theme-apple-basic']).toBe('catalog:');
+    expect(presPackageJson.dependencies['slidev-theme-supa11y']).toBe('catalog:');
     expect(presPackageJson.dependencies['vue']).toBe('catalog:');
   });
 
@@ -123,6 +124,7 @@ describe('Scaffolding E2E', () => {
     expect(workspaceContent).toContain('@slidev/theme-default');
     expect(workspaceContent).toContain('@slidev/theme-seriph');
     expect(workspaceContent).toContain('@slidev/theme-apple-basic');
+    expect(workspaceContent).toContain('slidev-theme-supa11y');
   });
 
   it('creates state.json with correct initial values', async () => {

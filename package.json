@@ -61,10 +61,10 @@
   "lint-staged": {
     "*.{ts,js,mjs,vue}": [
       "oxlint --fix",
-      "oxfmt --write",
+      "oxfmt --write --no-error-on-unmatched-pattern",
       "vitest related --run"
     ],
-    "*.json": "oxfmt --write"
+    "*.json": "oxfmt --write --no-error-on-unmatched-pattern"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -243,7 +243,7 @@ describe('Shared Package Integration E2E (with install)', { timeout: 180000 }, (
     } catch {
       // Ignore cleanup errors - temp dir will be cleaned by OS
     }
-  });
+  }, 60000);
 
   it('pnpm install completes successfully', () => {
     expect(existsSync(join(projectDir, 'node_modules'))).toBe(true);
@@ -289,7 +289,7 @@ describe('Slidev Integration E2E', { timeout: 180000 }, () => {
     } catch {
       // Ignore cleanup errors - temp dir will be cleaned by OS
     }
-  });
+  }, 60000);
 
   it('SharedBadge component is available after pnpm install', async () => {
     const sharedPackageDir = join(projectDir, 'packages', 'shared');

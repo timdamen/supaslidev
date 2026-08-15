@@ -97,6 +97,7 @@ describe('CLI Scaffolding E2E', () => {
 
       expect(presPackageJson.dependencies['@slidev/cli']).toBe('catalog:');
       expect(presPackageJson.dependencies['@slidev/theme-default']).toBe('catalog:');
+      expect(presPackageJson.dependencies['slidev-theme-supa11y']).toBe('catalog:');
       expect(presPackageJson.dependencies['vue']).toBe('catalog:');
     });
 
@@ -176,7 +177,7 @@ describe('CLI Scaffolding E2E', () => {
 
       expect(content).toContain('---');
       expect(content).toContain('title: test-deck');
-      expect(content).toContain('theme: default');
+      expect(content).toContain('theme: supa11y');
     });
 
     it('slides.md contains presentation heading matching name', () => {
