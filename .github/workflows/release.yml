@@ -37,21 +37,28 @@ jobs:
       - name: Build supaslidev package
         run: pnpm --filter supaslidev build
 
+      # pnpm 11 dropped NPM_CONFIG_PROVENANCE support in its token-auth publish path
+      # (and its OIDC path 404s until a trusted publisher is configured on npmjs.com),
+      # which silently shipped v0.4.3 without provenance. Pack with pnpm so that
+      # catalog:/workspace: deps get resolved, then publish the tarball with npm,
+      # which still generates provenance from NODE_AUTH_TOKEN + id-token: write.
       - name: Publish CLI package
         working-directory: packages/cli
         continue-on-error: true
         env:
-          NPM_CONFIG_PROVENANCE: true
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --access public --no-git-checks
+        run: |
+          pnpm pack
+          npm publish ./*.tgz --provenance --access public
 
       - name: Publish supaslidev package
         working-directory: packages/supaslidev
         continue-on-error: true
         env:
-          NPM_CONFIG_PROVENANCE: true
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --access public --no-git-checks
+        run: |
+          pnpm pack
+          npm publish ./*.tgz --provenance --access public
 
       - name: Create GitHub Release
         run: npx changelogithub
