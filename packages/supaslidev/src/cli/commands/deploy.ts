@@ -211,6 +211,19 @@ export async function deploy(options: DeployOptions = {}): Promise<void> {
       : {};
     const useDark = frontmatter.colorSchema === 'dark';
 
+    // A thumbnail that is already on disk was put there deliberately — either
+    // committed to the repo or produced by an earlier run. Regenerating it needs
+    // a browser, which CI images generally do not have, so the export fails and
+    // the committed file is what ships anyway. Skipping keeps the log honest and
+    // makes "generate locally, commit the result" a supported workflow.
+    const committed = [`${id}.png`, `${id}.webp`]
+      .map((name) => join(thumbnailsDir, name))
+      .find((file) => existsSync(file));
+    if (committed) {
+      console.log(`  Thumbnail: ${id} (already present, skipping)\n`);
+      continue;
+    }
+
     console.log(`  Thumbnail: ${id}${useDark ? ' (dark mode)' : ''}`);
 
     const exportArgs = ['export', '--format', 'png', '--range', '1', '--output', outputBase];

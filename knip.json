@@ -1,28 +1,28 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignoreWorkspaces": ["playground", "playground/packages/*", "playground/presentations/*", "docs"],
+  "ignoreWorkspaces": [
+    "playground",
+    "playground/packages/*",
+    "playground/presentations/*",
+    "docs",
+    "themes/*"
+  ],
   "exclude": ["catalog", "exports", "types"],
   "workspaces": {
     ".": {
       "entry": ["vitest.config.ts"],
       "ignore": ["tests/**"],
       "vitest": false,
-      "ignoreDependencies": [
-        "supaslidev",
-        "@vitest/browser",
-        "@vitest/coverage-v8",
-        "changelogen",
-        "tsx"
-      ]
+      "ignoreDependencies": ["supaslidev", "changelogen", "tsx"]
     },
     "packages/cli": {
-      "project": ["src/**/*.ts"],
-      "ignoreDependencies": ["tsx"]
+      "project": ["src/**/*.ts"]
     },
     "packages/supaslidev": {
       "entry": ["app/**/*.vue", "server/**/*.ts"],
       "project": ["src/**/*.ts", "app/**/*.{ts,vue}", "server/**/*.ts"],
-      "ignoreDependencies": ["js-yaml", "vue-tsc", "@types/js-yaml", "tsx"]
+      "ignoreDependencies": ["js-yaml", "vue-tsc", "@types/js-yaml"],
+      "ignoreBinaries": ["create"]
     }
   }
 }

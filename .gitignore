@@ -24,3 +24,6 @@ components.d.ts
 
 # Nuxt Content cache
 .data/
+
+# Vercel CLI artifacts
+.vercel

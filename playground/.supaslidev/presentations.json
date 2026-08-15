@@ -4,6 +4,7 @@
     "title": "Welcome to Slidev",
     "description": "Presentation slides for developers. Learn more at [Sli.dev](https://sli.dev)",
     "theme": "seriph",
+    "colorSchema": "",
     "background": "https://cover.sli.dev",
     "duration": "35min",
     "thumbnail": "/thumbnails/my-first-deck.webp"

@@ -410,50 +410,42 @@ const commandPaletteGroups = computed<CommandPaletteGroup[]>(() => {
     {
       id: 'presentations',
       label: 'Present',
-      items: presentations.value.map(
-        (p: Presentation): CommandPaletteItem => ({
-          label: `Present > ${p.title}`,
-          suffix: deployMode.value ? 'Open presentation' : 'Start dev server and open in browser',
-          icon: 'i-lucide-play',
-          onSelect: () => handlePresentCommand(p),
-        }),
-      ),
+      items: presentations.value.map((p: Presentation): CommandPaletteItem => ({
+        label: `Present > ${p.title}`,
+        suffix: deployMode.value ? 'Open presentation' : 'Start dev server and open in browser',
+        icon: 'i-lucide-play',
+        onSelect: () => handlePresentCommand(p),
+      })),
     },
     {
       id: 'export',
       label: 'Export',
-      items: presentations.value.map(
-        (p: Presentation): CommandPaletteItem => ({
-          label: `Export > ${p.title}`,
-          suffix: 'Export to PDF',
-          icon: 'i-lucide-download',
-          onSelect: () => handleExportCommand(p),
-        }),
-      ),
+      items: presentations.value.map((p: Presentation): CommandPaletteItem => ({
+        label: `Export > ${p.title}`,
+        suffix: 'Export to PDF',
+        icon: 'i-lucide-download',
+        onSelect: () => handleExportCommand(p),
+      })),
     },
     {
       id: 'thumbnail',
       label: 'Thumbnail',
-      items: presentations.value.map(
-        (p: Presentation): CommandPaletteItem => ({
-          label: `Thumbnail > ${p.title}`,
-          suffix: 'Generate PNG of first slide',
-          icon: 'i-lucide-image',
-          onSelect: () => handleThumbnailCommand(p),
-        }),
-      ),
+      items: presentations.value.map((p: Presentation): CommandPaletteItem => ({
+        label: `Thumbnail > ${p.title}`,
+        suffix: 'Generate PNG of first slide',
+        icon: 'i-lucide-image',
+        onSelect: () => handleThumbnailCommand(p),
+      })),
     },
     {
       id: 'edit',
       label: 'Edit',
-      items: presentations.value.map(
-        (p: Presentation): CommandPaletteItem => ({
-          label: `Edit > ${p.title}`,
-          suffix: 'Open in VS Code',
-          icon: 'i-lucide-pencil',
-          onSelect: () => handleEditCommand(p),
-        }),
-      ),
+      items: presentations.value.map((p: Presentation): CommandPaletteItem => ({
+        label: `Edit > ${p.title}`,
+        suffix: 'Open in VS Code',
+        icon: 'i-lucide-pencil',
+        onSelect: () => handleEditCommand(p),
+      })),
     },
   ];
 });

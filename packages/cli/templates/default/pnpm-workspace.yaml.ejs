@@ -3,23 +3,31 @@ packages:
   - 'presentations/*'
 
 catalog:
-  '@slidev/cli': ^52.11.3
+  '@slidev/cli': ^52.19.0
   '@slidev/theme-default': latest
   '@slidev/theme-seriph': latest
   '@slidev/theme-apple-basic': latest
-  vue: ^3.5.26
-  playwright-chromium: ^1.58.2
+  vue: ^3.5.41
+  playwright-chromium: ^1.62.1
 
 catalogs:
   core:
-    nuxt: ^4.4.2
-    '@vue/compiler-sfc': ^3.5.27
-    typescript: ^5.3.3
-    vue-tsc: ^2.0.0
+    nuxt: ^4.5.2
+    '@vue/compiler-sfc': ^3.5.41
+    typescript: ^6.0.3
+    vue-tsc: ^3.3.10
 
 catalogMode: prefer
 
 linkWorkspacePackages: true
+
+allowBuilds:
+  '@parcel/watcher': true
+  better-sqlite3: true
+  esbuild: true
+  playwright-chromium: true
+  sharp: true
+  vue-demi: true
 
 shellEmulator: true
 
@@ -28,6 +36,7 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - axios
   - chokidar
+  - cytoscape@3.34.1
   - semver
   - undici
   - undici-types

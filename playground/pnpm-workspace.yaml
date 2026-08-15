@@ -3,18 +3,18 @@ packages:
   - 'presentations/*'
 
 catalog:
-  '@slidev/cli': ^52.14.2
+  '@slidev/cli': ^52.19.0
   '@slidev/theme-default': latest
   '@slidev/theme-seriph': latest
   '@slidev/theme-apple-basic': latest
-  vue: ^3.5.33
-  playwright-chromium: ^1.59.1
+  vue: ^3.5.41
+  playwright-chromium: ^1.62.1
 
 catalogs:
   core:
-    nuxt: ^4.4.7
-    '@vue/compiler-sfc': ^3.5.33
+    nuxt: ^4.5.2
+    '@vue/compiler-sfc': ^3.5.41
     typescript: ^6.0.3
-    vue-tsc: ^3.2.7
+    vue-tsc: ^3.3.10
 
 catalogMode: prefer
