@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 552" role="img" aria-label="Bar chart: screen reader usage grows each year from 2022 to 2025">
+  <rect width="480" height="552" fill="#0f172a"/>
+  <text x="40" y="60" fill="#e5e7eb" font-family="system-ui, sans-serif" font-size="24" font-weight="700">Assistive tech use</text>
+  <text x="40" y="90" fill="#a5b4c4" font-family="system-ui, sans-serif" font-size="16">Example data, for the theme demo</text>
+  <g>
+    <rect x="60"  y="360" width="70" height="120" fill="#60a5fa"/>
+    <rect x="160" y="320" width="70" height="160" fill="#60a5fa"/>
+    <rect x="260" y="260" width="70" height="220" fill="#60a5fa"/>
+    <rect x="360" y="200" width="70" height="280" fill="#93c5fd"/>
+  </g>
+  <g fill="#e5e7eb" font-family="system-ui, sans-serif" font-size="16" text-anchor="middle">
+    <text x="95"  y="505">2022</text>
+    <text x="195" y="505">2023</text>
+    <text x="295" y="505">2024</text>
+    <text x="395" y="505">2025</text>
+  </g>
+  <line x1="50" y1="480" x2="440" y2="480" stroke="#a5b4c4" stroke-width="2"/>
+</svg>

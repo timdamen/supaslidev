@@ -1,0 +1,74 @@
+{
+  "name": "slidev-theme-supa11y",
+  "version": "0.1.0",
+  "description": "Accessibility-first Slidev theme aiming at WCAG 2.2: AAA contrast tokens, hyperlegible self-hosted fonts, screen-reader fixes, real <img> layouts with alt text, high-contrast code highlighting",
+  "keywords": [
+    "a11y",
+    "accessibility",
+    "slidev",
+    "slidev-theme",
+    "wcag"
+  ],
+  "homepage": "https://github.com/timdamen/supaslidev/tree/main/themes/slidev-theme-supa11y#readme",
+  "bugs": {
+    "url": "https://github.com/timdamen/supaslidev/issues"
+  },
+  "license": "MIT",
+  "author": "Tim Damen <hello@timdamen.io>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timdamen/supaslidev.git",
+    "directory": "themes/slidev-theme-supa11y"
+  },
+  "files": [
+    "components",
+    "example.md",
+    "global-bottom.vue",
+    "helpers",
+    "layouts",
+    "public",
+    "setup",
+    "styles"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "slidev example.md --open",
+    "build": "slidev build example.md",
+    "export": "slidev export example.md",
+    "screenshot": "slidev export example.md --format png",
+    "test:a11y": "tsx scripts/a11y-audit.ts",
+    "release": "bumpp --tag \"theme-v%s\" --commit \"release(theme): v%s\" --push"
+  },
+  "dependencies": {
+    "@fontsource/atkinson-hyperlegible-mono": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible-next": "^5.3.0",
+    "@slidev/types": "^52.14.2"
+  },
+  "devDependencies": {
+    "@slidev/cli": "catalog:",
+    "axe-core": "^4.13.0",
+    "playwright-chromium": "catalog:",
+    "tsx": "catalog:dev",
+    "vue": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "slidev": ">=52.0.0"
+  },
+  "slidev": {
+    "defaults": {
+      "transition": "fade",
+      "fonts": {
+        "sans": "Atkinson Hyperlegible Next",
+        "mono": "Atkinson Hyperlegible Mono",
+        "provider": "none",
+        "weights": "400,600,700"
+      }
+    },
+    "colorSchema": "both",
+    "highlighter": "shiki"
+  }
+}

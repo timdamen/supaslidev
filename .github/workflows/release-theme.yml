@@ -1,9 +1,9 @@
-name: Release
+name: Release Theme
 
 on:
   push:
     tags:
-      - v*
+      - theme-v*
 
 permissions:
   contents: write
@@ -31,29 +31,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build CLI package
-        run: pnpm --filter create-supaslidev build
+      # Themes ship .vue/.ts sources directly — no build step needed
 
-      - name: Build supaslidev package
-        run: pnpm --filter supaslidev build
-
-      - name: Publish CLI package
-        working-directory: packages/cli
-        continue-on-error: true
+      - name: Publish theme package
+        working-directory: themes/slidev-theme-supa11y
         env:
           NPM_CONFIG_PROVENANCE: true
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm publish --access public --no-git-checks
-
-      - name: Publish supaslidev package
-        working-directory: packages/supaslidev
-        continue-on-error: true
-        env:
-          NPM_CONFIG_PROVENANCE: true
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --access public --no-git-checks
-
-      - name: Create GitHub Release
-        run: npx changelogithub
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

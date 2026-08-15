@@ -1,0 +1,351 @@
+/**
+ * Typography and layout styling.
+ *
+ * Sizes are canvas pixels on Slidev's default 980x552 canvas, which scales
+ * ~1.96x on a 1080p display: 22px body renders ~43px (~32pt equivalent),
+ * above the common ">= 30pt when projected" guidance.
+ */
+
+.slidev-layout {
+  background: var(--supa11y-bg);
+  color: var(--supa11y-fg);
+  font-size: 22px;
+  line-height: 1.5;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--supa11y-fg);
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: 44px;
+    margin-bottom: 0.6em;
+  }
+
+  h2 {
+    font-size: 36px;
+    margin-bottom: 0.7em;
+  }
+
+  h3 {
+    font-size: 27px;
+    font-weight: 600;
+  }
+
+  h4 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  /* Keep measure readable: under the 80ch AAA cap (SC 1.4.8) */
+  p,
+  ul,
+  ol,
+  blockquote {
+    max-width: 65ch;
+  }
+
+  p,
+  ul,
+  ol {
+    margin-bottom: 0.6em;
+  }
+
+  /* Explicit: the client's layouts-base.css sets p { line-height: 1.5rem },
+     which at 22px text is an effective 1.09 — inheritance alone loses. */
+  p,
+  li,
+  blockquote {
+    line-height: 1.5;
+  }
+
+  li {
+    margin-bottom: 0.35em;
+  }
+
+  b,
+  strong {
+    font-weight: 700;
+  }
+
+  /* Links: color + underline, never color alone (SC 1.4.1) */
+  a {
+    color: var(--supa11y-link);
+    text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.15em;
+    border: none;
+
+    &:hover {
+      text-decoration-thickness: 0.14em;
+    }
+  }
+
+  blockquote {
+    border-left: 4px solid var(--supa11y-accent);
+    padding-left: 0.8em;
+    color: var(--supa11y-muted);
+    font-size: inherit;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--supa11y-muted);
+    padding: 0.35em 0.7em;
+  }
+
+  th {
+    font-weight: 600;
+  }
+}
+
+/* Muted helper for secondary text — still AAA */
+.slidev-layout .supa11y-muted,
+.slidev-layout .opacity-50,
+.slidev-layout .op50 {
+  opacity: 1 !important;
+  color: var(--supa11y-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* Cover / intro / end                                                 */
+/* ------------------------------------------------------------------ */
+
+.supa11y-cover,
+.supa11y-intro,
+.supa11y-end {
+  display: flex;
+  position: relative;
+
+  .supa11y-cover-content {
+    position: relative;
+    z-index: 2;
+    margin: auto 0;
+    max-width: 80%;
+  }
+
+  h1 {
+    font-size: 58px;
+    line-height: 1.1;
+  }
+
+  h1 + p {
+    font-size: 26px;
+    color: var(--supa11y-muted);
+    margin-top: -0.4em;
+  }
+}
+
+/* Decorative accent bar above cover/intro titles (not on the centered end slide) */
+.supa11y-cover:not(.supa11y-end) .supa11y-cover-content > h1:first-child::before {
+  content: '';
+  display: block;
+  width: 76px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--supa11y-accent);
+  margin-bottom: 28px;
+}
+
+/* Cover with a background image: real <img> + scrim so text stays readable */
+.supa11y-cover-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.supa11y-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--supa11y-scrim);
+  z-index: 1;
+}
+
+/* Over an image + scrim, force light text (scrim guarantees >= 7:1 for #f0f3f6) */
+.supa11y-cover.has-image {
+  .supa11y-cover-content,
+  h1,
+  h2,
+  p {
+    color: #f0f3f6;
+  }
+
+  a {
+    color: #bfdbfe;
+  }
+}
+
+.supa11y-end {
+  text-align: center;
+
+  .supa11y-cover-content {
+    margin: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Section / fact / statement / quote                                  */
+/* ------------------------------------------------------------------ */
+
+.supa11y-section {
+  display: flex;
+
+  h2 {
+    font-size: 48px;
+    margin: auto 0;
+    border-left: 6px solid var(--supa11y-accent);
+    padding-left: 0.5em;
+  }
+}
+
+.supa11y-fact {
+  display: flex;
+  text-align: center;
+
+  .supa11y-fact-content {
+    margin: auto;
+  }
+
+  /* Kicker heading stays modest; the fact itself (first paragraph) goes big */
+  h2 {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--supa11y-muted);
+    margin-bottom: 0.4em;
+  }
+
+  .supa11y-fact-content > p:first-of-type {
+    font-size: 84px;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--supa11y-accent);
+    margin-bottom: 0.1em;
+    max-width: none;
+  }
+}
+
+.supa11y-statement {
+  display: flex;
+  text-align: center;
+
+  .supa11y-statement-content {
+    margin: auto;
+    max-width: 85%;
+  }
+
+  h2,
+  div > p:first-child {
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+}
+
+.supa11y-quote {
+  display: flex;
+
+  figure {
+    margin: auto 0;
+    max-width: 75%;
+  }
+
+  blockquote {
+    border-left: 6px solid var(--supa11y-accent);
+    padding-left: 0.8em;
+    color: var(--supa11y-fg);
+
+    p {
+      font-size: 32px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+  }
+
+  figcaption {
+    margin-top: 0.8em;
+    padding-left: 1.1em;
+    font-size: 22px;
+    color: var(--supa11y-muted);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Image layouts: real <img> elements, captions, split grid            */
+/* ------------------------------------------------------------------ */
+
+.supa11y-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  background: var(--supa11y-bg);
+
+  .slidev-layout {
+    height: 100%;
+  }
+}
+
+.supa11y-figure {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  height: 100%;
+  min-height: 0;
+  background: var(--supa11y-bg);
+
+  img {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    object-fit: cover;
+  }
+
+  figcaption {
+    flex: none;
+    padding: 0.5rem 1rem;
+    font-size: 18px;
+    color: var(--supa11y-muted);
+    background: var(--supa11y-bg);
+    border-top: 2px solid var(--supa11y-accent);
+  }
+}
+
+.supa11y-image-full {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+
+  .supa11y-figure {
+    height: 100%;
+  }
+
+  .supa11y-image-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    max-width: 60%;
+    margin: 1.5rem;
+    padding: 0.8rem 1.2rem;
+    background: var(--supa11y-bg);
+    border-radius: 6px;
+
+    &:empty {
+      display: none;
+    }
+  }
+}

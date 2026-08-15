@@ -27,3 +27,5 @@ components.d.ts
 
 # Vercel CLI artifacts
 .vercel
+
+themes/*/a11y-report.md

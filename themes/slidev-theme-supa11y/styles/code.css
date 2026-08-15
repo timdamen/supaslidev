@@ -1,0 +1,87 @@
+/**
+ * Code block accessibility.
+ *
+ * Shiki themes (github-*-high-contrast) are set in setup/shiki.ts; this file
+ * fixes the parts Slidev's defaults get wrong: line-highlight dimming that
+ * crushes contrast to ~2:1, sub-3:1 line-number gutters, 12px type, and
+ * ligatures that make glyphs differ from the characters the audience types.
+ */
+
+.slidev-layout {
+  /* Literal characters only: => stays two glyphs, not an arrow */
+  code,
+  pre,
+  kbd {
+    font-variant-ligatures: none;
+  }
+
+  /* Inline code: bordered chip, AAA text in both schemes */
+  :not(pre) > code {
+    font-size: 0.9em;
+    background: var(--supa11y-code-bg);
+    border: 1px solid var(--supa11y-code-border);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+  }
+
+  pre:not(.shiki) {
+    background: var(--supa11y-code-bg);
+  }
+}
+
+/* Block chrome matches the Shiki theme backgrounds so contrast math holds */
+.slidev-code-wrapper pre,
+.slidev-layout pre.shiki {
+  border: 1px solid var(--supa11y-code-border);
+}
+
+/*
+ * Line highlighting (```ts {1|2-3}): Slidev de-emphasizes other lines with
+ * `opacity: 0.3`, dropping every token below 2.5:1. Instead: highlighted
+ * lines get a background tint + a left bar (shape, not color alone —
+ * SC 1.4.1), and dimming is mild on dark (all tokens stay >= 4.9:1) and
+ * disabled on light (its 5.04:1 comments can't afford any dimming).
+ */
+.slidev-code .slidev-code-dishonored,
+.slidev-code .dishonored {
+  opacity: 0.7;
+  pointer-events: auto;
+}
+
+html:not(.dark) .slidev-code .slidev-code-dishonored,
+html:not(.dark) .slidev-code .dishonored {
+  opacity: 1;
+}
+
+.slidev-code .slidev-code-highlighted,
+.slidev-code .highlighted {
+  display: inline-block;
+  width: calc(100% + 2 * var(--slidev-code-padding));
+  margin: 0 calc(-1 * var(--slidev-code-padding));
+  padding: 0 var(--slidev-code-padding);
+  background: var(--supa11y-code-hl-bg);
+  box-shadow: inset 4px 0 0 var(--supa11y-code-hl-bar);
+}
+
+/* KaTeX range highlighting (```latex {1|2}) dims with the same opacity: 0.3
+   pattern as code — apply the same correction to formulas */
+.slidev-katex-wrapper .mord.dishonored,
+.slidev-katex-wrapper .dishonored {
+  opacity: 0.7;
+  pointer-events: auto;
+}
+
+html:not(.dark) .slidev-katex-wrapper .mord.dishonored,
+html:not(.dark) .slidev-katex-wrapper .dishonored {
+  opacity: 1;
+}
+
+/*
+ * Line numbers (off by default; enable per deck with `lineNumbers: true`).
+ * Slidev's gutter grays measure ~2.5:1 on these backgrounds; use the GitHub
+ * high-contrast gutter colors instead. Rendered as CSS counters in ::before,
+ * they're skipped by screen readers and excluded from copy — as they should be.
+ */
+.slidev-code-line-numbers .slidev-code code .line::before {
+  color: var(--supa11y-code-gutter);
+}
