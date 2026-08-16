@@ -185,6 +185,48 @@ where even mild dimming would push comments below AA.
 -->
 
 ---
+
+## Line numbers
+
+```ts {2|4}{lines:true}
+const total = slides.length;
+const current = page.no;
+
+announce(current, total);
+```
+
+Numbers are CSS counters in the gutter: skipped by screen readers, excluded
+from copy, recolored to the GitHub high-contrast gutter grays.
+
+<!--
+Line highlighting and line numbers combine: the highlighted line keeps its
+tint and left bar, and the numbers stay aligned in the gutter.
+-->
+
+---
+
+## Magic Move
+
+````md magic-move {lines: true}
+```ts
+const msg = 'hello';
+console.log(msg);
+```
+```ts {2}
+const msg = 'hello supa11y';
+console.log(msg.toUpperCase());
+```
+````
+
+Magic Move renders one span per token, not per line — the theme only tints
+tokens while a range is active, and never gives them line geometry.
+
+<!--
+Click once: the code morphs and line 2 gets its range tint. Both states keep
+their line numbers in the gutter.
+-->
+
+---
 layout: image-right
 image: /demo-chart.svg
 alt: Bar chart showing assistive technology use growing each year from 2022 to 2025

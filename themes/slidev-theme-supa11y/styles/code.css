@@ -53,14 +53,27 @@ html:not(.dark) .slidev-code .dishonored {
   opacity: 1;
 }
 
-.slidev-code .slidev-code-highlighted,
-.slidev-code .highlighted {
+.slidev-code .line.slidev-code-highlighted,
+.slidev-code .line.highlighted {
   display: inline-block;
-  width: calc(100% + 2 * var(--slidev-code-padding));
-  margin: 0 calc(-1 * var(--slidev-code-padding));
-  padding: 0 var(--slidev-code-padding);
+  width: calc(100% + 2 * var(--slidev-code-padding, 0px));
+  margin: 0 calc(-1 * var(--slidev-code-padding, 0px));
+  padding: 0 var(--slidev-code-padding, 0px);
   background: var(--supa11y-code-hl-bg);
   box-shadow: inset 4px 0 0 var(--supa11y-code-hl-bar);
+}
+
+/*
+ * Shiki Magic Move blocks render one span per TOKEN (plus a span per line
+ * number), not per line, and in the default step every span carries the
+ * `highlighted` class. Those spans must never get the line geometry above —
+ * it puts each token on its own full-width row and paints the whole block
+ * as highlighted. Tint tokens only while a real range is active, i.e. when
+ * some tokens are de-emphasized.
+ */
+.shiki-magic-move-container:has(.slidev-code-dishonored)
+  .slidev-code-highlighted:not(.shiki-magic-move-line-number) {
+  background: var(--supa11y-code-hl-bg);
 }
 
 /* KaTeX range highlighting (```latex {1|2}) dims with the same opacity: 0.3
@@ -84,4 +97,13 @@ html:not(.dark) .slidev-katex-wrapper .dishonored {
  */
 .slidev-code-line-numbers .slidev-code code .line::before {
   color: var(--supa11y-code-gutter);
+}
+
+/* Magic Move gutters: shiki-magic-move dims its line numbers to opacity 0.3,
+   far below 3:1 — use the same high-contrast gutter color at full opacity.
+   The double class outweighs Slidev's `html.dark .shiki span` color rule,
+   which would otherwise make numbers inherit the pre's foreground. */
+.slidev-code .shiki-magic-move-item.shiki-magic-move-line-number {
+  color: var(--supa11y-code-gutter);
+  opacity: 1;
 }
