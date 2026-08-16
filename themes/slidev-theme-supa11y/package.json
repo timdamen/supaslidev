@@ -1,6 +1,6 @@
 {
   "name": "slidev-theme-supa11y",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Accessibility-first Slidev theme aiming at WCAG 2.2: AAA contrast tokens, hyperlegible self-hosted fonts, screen-reader fixes, real <img> layouts with alt text, high-contrast code highlighting",
   "keywords": [
     "a11y",
